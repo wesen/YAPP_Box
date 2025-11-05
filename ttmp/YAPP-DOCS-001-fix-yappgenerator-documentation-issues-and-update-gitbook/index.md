@@ -32,6 +32,10 @@ RelatedFiles:
       Note: Aggregated defaults for common feature params
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
       Note: Verification checklist for PCB stands parameter order
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/various/test_light_tubes_center.scad
+      Note: Minimal OpenSCAD test for lightTubes with yappCenter
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/various/test_push_buttons_center.scad
+      Note: Minimal OpenSCAD test for pushButtons with yappCenter
     - Path: analysis/README.md
       Note: Complete documentation for the analysis system
     - Path: analysis/USAGE_EXAMPLES.md
@@ -52,6 +56,7 @@ ExternalSources:
 Summary: Comprehensive analysis and fixing of YAPPgenerator documentation issues. Includes GitBook scraping, API change tracking, and issue database for systematic documentation updates.
 LastUpdated: 2025-11-05T16:57:59.208780448-05:00
 ---
+
 
 
 

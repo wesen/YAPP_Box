@@ -10,7 +10,8 @@ from pathlib import Path
 import subprocess
 
 DB_PATH = Path(__file__).parent / "yapp_analysis.db"
-REPO_PATH = Path(__file__).parent.parent.parent
+# Resolve repository root: analysis -> ticket -> ttmp -> repo root
+REPO_PATH = Path(__file__).resolve().parents[3]
 EXAMPLES_PATH = REPO_PATH / "examples"
 
 def get_db():

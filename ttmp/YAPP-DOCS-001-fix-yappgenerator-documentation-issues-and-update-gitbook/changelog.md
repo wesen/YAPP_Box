@@ -60,3 +60,19 @@ Add reference docs: yappCircle+yappCenter corrections; coordinate systems; defau
 - /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md
 - /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
 
+
+## 2025-11-05
+
+Validated yappCenter corrections with OpenSCAD; fixed analyzer path; rendered two minimal tests
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/analyze_examples.py
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/various/test_light_tubes_center.scad
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/various/test_push_buttons_center.scad
+
+
+## 2025-11-05
+
+Built all 44 example .scad files via OpenSCAD preview export; 0 failures
+

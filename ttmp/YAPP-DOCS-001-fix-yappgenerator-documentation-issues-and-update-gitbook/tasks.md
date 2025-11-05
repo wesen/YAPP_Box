@@ -13,3 +13,6 @@
 - [ ] Document default values for all optional parameters
 - [ ] Verify and update PCB Stands parameter order documentation
 - [ ] Re-scrape GitBook after fixes and verify issues are resolved
+- [x] Run OpenSCAD analyzer on examples via analyze_examples.py
+- [x] Create and run OpenSCAD tests for yappCenter corrections
+- [x] Build all examples with OpenSCAD preview export
