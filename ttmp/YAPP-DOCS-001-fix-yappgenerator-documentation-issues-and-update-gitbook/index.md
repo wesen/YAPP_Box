@@ -10,6 +10,28 @@ Intent: long-term
 Owners:
     - manuel
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/README.md
+      Note: Analysis system docs
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/USAGE_EXAMPLES.md
+      Note: DB usage workflows
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/analyze_examples.py
+      Note: Example analyzer
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/analyze_git_history.py
+      Note: Git history analyzer
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/query_db.py
+      Note: Interactive query interface
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/scrape_gitbook.py
+      Note: GitBook scraper
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/yapp_analysis.db
+      Note: SQLite database with GitBook pages and issues
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/code-examples-yappcircle-yappcenter-corrections.md
+      Note: Corrections for yappCircle examples to use center-based placement
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/coordinate-systems-pcb-vs-box-vs-boxinside-comparison.md
+      Note: Comparison guide for PCB/Box/BoxInside coords
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md
+      Note: Aggregated defaults for common feature params
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
+      Note: Verification checklist for PCB stands parameter order
     - Path: analysis/README.md
       Note: Complete documentation for the analysis system
     - Path: analysis/USAGE_EXAMPLES.md
@@ -30,6 +52,8 @@ ExternalSources:
 Summary: Comprehensive analysis and fixing of YAPPgenerator documentation issues. Includes GitBook scraping, API change tracking, and issue database for systematic documentation updates.
 LastUpdated: 2025-11-05T16:57:59.208780448-05:00
 ---
+
+
 
 
 

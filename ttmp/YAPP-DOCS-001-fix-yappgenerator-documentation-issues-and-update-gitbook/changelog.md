@@ -34,3 +34,29 @@ Created interactive query interface (query_db.py) with commands: readme, summary
 
 Updated README_FIRST table in database with GitBook scraping information and usage examples. Database is now self-documenting.
 
+
+## 2025-11-05
+
+Created comprehensive fix documentation for critical and high-priority GitBook issues: version mismatch (v3.0→v3.3.8), include order requirements, yappCenter usage, parameter notation (p(n) vs n(a)), and PCB stands verification
+
+### Related Files
+
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/01-version-mismatch-fix.md
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/02-include-order-fix.md
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/03-yappCenter-usage-fix.md
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/04-parameter-notation-fix.md
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/05-pcb-stands-parameter-order-fix.md
+- ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/README.md
+
+
+## 2025-11-05
+
+Add reference docs: yappCircle+yappCenter corrections; coordinate systems; default values; PCB stands verification
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/code-examples-yappcircle-yappcenter-corrections.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/coordinate-systems-pcb-vs-box-vs-boxinside-comparison.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
+

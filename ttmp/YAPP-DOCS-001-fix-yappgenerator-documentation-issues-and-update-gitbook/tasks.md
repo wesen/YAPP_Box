@@ -3,11 +3,11 @@
 ## TODO
 
 
-- [ ] Review analysis system and understand database structure (read analysis/README.md and run query_db.py readme)
-- [ ] Fix critical issue: Update GitBook version from v3.0 to v3.3.8
-- [ ] Fix critical issue: Add include order documentation to Getting Started page
-- [ ] Fix high priority: Clarify yappCenter usage for circular cutouts in Cutouts page
-- [ ] Fix high priority: Explain p(n) vs n(a) parameter notation in Parameters page
+- [x] Review analysis system and understand database structure (read analysis/README.md and run query_db.py readme)
+- [x] Fix critical issue: Update GitBook version from v3.0 to v3.3.8
+- [x] Fix critical issue: Add include order documentation to Getting Started page
+- [x] Fix high priority: Clarify yappCenter usage for circular cutouts in Cutouts page
+- [x] Fix high priority: Explain p(n) vs n(a) parameter notation in Parameters page
 - [ ] Fix code examples: Update 8 examples using yappCircle without yappCenter (Light Tubes, Push Buttons pages)
 - [ ] Add coordinate system comparison diagrams showing all three systems side-by-side
 - [ ] Document default values for all optional parameters
