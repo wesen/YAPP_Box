@@ -1,0 +1,27 @@
+topics:
+    - slug: chat
+      description: Chat backend and frontend surfaces
+    - slug: backend
+      description: Backend services
+    - slug: websocket
+      description: WebSocket lifecycle & events
+    - slug: enclosures
+      description: 3D printed enclosures and boxes
+    - slug: yappgenerator
+      description: YAPPgenerator parametric box design
+    - slug: hardware
+      description: Hardware components and specifications
+docTypes:
+    - slug: design-doc
+      description: Structured rationale and architecture notes
+    - slug: reference
+      description: Reference docs and API contracts
+    - slug: playbook
+      description: Operational procedures and QA/Smoke steps
+    - slug: index
+      description: Ticket landing page
+    - slug: specification
+      description: Component and design specifications
+intent:
+    - slug: long-term
+      description: Likely to persist
