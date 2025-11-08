@@ -1,0 +1,27 @@
+enclosure:
+    base:
+        thickness: 4
+    lid:
+        type: snap
+    wall:
+        clearance: 0.5
+        fillet_radius: 2
+        thickness: 2
+pcb:
+    length: 40
+    thickness: 1.6
+    width: 20
+    z_clearance: 2
+project: example-chain
+tolerances:
+    holes: 0.3
+    mating: 0.2
+    perimeter: 0.5
+units: mm
+vars:
+    a: 1
+    b: 2
+    c: 3
+    d: 4
+version: 0
+yapp_version: v3.3.8

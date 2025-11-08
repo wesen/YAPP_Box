@@ -113,6 +113,10 @@ func resolvePass(state map[string]any, usedVars map[string]struct{}) (map[string
 			}
 			return t, updated, nil
 		case string:
+			// Treat some fields as literal strings, not expressions
+			if isStringFieldPath(path) {
+				return v, false, nil
+			}
 			// Try to parse as number if it looks like one
 			if num, ok := parseNumericString(t); ok {
 				return num, true, nil
@@ -364,6 +368,11 @@ func collectUnresolved(state any) []string {
 		"project":      {},
 		"units":        {},
 		"yapp_version": {},
+		"enclosure.lid.type":           {},
+		"enclosure.lid.screws.positions": {},
+		"coordinates.origin":           {},
+		"coordinates.reference_plane":  {},
+		"pcb.standoffs.type":           {},
 	}
 	var walk func(path string, v any)
 	walk = func(path string, v any) {
@@ -378,7 +387,7 @@ func collectUnresolved(state any) []string {
 			}
 		case string:
 			// Ignore known string-typed fields
-			if _, ok := ignore[path]; ok {
+			if _, ok := ignore[path]; ok || isStringFieldPath(path) {
 				return
 			}
 			out = append(out, path)
@@ -389,6 +398,23 @@ func collectUnresolved(state any) []string {
 }
 
 var identRe = regexp.MustCompile(`\b[a-zA-Z_][a-zA-Z0-9_]*(?:\.[a-zA-Z0-9_]+)*\b`)
+
+func isStringFieldPath(path string) bool {
+	if path == "project" || path == "units" || path == "yapp_version" {
+		return true
+	}
+	switch path {
+	case "enclosure.lid.type", "enclosure.lid.screws.positions",
+		"coordinates.origin", "coordinates.reference_plane",
+		"pcb.standoffs.type":
+		return true
+	}
+	// Any feature face selector
+	if strings.HasSuffix(path, ".face") {
+		return true
+	}
+	return false
+}
 
 func extractVarRefs(exprStr string) []string {
 	if exprStr == "" {

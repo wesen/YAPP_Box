@@ -1,0 +1,31 @@
+project: example-functions
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 60
+  width: 30
+  thickness: 1.6
+  z_clearance: 1.8
+
+enclosure:
+  wall:
+    thickness: 1.8
+    clearance: 0.5
+    fillet_radius: 2
+  base:
+    thickness: max(2.0, enclosure.wall.thickness)
+  lid:
+    type: screws
+    screws:
+      count: round(3.6)
+      positions: corners
+      head_clearance: clamp(0.4, 0.3, 0.6)
+
+tolerances:
+  perimeter: floor(0.9)
+  holes: ceil(0.25)
+  mating: 0.2
+
+

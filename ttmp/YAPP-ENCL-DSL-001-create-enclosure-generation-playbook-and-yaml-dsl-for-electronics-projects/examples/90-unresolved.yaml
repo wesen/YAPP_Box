@@ -1,0 +1,31 @@
+project: example-unresolved
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 50
+  width: 20
+  thickness: 1.6
+  z_clearance: 2
+
+enclosure:
+  wall:
+    thickness: 2
+    clearance: 0.5
+    fillet_radius: 2
+  base:
+    thickness: missing.path + 1
+  lid:
+    type: screws
+    screws:
+      count: 4
+      positions: corners
+      head_clearance: 0.6
+
+tolerances:
+  perimeter: 0.5
+  holes: 0.3
+  mating: 0.2
+
+

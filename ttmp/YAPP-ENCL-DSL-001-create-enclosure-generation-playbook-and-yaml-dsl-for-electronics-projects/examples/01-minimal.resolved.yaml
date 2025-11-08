@@ -1,0 +1,26 @@
+enclosure:
+    base:
+        thickness: 2
+    lid:
+        screws:
+            count: 4
+            head_clearance: 0.6
+            positions: corners
+        type: screws
+    wall:
+        clearance: 0.5
+        fillet_radius: 2
+        thickness: 2
+pcb:
+    length: 50
+    thickness: 1.6
+    width: 20
+    z_clearance: 2
+project: example-minimal
+tolerances:
+    holes: 0.3
+    mating: 0.2
+    perimeter: 0.5
+units: mm
+version: 0
+yapp_version: v3.3.8

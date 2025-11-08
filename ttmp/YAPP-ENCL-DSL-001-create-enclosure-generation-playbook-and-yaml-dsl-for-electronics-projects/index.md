@@ -40,10 +40,33 @@ RelatedFiles:
       Note: Reference defaults to seed DSL default values
     - Path: ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
       Note: Ordering and naming caveats for stands mapping
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/01-minimal.resolved.yaml
+      Note: Resolved output
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/01-minimal.yaml
+      Note: Minimal valid config
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/02-vars-and-expr.resolved.yaml
+      Note: Resolved output
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/02-vars-and-expr.yaml
+      Note: Vars and expressions example
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/03-functions.resolved.yaml
+      Note: Resolved output
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/03-functions.yaml
+      Note: Functions (min/max/round/ceil/floor/clamp)
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/04-features.resolved.yaml
+      Note: Resolved output
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/04-features.yaml
+      Note: 'Features: holes'
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/05-chain-deps.resolved.yaml
+      Note: Resolved output
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/05-chain-deps.yaml
+      Note: Chained vars resolution
+    - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/90-unresolved.yaml
+      Note: 'Negative case: unresolved dependency'
 ExternalSources: []
 Summary: Create playbook and YAML DSL to generate electronics enclosures quickly
 LastUpdated: 2025-11-08T15:56:18.856504759-05:00
 ---
+
 
 
 

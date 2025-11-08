@@ -49,3 +49,8 @@ Expanded DSL Language Reference with detailed sections, expression syntax, type 
 
 Implemented encl-resolve (glazed v0.7.0 BareCommand); added resolver pkg; added unit tests; upgraded go.mod; all tests passing
 
+
+## 2025-11-08
+
+Added examples and generated resolved outputs; updated resolver to skip string fields for BareCommand; removed glazed parameter layers for bare mode
+

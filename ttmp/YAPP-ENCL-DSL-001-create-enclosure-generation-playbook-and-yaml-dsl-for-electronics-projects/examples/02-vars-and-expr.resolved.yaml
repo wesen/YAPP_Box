@@ -1,0 +1,35 @@
+enclosure:
+    base:
+        thickness: 2
+    lid:
+        screws:
+            count: 4
+            head_clearance: 0.6
+            positions: corners
+        type: screws
+    wall:
+        clearance: 0.5
+        fillet_radius: 2
+        thickness: 2
+pcb:
+    length: 51
+    standoffs:
+        diameter: 5
+        height: 6
+        screw_d: 2.2
+        type: round
+    thickness: 1.6
+    width: 21
+    z_clearance: 2
+project: example-vars
+tolerances:
+    holes: 0.3
+    mating: 0.2
+    perimeter: 0.5
+units: mm
+vars:
+    min_base: 2
+    standoff_height: 6
+    wall_clearance: 0.5
+version: 0
+yapp_version: v3.3.8

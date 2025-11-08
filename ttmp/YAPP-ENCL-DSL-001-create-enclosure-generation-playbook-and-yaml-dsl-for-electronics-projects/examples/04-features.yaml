@@ -1,0 +1,56 @@
+project: example-features
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 55
+  width: 25
+  thickness: 1.6
+  z_clearance: 2
+
+enclosure:
+  wall:
+    thickness: 2
+    clearance: 0.5
+    fillet_radius: 2
+  base:
+    thickness: 2
+  lid:
+    type: screws
+    screws:
+      count: 4
+      positions: corners
+      head_clearance: 0.6
+
+features:
+  holes:
+    - face: top
+      x: 10
+      y: 12
+      d: 3.2
+  cutouts:
+    - face: side_x+
+      x: 25
+      z: 10
+      width: 8
+      height: 4
+      fillet: 1
+  light_tubes:
+    - face: top
+      x: 15
+      y: 8
+      lens_d: 3
+      tube_d: 4
+      depth: 2.5
+
+coordinates:
+  origin: boxinside
+  reference_plane: base
+
+tolerances:
+  perimeter: 0.5
+  holes: 0.3
+  mating: 0.2
+
+

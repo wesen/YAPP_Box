@@ -1,0 +1,41 @@
+project: example-vars
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+vars:
+  wall_clearance: tolerances.perimeter
+  standoff_height: pcb.z_clearance + 4
+  min_base: 2
+
+pcb:
+  length: 51
+  width: 21
+  thickness: 1.6
+  z_clearance: 2
+  standoffs:
+    type: round
+    diameter: 5
+    height: standoff_height
+    screw_d: 2.2
+
+enclosure:
+  wall:
+    thickness: 2
+    clearance: wall_clearance
+    fillet_radius: 2
+  base:
+    thickness: max(vars.min_base, enclosure.wall.thickness)
+  lid:
+    type: screws
+    screws:
+      count: 4
+      positions: corners
+      head_clearance: 0.6
+
+tolerances:
+  perimeter: 0.5
+  holes: 0.3
+  mating: 0.2
+
+

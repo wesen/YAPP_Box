@@ -1,0 +1,49 @@
+coordinates:
+    origin: boxinside
+    reference_plane: base
+enclosure:
+    base:
+        thickness: 2
+    lid:
+        screws:
+            count: 4
+            head_clearance: 0.6
+            positions: corners
+        type: screws
+    wall:
+        clearance: 0.5
+        fillet_radius: 2
+        thickness: 2
+features:
+    cutouts:
+        - face: side_x+
+          fillet: 1
+          height: 4
+          width: 8
+          x: 25
+          z: 10
+    holes:
+        - d: 3.2
+          face: top
+          x: 10
+          "y": 12
+    light_tubes:
+        - depth: 2.5
+          face: top
+          lens_d: 3
+          tube_d: 4
+          x: 15
+          "y": 8
+pcb:
+    length: 55
+    thickness: 1.6
+    width: 25
+    z_clearance: 2
+project: example-features
+tolerances:
+    holes: 0.3
+    mating: 0.2
+    perimeter: 0.5
+units: mm
+version: 0
+yapp_version: v3.3.8

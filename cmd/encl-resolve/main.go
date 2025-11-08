@@ -12,7 +12,6 @@ import (
 	"github.com/go-go-golems/glazed/pkg/cmds/parameters"
 	"github.com/go-go-golems/glazed/pkg/help"
 	help_cmd "github.com/go-go-golems/glazed/pkg/help/cmd"
-	"github.com/go-go-golems/glazed/pkg/settings"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -25,7 +24,7 @@ var _ cmds.BareCommand = &ResolveCommand{}
 
 type ResolveSettings struct {
 	Input         string `glazed.parameter:"input"`
-	Output        string `glazed.parameter:"output"`
+	OutFile       string `glazed.parameter:"out-file"`
 	Format        string `glazed.parameter:"format"`
 	MaxIterations int    `glazed.parameter:"max-iterations"`
 	Strict        bool   `glazed.parameter:"strict"`
@@ -36,10 +35,6 @@ type ResolveCommand struct {
 }
 
 func NewResolveCommand() (*ResolveCommand, error) {
-	glazedLayer, err := settings.NewGlazedParameterLayers()
-	if err != nil {
-		return nil, err
-	}
 	commandSettingsLayer, err := cli.NewCommandSettingsLayer()
 	if err != nil {
 		return nil, err
@@ -61,13 +56,13 @@ Examples:
 		cmds.WithFlags(
 			parameters.NewParameterDefinition(
 				"input",
-				parameters.ParameterTypeFile,
-				parameters.WithHelp("Path to input DSL YAML"),
+				parameters.ParameterTypeString,
+				parameters.WithHelp("Path to input DSL YAML (not read into memory by the framework)"),
 				parameters.WithRequired(true),
 				parameters.WithShortFlag("i"),
 			),
 			parameters.NewParameterDefinition(
-				"output",
+				"out-file",
 				parameters.ParameterTypeString,
 				parameters.WithDefault(""),
 				parameters.WithHelp("Path to write resolved output (defaults to stdout)"),
@@ -94,7 +89,7 @@ Examples:
 				parameters.WithHelp("Enable strict validation (unknown keys, unused vars)"),
 			),
 		),
-		cmds.WithLayersList(glazedLayer, commandSettingsLayer),
+		cmds.WithLayersList(commandSettingsLayer),
 	)
 
 	return &ResolveCommand{CommandDescription: desc}, nil
@@ -139,12 +134,12 @@ func (c *ResolveCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) e
 		return errors.Errorf("unsupported format: %s", settings.Format)
 	}
 
-	if settings.Output == "" {
+	if settings.OutFile == "" {
 		fmt.Printf("%s", string(out))
 		return nil
 	}
-	if err := os.WriteFile(settings.Output, out, 0o644); err != nil {
-		return errors.Wrapf(err, "write output file %s", settings.Output)
+	if err := os.WriteFile(settings.OutFile, out, 0o644); err != nil {
+		return errors.Wrapf(err, "write output file %s", settings.OutFile)
 	}
 	return nil
 }

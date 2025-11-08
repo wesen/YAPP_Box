@@ -1,0 +1,33 @@
+project: example-chain
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+vars:
+  a: 1
+  b: a + 1
+  c: b + 1
+  d: c + 1
+
+pcb:
+  length: 40
+  width: 20
+  thickness: 1.6
+  z_clearance: 2
+
+enclosure:
+  wall:
+    thickness: 2
+    clearance: 0.5
+    fillet_radius: 2
+  base:
+    thickness: d
+  lid:
+    type: snap
+
+tolerances:
+  perimeter: 0.5
+  holes: 0.3
+  mating: 0.2
+
+
