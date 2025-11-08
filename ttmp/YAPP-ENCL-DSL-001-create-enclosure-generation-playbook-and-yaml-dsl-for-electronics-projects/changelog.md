@@ -44,3 +44,8 @@ Added reference docs: DSL Language Reference and Resolver CLI Spec; added implem
 
 Expanded DSL Language Reference with detailed sections, expression syntax, type reference, and validation rules
 
+
+## 2025-11-08
+
+Implemented encl-resolve (glazed v0.7.0 BareCommand); added resolver pkg; added unit tests; upgraded go.mod; all tests passing
+

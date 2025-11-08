@@ -14,6 +14,14 @@ Intent: long-term
 Owners:
     - manuel
 RelatedFiles:
+    - Path: cmd/encl-resolve/main.go
+      Note: Glazed v0.7.0 BareCommand CLI to resolve DSL
+    - Path: go.mod
+      Note: Dependencies (glazed v0.7.0
+    - Path: pkg/resolver/resolver.go
+      Note: Fixed-point evaluator with dotted-paths and functions
+    - Path: pkg/resolver/resolver_test.go
+      Note: Unit tests for happy/unhappy paths
     - Path: ttmp/PICO-TEMP-001-raspberry-pi-pico-temperature-monitor-enclosure/README.md
       Note: Real-world enclosure case study and measurements
     - Path: ttmp/PICO-TEMP-001-raspberry-pi-pico-temperature-monitor-enclosure/pico_temp_monitor_base_only.scad
@@ -36,6 +44,7 @@ ExternalSources: []
 Summary: Create playbook and YAML DSL to generate electronics enclosures quickly
 LastUpdated: 2025-11-08T15:56:18.856504759-05:00
 ---
+
 
 
 
