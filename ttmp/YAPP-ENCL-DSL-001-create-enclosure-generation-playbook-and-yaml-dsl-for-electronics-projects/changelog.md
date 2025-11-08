@@ -54,3 +54,8 @@ Implemented encl-resolve (glazed v0.7.0 BareCommand); added resolver pkg; added 
 
 Added examples and generated resolved outputs; updated resolver to skip string fields for BareCommand; removed glazed parameter layers for bare mode
 
+
+## 2025-11-08
+
+Moved examples to top-level; added 'DSL to YAPP OpenSCAD Mapping' reference with links to examples, SCAD demos, and prior docs
+
