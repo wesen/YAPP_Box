@@ -168,12 +168,12 @@ cutoutsLid  =
   // All 8 Coordinate combinations of (yappOrigin | yappCenter) and  (yappCoordBox | yappCoordPCB) and (yappLeftOrigin |yappGlobalOrigin)
   [25,15, 20, 10,  2, yappRoundedRect, yappCenter]
  ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB]
- ,[25,15, 20, 12,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 12,  2, yappRoundedRect, yappCenter, yappLeftOrigin]
+ ,[25,15, 20, 12,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 12,  2, yappRoundedRect, yappCenter, yappAltOrigin]
  ,[25,15, 20, 14,  2, yappRoundedRect]
  ,[25,15, 20, 14,  2, yappRoundedRect, yappCoordPCB]
- ,[25,15, 20, 16,  2, yappRoundedRect, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 16,  2, yappRoundedRect, yappLeftOrigin]
+ ,[25,15, 20, 16,  2, yappRoundedRect, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 16,  2, yappRoundedRect, yappAltOrigin]
 ];
 
 cutoutsFront = 
@@ -191,12 +191,12 @@ cutoutsBack =
   // All 8 Coordinate combinations
   [25,15, 20, 10,  2, yappRoundedRect, yappCenter]
  ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappLeftOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappAltOrigin]
  ,[25,15, 20, 10,  2, yappRoundedRect]
  ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappLeftOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappAltOrigin]
 ];
 
 
@@ -215,12 +215,12 @@ cutoutsRight =
   // All 8 Coordinate combinations
   [25,15, 20, 10,  2, yappRoundedRect, yappCenter]
  ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappLeftOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCenter, yappAltOrigin]
  ,[25,15, 20, 10,  2, yappRoundedRect]
  ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB, yappLeftOrigin]
- ,[25,15, 20, 10,  2, yappRoundedRect, yappLeftOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappCoordPCB, yappAltOrigin]
+ ,[25,15, 20, 10,  2, yappRoundedRect, yappAltOrigin]
 ];
 
 

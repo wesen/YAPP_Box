@@ -28,6 +28,54 @@ This reference aggregates default values for commonly used optional parameters i
 - `p(16)` snapSlack: Default = `0.10`
 - `n(d)` `[yappPCBName, "Main"]` by default
 
+## Cutouts
+
+- `p(6)` depth: Default = `0` (Auto → plane thickness)
+- `p(7)` angle: Default = `0`
+- `n(d)` coordinate system: `{ <yappCoordPCB> | yappCoordBox | yappCoordBoxInside }` (default in docs is PCB for many examples; set explicitly)
+- `n(e)` origin/center: `{ <yappOrigin>, yappCenter }` (default is origin)
+
+## Box Mounts
+
+- `p(4)` filletRadius: Default = `0` (Auto)
+- `n(a)` faces: `{ yappLeft | yappRight | yappFront | yappBack }`
+- `n(b)` flags: may include `yappNoFillet`
+- `n(c)` base/lid: `{ <yappBase>, yappLid }` (default base)
+- `n(d)` center flag: optional `{ yappCenter }`
+
+## Connectors
+
+- `p(7)` insertDepth: Default = entire connector
+- `p(8)` pcbGap: Default depends on coord (`yappCoordPCB` → `pcbThickness`, else `0`)
+- `p(9)` filletRadius: Default = `0` (Auto)
+- `n(d)` countersink: optional `{ yappCountersink }`
+- `n(g)` self threading: optional `{ yappSelfThreading }`
+- `n(d/e/...)` coordinate/PCB name: `{ <yappCoordPCB> | yappCoordBox | yappCoordBoxInside }`, `[yappPCBName, "Main"]`
+
+## Labels
+
+- Direction: Default = `yappTextLeftToRight`
+- Horizontal alignment: Default = `yappTextHAlignLeft`
+- Vertical alignment: Default = `yappTextVAlignBottom`
+- Spacing: Default = `1.0`
+
+## Ridge Extensions
+
+- Default coordinate system: `yappCoordBox`
+- `n(a)` origin/center: `{ <yappOrigin>, yappCenter }` (default origin)
+- `n(b)` left/global origin: `{ <yappGlobalOrigin>, yappAltOrigin }` (default global)
+- Notes: `height` is measured relative to the ridge; negative values move into lid
+
+## PCB Stands
+
+- `p(2)` heightToBottomOfPCB: Default = `standoffHeight`
+- `p(3)` pcbGap: Default = `-1` (resolves to `pcbThickness` for `yappCoordPCB`, else `0`)
+- `p(4)` standoffDiameter: Default = `standoffDiameter`
+- `p(5)` standoffPinDiameter: Default = `standoffPinDiameter`
+- `p(6)` standoffHoleSlack: Default = `standoffHoleSlack`
+- `p(7)` filletRadius: `0` (Auto)
+- Named flags: see `PCB Stands: Parameter Order Verification`
+
 ## Notes
 
 - For each feature, keep defaults listed near the parameter description.
@@ -36,7 +84,7 @@ This reference aggregates default values for commonly used optional parameters i
 ## To Do (Data Backfill)
 
 - Cross-check against upstream OpenSCAD modules for authoritative defaults.
-- Extend with other features (standoffs, LEDs, connectors) as we verify.
+- Extend with other features (imagesPlane, vents, labels) as we verify.
 
 ---
 Title: Default Values for Optional Parameters

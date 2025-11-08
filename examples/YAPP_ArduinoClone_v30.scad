@@ -39,7 +39,7 @@ printBaseShell    = true;
 printLidShell     = true;
 
 
-myPcb = "./STL/MODELS/Arduino_Uno_model.stl";
+myPcb = "../STL/MODELS/Arduino_Uno_model.stl";
 
 if (true)
 {
@@ -259,12 +259,12 @@ snapJoins   =
 //   (7) = "label text"
 //-------------------------------------------------------------------
 labelsPlane = [
-               [28, 14,  0, 0.8, yappTop, "Arial:style=bold", 4, "Arduino CLONE" ]
-             , [57, 25, 90, 0.8, yappTop, "Liberation Mono:style=bold", 5, "YAPP" ]
-             , [33, 23,  0, 0.8, yappTop, "Liberation Mono:style=bold", 4, "L13" ]
-             , [33, 30,  0, 0.8, yappTop, "Liberation Mono:style=bold", 4, "TX" ]
-             , [33, 36,  0, 0.8, yappTop, "Liberation Mono:style=bold", 4, "RX" ]
-             , [33, 43,  0, 0.8, yappTop, "Liberation Mono:style=bold", 4, "PWR" ]
+               [28, 14,  0, 0.8, yappLid, "Arial:style=bold", 4, "Arduino CLONE" ]
+             , [57, 25, 90, 0.8, yappLid, "Liberation Mono:style=bold", 5, "YAPP" ]
+             , [33, 23,  0, 0.8, yappLid, "Liberation Mono:style=bold", 4, "L13" ]
+             , [33, 30,  0, 0.8, yappLid, "Liberation Mono:style=bold", 4, "TX" ]
+             , [33, 36,  0, 0.8, yappLid, "Liberation Mono:style=bold", 4, "RX" ]
+             , [33, 43,  0, 0.8, yappLid, "Liberation Mono:style=bold", 4, "PWR" ]
             ];
 
 

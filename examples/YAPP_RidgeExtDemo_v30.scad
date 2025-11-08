@@ -196,7 +196,7 @@ cutoutsBack =
   [28,8, 0,  0,  3, yappCircle, yappCenter, yappCoordBox]
 
   // Make the hole thru the end of the ridge extansion
- ,[25,8, 6,  6,  0, yappPolygon, shape6ptStar, yappLeftOrigin, yappCenter, yappCoordBox]
+ ,[25,8, 6,  6,  0, yappPolygon, shape6ptStar, yappAltOrigin, yappCenter, yappCoordBox]
 
   // Make the rounded rect thru the end of the ridge extansion
  ,[55,13, 20, 6,  3, yappRoundedRect, yappCenter, yappCoordBox]
@@ -228,7 +228,7 @@ cutoutsRight =
   [25,10-3, 0,  0,  3, yappCircle]
 
   // Make the hole thru the end of the ridge extansion
- ,[25,10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappLeftOrigin]
+ ,[25,10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappAltOrigin]
 
   // Make the rounded rect thru the end of the ridge extansion
  ,[45,15-3, 20, 6,  3, yappRoundedRect]
@@ -278,10 +278,10 @@ ridgeExtFront =
 ridgeExtBack =
 [
   // Make a ridge extension 6mm wide 8mm from the bottom of the box
-  [25, 6, 8, yappCoordBox]
+  [25, 6, 8, yappAltOrigin, yappCoordBox, yappCenter]
   
   // Make a ridge extension 6mm wide 8mm from the bottom of the box from the left edge
- ,[25, 6, 8, yappLeftOrigin, yappCoordBox, yappCenter]
+ ,[25, 6, 8, yappAltOrigin, yappCoordBox, yappCenter]
   
   // Make a ridge extension 20mm wide 13mm from the bottom of the box
  ,[45, 20, 13, yappCoordBox]
@@ -318,7 +318,7 @@ ridgeExtRight =
   [25, 6, 10]
   
   // Make a ridge extension 6mm wide 10mm below the top of the ridge from the left edge
- ,[25, 6, 10, yappLeftOrigin]
+ ,[25, 6, 10, yappAltOrigin]
   
   // Make a ridge extension 20mm wide 15mm below the top of the ridge
  ,[45, 20, 15]

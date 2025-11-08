@@ -29,15 +29,58 @@ Default origin in most examples is `yappCoordPCB` (PCB[0,0,0]). Be explicit in d
 - For circular features, prefer center-based positioning via `yappCenter` where available to reduce manual offset calculations.
 - When not using `yappCenter`, ensure the radius/diameter is accounted for in offsets from the chosen origin.
 
-## Diagram Placeholders
+## Diagrams
 
-Add three simple diagrams showing the same point across systems:
+Three simple diagrams showing the same point across systems:
 
 - Diagram A: PCB coordinate frame
 - Diagram B: Box (outer) coordinate frame
 - Diagram C: Box (inside) coordinate frame
 
-These diagrams should share an example feature (e.g., a hole at PCB (x,y)) and show how it maps to each system.
+These diagrams share an example feature (e.g., a hole at PCB (x,y)) and show how it maps to each system.
+
+### ASCII guide (quick reference)
+
+```text
+PCB (yappCoordPCB): origin at PCB[0,0,0]
+
+  Y^
+   |
+   |   (x,y)
+   |    *
+   +--------> X
+
+Box (yappCoordBox): origin at box outer [0,0,0]
+
+  Y^
+   |
+   |                * (x,y)
+   +------------------------> X
+
+BoxInside (yappCoordBoxInside): origin at inner cavity [0,0,0]
+
+  Y^
+   |
+   |            * (x,y)
+   +------------------> X
+```
+
+### Worked example
+
+- Goal: Circular cutout above PCB LED at PCB (20, 15)
+- Use `yappCoordPCB` and `yappCenter` so the position is the LED center:
+
+```scad
+cutoutsLid = [
+  // p(0)=from Back, p(1)=from Left, p(2)=width, p(3)=length, p(4)=radius, p(5)=shape
+  // Using center-based positioning via yappCenter and PCB coords via yappCoordPCB
+  [20, 15, 0, 0, 2.5, yappCircle, 0, 0, yappCoordPCB, yappCenter]
+];
+```
+
+Notes:
+- With `yappCenter`, `width`/`length` are unused for circles; `radius` defines the size.
+- Without `yappCenter`, the same point would require manual offsets.
 
 ## Validation
 

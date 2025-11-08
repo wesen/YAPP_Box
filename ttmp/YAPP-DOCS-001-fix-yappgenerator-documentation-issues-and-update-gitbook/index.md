@@ -10,6 +10,22 @@ Intent: long-term
 Owners:
     - manuel
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/examples/PoolMonitor_v30.scad
+      Note: Disable external Windows STL import for CI builds
+    - Path: /home/manuel/code/others/YAPP_Box/examples/RidgeExtDemo_v30.scad
+      Note: Optional cleanup to remove warning
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_ArduinoClone_v30.scad
+      Note: Replace yappTop with yappLid; fix STL import path
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_Connector_Demo.scad
+      Note: Fix Windows include path to repo relative
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_Labels_v3.scad
+      Note: Fix include path to ../YAPPgenerator_v3.scad
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_RealBox_v30.scad
+      Note: Fix STL import path to repo root
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_RealBox_v31.scad
+      Note: Fix STL import path to repo root
+    - Path: /home/manuel/code/others/YAPP_Box/examples/YAPP_RidgeExtDemo_v30.scad
+      Note: Replace deprecated yappLeftOrigin with yappAltOrigin; warning eliminated
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/README.md
       Note: Analysis system docs
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/USAGE_EXAMPLES.md
@@ -24,12 +40,18 @@ RelatedFiles:
       Note: GitBook scraper
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/yapp_analysis.db
       Note: SQLite database with GitBook pages and issues
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/06-gitbook-update-light-tubes.md
+      Note: 'GitBook changes: add yappCenter for yappCircle on Light Tubes page'
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/07-gitbook-update-push-buttons.md
+      Note: 'GitBook changes: add yappCenter for yappCircle on Push Buttons page'
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/08-gitbook-update-pcb-stands-parameter-order.md
+      Note: PCB Stands doc fix for maintainers
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/code-examples-yappcircle-yappcenter-corrections.md
       Note: Corrections for yappCircle examples to use center-based placement
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/coordinate-systems-pcb-vs-box-vs-boxinside-comparison.md
-      Note: Comparison guide for PCB/Box/BoxInside coords
+      Note: Diagrams embedded (ASCII)
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md
-      Note: Aggregated defaults for common feature params
+      Note: Defaults reference expanded (Ridge Extensions
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
       Note: Verification checklist for PCB stands parameter order
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/various/test_light_tubes_center.scad
@@ -56,6 +78,14 @@ ExternalSources:
 Summary: Comprehensive analysis and fixing of YAPPgenerator documentation issues. Includes GitBook scraping, API change tracking, and issue database for systematic documentation updates.
 LastUpdated: 2025-11-05T16:57:59.208780448-05:00
 ---
+
+
+
+
+
+
+
+
 
 
 

@@ -29,7 +29,7 @@ include <../YAPPgenerator_v3.scad>
 see https://polyd.com/en/conversione-step-to-stl-online
 */
 
-myPcb = "./STL/MODELS/virtualP1Cable_v10_model.stl";
+myPcb = "../STL/MODELS/virtualP1Cable_v10_model.stl";
 
 if (true)
 {

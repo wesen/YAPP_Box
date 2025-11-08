@@ -107,27 +107,63 @@ def analyze_example_file(file_path):
                         'severity': 'high'
                     })
         
-        # Try to render the file (just check syntax)
+        # Try to render the file (preview export) and treat warnings as errors
         try:
+            # Use preview export to keep it fast; parse output for WARNING/ERROR regardless of exit code
+            cmd = [
+                'openscad',
+                '--hardwarnings',
+                '-o', '/tmp/yapp_analyze_preview.png',
+                '--preview=throwntogether',
+                '--imgsize=16,16',
+                str(file_path),
+            ]
             result = subprocess.run(
-                ['openscad', '-o', '/dev/null', '--check-only', str(file_path)],
+                cmd,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=30
             )
+
+            combined_output = (result.stderr or '') + "\n" + (result.stdout or '')
+            # Ignore benign camera warning produced by examples that set $vp* for screenshots
+            ignored_phrases = [
+                'Viewall and autocenter disabled in favor of $vp*',
+                'Normalized tree is growing past',
+            ]
+            filtered_output = "\n".join(
+                line for line in combined_output.splitlines()
+                if not any(phrase in line for phrase in ignored_phrases)
+            )
+
+            # Any WARNING or ERROR should be flagged
+            if 'WARNING' in filtered_output or 'ERROR' in filtered_output:
+                issues.append({
+                    'type': 'openscad_warning',
+                    'line': None,
+                    'description': 'OpenSCAD reported warnings/errors during preview export',
+                    'snippet': filtered_output[:400],
+                    'severity': 'high'
+                })
+
+            # Non-zero exit code is still flagged
             if result.returncode != 0:
-                # Parse errors
-                errors = result.stderr
-                if 'WARNING' in errors or 'ERROR' in errors:
-                    issues.append({
-                        'type': 'syntax_error',
-                        'line': None,
-                        'description': 'OpenSCAD reports warnings or errors',
-                        'snippet': errors[:200],
-                        'severity': 'high'
-                    })
+                issues.append({
+                    'type': 'syntax_error',
+                    'line': None,
+                    'description': f'OpenSCAD exited with code {result.returncode}',
+                    'snippet': filtered_output[:400],
+                    'severity': 'high'
+                })
+
         except (subprocess.TimeoutExpired, FileNotFoundError):
-            pass  # OpenSCAD not available or timeout
+            issues.append({
+                'type': 'execution_error',
+                'line': None,
+                'description': 'OpenSCAD not available or timed out during preview export',
+                'snippet': str(file_path),
+                'severity': 'high'
+            })
         
         return file_version, issues
         

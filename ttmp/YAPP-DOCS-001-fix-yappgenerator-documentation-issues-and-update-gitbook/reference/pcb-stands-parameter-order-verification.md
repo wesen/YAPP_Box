@@ -20,6 +20,29 @@ Confirm that the parameter order documented for PCB stands matches the current i
 
 - Known risk: Documentation may list parameters in a different order than the actual module. Confirm exact order before updating examples.
 
+### v3.3.8 Parameter Order (from template/generator comments)
+
+Required:
+- `p(0)` posx
+- `p(1)` posy
+
+Optional:
+- `p(2)` heightToBottomOfPCB (Default = `standoffHeight`)
+- `p(3)` pcbGap (Default = `-1`; resolves to `pcbThickness` for `yappCoordPCB`, else `0`)
+- `p(4)` standoffDiameter (Default = `standoffDiameter`)
+- `p(5)` standoffPinDiameter (Default = `standoffPinDiameter`)
+- `p(6)` standoffHoleSlack (Default = `standoffHoleSlack`)
+- `p(7)` filletRadius (`0` = Auto)
+- Named flags (order-insensitive):
+  - `n(a)` `{ <yappBoth> | yappLidOnly | yappBaseOnly }`
+  - `n(b)` `{ <yappPin>, yappHole, yappTopPin }`
+  - `n(c)` corners `{ yappAllCorners | yappFrontLeft | yappFrontRight | yappBackLeft | yappBackRight }`
+  - `n(d)` coords `{ <yappCoordPCB> | yappCoordBox | yappCoordBoxInside }`
+  - `n(e)` `{ yappNoFillet }`
+  - (optional) `[yappPCBName, "Main"]`
+
+Recommendation for docs: present the required pair first, then group optionals by role (geometry, placement, flags) and mark defaults inline.
+
 ## Next Actions
 
 - Cross-check implementation in YAPP_Box (v3.3.8 tag or latest main).

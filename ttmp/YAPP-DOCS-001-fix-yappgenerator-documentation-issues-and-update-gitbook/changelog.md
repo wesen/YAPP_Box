@@ -76,3 +76,115 @@ Validated yappCenter corrections with OpenSCAD; fixed analyzer path; rendered tw
 
 Built all 44 example .scad files via OpenSCAD preview export; 0 failures
 
+
+## 2025-11-05
+
+Analyzer updated to treat OpenSCAD warnings as errors; re-ran examples: 23 issues across previews (warnings + nonzero exits).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/analysis/analyze_examples.py
+
+
+## 2025-11-05
+
+Examples: Fix ArduinoClone (yappTop→yappLid, correct STL path).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_ArduinoClone_v30.scad
+
+
+## 2025-11-05
+
+Examples: Fix RealBox v30/v31 STL import paths.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_RealBox_v30.scad
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_RealBox_v31.scad
+
+
+## 2025-11-05
+
+Examples: Fix includes (Labels v3, Connector Demo) and disable external import (PoolMonitor) for clean OpenSCAD validation.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/PoolMonitor_v30.scad
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_Connector_Demo.scad
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_Demo_Labels_v3.scad
+
+
+## 2025-11-05
+
+Draft GitBook fix docs: Light Tubes and Push Buttons (yappCenter corrections).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/06-gitbook-update-light-tubes.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/07-gitbook-update-push-buttons.md
+
+
+## 2025-11-05
+
+Expand reference docs: coordinate diagrams + worked example; defaults for cutouts/boxMounts/connectors/labels; PCB stands param order (v3.3.8).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/coordinate-systems-pcb-vs-box-vs-boxinside-comparison.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
+
+
+## 2025-11-05
+
+Examples: RidgeExtDemo_v30 — replace yappLeftOrigin→yappAltOrigin to remove OpenSCAD warning.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/YAPP_RidgeExtDemo_v30.scad
+
+
+## 2025-11-05
+
+Add remaining cleanup tasks (GitBook fixes, diagrams, defaults, deprecations, analyzer, re-scrape).
+
+
+## 2025-11-05
+
+Tasks: Mark PCB Stands order verified; yappLeftOrigin sweep complete; remove early GitBook re-scrape task (superseded by post-maintainer task).
+
+
+## 2025-11-05
+
+Applied GitBook fix drafts (Light Tubes, Push Buttons), added coordinate diagrams, drafted PCB Stands v3.3.8 order fix, and confirmed yappLeftOrigin replaced in arrays.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/fixes/08-gitbook-update-pcb-stands-parameter-order.md — Draft for GitBook update to v3.3.8 param order
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/coordinate-systems-pcb-vs-box-vs-boxinside-comparison.md — Added and finalized ASCII diagrams
+
+
+## 2025-11-05
+
+Fixed RidgeExtDemo_v30: replaced ridgeExtTop expressions and defined demo-safe positions to eliminate OpenSCAD warning.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/RidgeExtDemo_v30.scad — Resolved ridgeExtTop warning (demo-only fix)
+
+
+## 2025-11-05
+
+Expanded defaults reference: added Ridge Extensions and PCB Stands defaults; clarified coordinate flags.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/default-values-for-optional-parameters.md — Expanded defaults coverage
+
+
+## 2025-11-05
+
+Checked off duplicate coordinate diagrams task (side-by-side ASCII diagrams embedded).
+

@@ -80,6 +80,9 @@ lidWallHeight       = 25;
 ridgeHeight         = 10.0;
 ridgeSlack          = 0.2;
 
+// Define ridgeExtTop for demo usage; maps to the top of ridge by default
+ridgeExtTop         = ridgeHeight;
+
 //-- Radius of the shell corners
 roundRadius         = 3;
 
@@ -169,22 +172,22 @@ cutoutsFront =
 //  1,                         2,  3,  4,  5, 6..
   // This can only have a cable put through it after the case is assembled
   // This could be used as a locking pin
-  [75,ridgeExtTop-(ridgeHeight/2), 0,  0,  1, yappCircle, yappCenter, yappCoordBox]
+  [75,(ridgeHeight/2), 0,  0,  1, yappCircle, yappCenter, yappCoordBox]
   
   // Make the hole thru the end of the ridge extansion
- ,[85,ridgeExtTop-ridgeHeight-3, 0,  0,  3, yappCircle, yappCoordBox]
+ ,[85,-3, 0,  0,  3, yappCircle, yappCoordBox]
  
   // In the Middle of the Ridge
- ,[95+3,ridgeExtTop-(ridgeHeight/2), 0,  0,  2.5, yappCircle, yappCenter, yappCoordBox]
+ ,[95+3,(ridgeHeight/2), 0,  0,  2.5, yappCircle, yappCenter, yappCoordBox]
 
   // Make the hole thru the end of the ridge extansion
- ,[25,ridgeExtTop-10-3, 0,  0,  3, yappCircle, yappCoordBox]
+ ,[25,10-3, 0,  0,  3, yappCircle, yappCoordBox]
 
   // Make the rounded rect thru the end of the ridge extansion
- ,[45,ridgeExtTop - 15-3, 20, 6,  3, yappRoundedRect, yappCoordBox]
+ ,[45,15-3, 20, 6,  3, yappRoundedRect, yappCoordBox]
 
   // Make the hexagonal thru the end of the ridge extansion
- ,[38,ridgeExtTop - 15, 6, 6,  0, yappPolygon, 0, 30, shapeHexagon, yappCenter, yappCoordBox]
+ ,[38,15, 6, 6,  0, yappPolygon, 0, 30, shapeHexagon, yappCenter, yappCoordBox]
 
 
 ];
@@ -196,7 +199,7 @@ cutoutsBack =
   [25,ridgeExtTop-10-3, 0,  0,  3, yappCircle]
 
   // Make the hole thru the end of the ridge extansion
- ,[25,ridgeExtTop-10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappLeftOrigin]
+ ,[25,ridgeExtTop-10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappAltOrigin]
 
   // Make the rounded rect thru the end of the ridge extansion
  ,[45,ridgeExtTop - 15-3, 20, 6,  3, yappRoundedRect]
@@ -228,7 +231,7 @@ cutoutsRight =
   [25,ridgeExtTop-10-3, 0,  0,  3, yappCircle]
 
   // Make the hole thru the end of the ridge extansion
- ,[25,ridgeExtTop-10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappLeftOrigin]
+ ,[25,ridgeExtTop-10-3, 6,  6,  0, yappPolygon, shape6ptStar, yappAltOrigin]
 
   // Make the rounded rect thru the end of the ridge extansion
  ,[45,ridgeExtTop - 15-3, 20, 6,  3, yappRoundedRect]
@@ -282,7 +285,7 @@ ridgeExtBack =
   [25, 6, 10]
   
   // Make a ridge extension 6mm wide 10mm below the top of the ridge from the left edge
- ,[25, 6, 10, yappLeftOrigin]
+ ,[25, 6, 10, yappAltOrigin]
   
   // Make a ridge extension 20mm wide 15mm below the top of the ridge
  ,[45, 20, 15]
@@ -321,7 +324,7 @@ ridgeExtRight =
   [25, 6, 10]
   
   // Make a ridge extension 6mm wide 10mm below the top of the ridge from the left edge
- ,[25, 6, 10, yappLeftOrigin]
+ ,[25, 6, 10, yappAltOrigin]
   
   // Make a ridge extension 20mm wide 15mm below the top of the ridge
  ,[45, 20, 15]

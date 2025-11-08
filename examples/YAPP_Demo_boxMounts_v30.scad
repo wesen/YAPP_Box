@@ -138,10 +138,10 @@ boxMounts =
 [
  [13, 3, 3, 3, yappLeft, yappRight, yappFront, yappBack]
 ,[30, 3, 6, 3, yappLeft, yappRight, yappFront, yappBack, yappCenter]
-,[30, 2, 6, 5, yappLeft, yappRight, yappFront, yappBack, yappCenter, yappLeftOrigin] // Note placement as previous line for Front and Left
+,[30, 2, 6, 5, yappLeft, yappRight, yappFront, yappBack, yappCenter, yappAltOrigin] // Note placement as previous line for Front and Left
 ,[10, 3, 6, 3, yappLeft, yappRight, yappFront, yappBack, yappLid]
 ,[30, 3, 6, 3, yappLeft, yappRight, yappFront, yappBack, yappCenter, yappLid]
-,[30, 3, 6, 3, yappLeft, yappRight, yappFront, yappBack, yappCenter, yappLeftOrigin, yappLid] // Note placement as previous line for Front and Left
+,[30, 3, 6, 3, yappLeft, yappRight, yappFront, yappBack, yappCenter, yappAltOrigin, yappLid] // Note placement as previous line for Front and Left
 
 ,[40, 3, 3, 3, yappLeft]        // 3 length yields a hole twice as wide as long (screw diameter = 3 also)
 ,[50, 3, 0, 3, 1, yappLeft]     // Zero length yields a circular hole
