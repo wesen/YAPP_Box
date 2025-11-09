@@ -454,12 +454,14 @@ After MVP:
 
 ## Conclusion
 
-The three semantic issues identified in Round 5 are **solvable and not blockers**. They require careful implementation but are straightforward:
+The three semantic issues identified in Round 5 have been addressed:
 
-1. **Mixed coordinate defaults** → Always generate explicit flags (feature-specific rules)
+1. **Mixed coordinate defaults** → **RESOLVED: Remove `coordinates.origin`, use YAPP defaults**
 2. **Optional positional parameters** → Build parameter schemas, use `undef`
 3. **Shape-dependent parameters** → Shape-specific mapping tables
 
+**Key simplification**: By removing the `coordinates` section from the DSL and relying on YAPP's default coordinate systems, we eliminate the most complex semantic issue. Users learn one simple rule: "PCB features use PCB coordinates, box features use box coordinates."
+
 With these fixes, MVP DSL-to-YAPP translation will be **semantically correct** and ready for real use.
 
-**Recommendation**: Implement these fixes before generating any SCAD. The effort is ~2-3 days, and it ensures correctness from day one.
+**Recommendation**: Implement these fixes before generating any SCAD. The effort is ~2 days, and it ensures correctness from day one.
