@@ -22,10 +22,13 @@ RelatedFiles:
       Note: Ready-to-print STL file for lid (1.9MB
     - Path: pico_temp_monitor_lid_only.scad
       Note: Lid shell design for 3D printing
+    - Path: ttmp/PICO-TEMP-001-raspberry-pi-pico-temperature-monitor-enclosure/README.md
+      Note: Enclosure context and mechanical constraints for display/buttons
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-05T16:02:42.611292525-05:00
 ---
+
 
 
 
