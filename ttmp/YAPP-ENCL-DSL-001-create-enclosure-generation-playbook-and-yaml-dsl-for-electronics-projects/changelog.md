@@ -59,3 +59,8 @@ Added examples and generated resolved outputs; updated resolver to skip string f
 
 Moved examples to top-level; added 'DSL to YAPP OpenSCAD Mapping' reference with links to examples, SCAD demos, and prior docs
 
+
+## 2025-11-08
+
+Added 'YAPP Documentation Study Playbook' with steps to query DB, browse examples, and locate implementation; linked analysis assets and examples
+
