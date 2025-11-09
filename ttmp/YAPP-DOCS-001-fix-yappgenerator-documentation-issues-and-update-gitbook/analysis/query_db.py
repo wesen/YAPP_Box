@@ -192,7 +192,18 @@ def show_versions():
     rows = cursor.fetchall()
     if rows:
         headers = ['Version', 'Release Date', 'Docs Ver', 'Actual Ver', 'Mismatch', 'Notes']
-        print(tabulate(rows, headers=headers, tablefmt='grid', maxcolwidths=[10, 12, 10, 10, 8, 40]))
+        # Normalize None values to empty strings for tabulate rendering
+        normalized = []
+        for version, release_date, docs_version, actual_version, version_mismatch, notes in rows:
+            normalized.append([
+                version or '',
+                release_date or '',
+                docs_version or '',
+                actual_version or '',
+                version_mismatch if version_mismatch is not None else '',
+                notes or ''
+            ])
+        print(tabulate(normalized, headers=headers, tablefmt='grid', maxcolwidths=[10, 12, 10, 10, 8, 40]))
     
     conn.close()
 
