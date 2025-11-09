@@ -11,6 +11,20 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/README.md
+      Note: Top-level wiring summary including all 3 buttons
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/display.py
+      Note: Display wrapper for SH1107 21x8 text grid
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/input.py
+      Note: Button input with debounce (BTN1/2/3)
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/sh1107.py
+      Note: Minimal SH1107 SPI driver for text mode
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/temp.py
+      Note: DS18B20 temperature helper
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py
+      Note: UI controller (Splash/Main/Menu/Timer stub)
+    - Path: /home/manuel/code/others/YAPP_Box/film-developer/main.py
+      Note: UI MVP entry point (loop)
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/scripts/ui-mvp/lib/display.py
       Note: Display wrapper for SH1107 21x8 text grid
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/scripts/ui-mvp/lib/input.py
@@ -23,10 +37,23 @@ RelatedFiles:
       Note: UI controller (Splash/Main/Menu/Timer stub)
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/scripts/ui-mvp/main.py
       Note: UI MVP entry point (loop)
+    - Path: ttmp/FILM-DEV-001-*/reference/05-raspberry-pi-pico-w-complete-pinout-reference.md
+      Note: Comprehensive Pico W pinout lookup for all GPIO planning
+    - Path: ttmp/FILM-DEV-001-film-development-timer-application-specification/reference/05-raspberry-pi-pico-w-hardware-and-micropython-reference.md
+      Note: Complete Pico W hardware pinout and MicroPython API reference
 ExternalSources: []
 Summary: Comprehensive specification for Raspberry Pi Pico W film development timer with multi-stage timing, temperature monitoring, and session logging
 LastUpdated: 2025-11-08T17:08:05.30832586-05:00
 ---
+
+
+
+
+
+
+
+
+
 
 
 
