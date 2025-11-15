@@ -24,9 +24,11 @@ RelatedFiles:
       Note: Tutorial covering DSL basics for future push button docs to reference
     - Path: pkg/docs/tutorials/yapp-dsl-reference.md
       Note: Field reference for all DSL sections
+    - Path: pkg/docs/tutorials/yapp-dsl-module-howto.md
+      Note: Developer tutorial explaining how to add new DSL modules via the registry
 ExternalSources: []
 Summary: "Close the gap between the YAML DSL and SCAD-only pushButtons arrays so tactile switch caps can be described in YAML, generated via yappctl, and documented in the help system."
-LastUpdated: 2025-11-15T16:33:57-05:00
+LastUpdated: 2025-11-15T16:40:12-05:00
 ---
 
 
@@ -53,6 +55,7 @@ Downstream tooling (manual playbooks + `yappctl generate`) still relies on runni
 - Replaced the old push-buttons-specific doc with two general DSL pages (`pkg/docs/tutorials/yapp-dsl-getting-started.md` and `pkg/docs/tutorials/yapp-dsl-reference.md`) that now explain resolver usage, variables, and expressions.
 - Implemented the `push_buttons` schema, builder, and model wiring (including `printSwitchExtenders` toggles + OpenSCAD flags), added unit tests, and backfilled YAML examples (`examples/yapp-demo-buttons.yaml`, `examples/yapp-demo-buttons2.yaml`) that now round-trip to SCAD + STL via `yappctl generate`.
 - Updated the CLI docs/playbooks so `yappctl help` surfaces the DSL material once the schema lands.
+- Built a registry-driven feature plumbing layer (`pkg/yappgen/features.go`) so future DSL modules only need to register a `FeatureModule`; documented the approach in `design/feature-module-registry.md`.
 
 ## Upcoming Focus
 

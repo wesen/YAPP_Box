@@ -115,42 +115,9 @@ func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
 		m.PaddingRight = v
 	}
 
-	// Features
 	features, _ := getMap(resolved, "features")
-	if features != nil {
-		// pcb_stands
-		if arr, ok := getArray(features, "pcb_stands"); ok {
-			m.PcbStands = normalizeArrayOfMaps(arr)
-		}
-		// connectors
-		if arr, ok := getArray(features, "connectors"); ok {
-			m.Connectors = normalizeArrayOfMaps(arr)
-		}
-		// snap_joins
-		if arr, ok := getArray(features, "snap_joins"); ok {
-			m.SnapJoins = normalizeArrayOfMaps(arr)
-		}
-		// cutouts (each cutout includes a required 'face' string)
-		if arr, ok := getArray(features, "cutouts"); ok {
-			for _, it := range arr {
-				item, ok := it.(map[string]any)
-				if !ok {
-					return nil, errors.Errorf("cutouts items must be objects, got %T", it)
-				}
-				face, _ := item["face"].(string)
-				if face == "" {
-					return nil, errors.Errorf("cutout missing required 'face'")
-				}
-				m.Cutouts = append(m.Cutouts, Cutout{Face: face, Item: item})
-			}
-		}
-		// push_buttons
-		if arr, ok := getArray(features, "push_buttons"); ok {
-			m.PushButtons = normalizeArrayOfMaps(arr)
-			if len(m.PushButtons) > 0 {
-				m.PrintSwitchExtenders = true
-			}
-		}
+	if err := collectFeatureModules(resolved, features, m); err != nil {
+		return nil, err
 	}
 
 	return m, nil

@@ -3,7 +3,6 @@ package yappgen
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 )
 
@@ -61,61 +60,8 @@ func EmitSCAD(ctx context.Context, m *Model) ([]byte, error) {
 	b.WriteString("\n")
 
 	// Features
-	// pcbStands
-	if len(m.PcbStands) > 0 {
-		list, err := buildPcbStands(m.PcbStands)
-		if err != nil {
-			return nil, err
-		}
-		writeArrayDecl(&b, "pcbStands", list)
-		b.WriteString("\n")
-	}
-	// connectors
-	if len(m.Connectors) > 0 {
-		list, err := buildConnectors(m.Connectors)
-		if err != nil {
-			return nil, err
-		}
-		writeArrayDecl(&b, "connectors", list)
-		b.WriteString("\n")
-	}
-	// pushButtons
-	if len(m.PushButtons) > 0 {
-		list, err := buildPushButtons(m.PushButtons)
-		if err != nil {
-			return nil, err
-		}
-		writeArrayDecl(&b, "pushButtons", list)
-		b.WriteString("\n")
-	}
-	// snapJoins
-	if len(m.SnapJoins) > 0 {
-		list, err := buildSnapJoins(m.SnapJoins)
-		if err != nil {
-			return nil, err
-		}
-		writeArrayDecl(&b, "snapJoins", list)
-		b.WriteString("\n")
-	}
-	// cutouts by face
-	if len(m.Cutouts) > 0 {
-		byFace, err := distributeCutouts(m.Cutouts)
-		if err != nil {
-			return nil, err
-		}
-		// deterministic face order
-		keys := make([]string, 0, len(byFace))
-		for k := range byFace {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, k := range keys {
-			if len(byFace[k]) == 0 {
-				continue
-			}
-			writeArrayDecl(&b, k, byFace[k])
-			b.WriteString("\n")
-		}
+	if err := emitFeatureModules(ctx, m, &b); err != nil {
+		return nil, err
 	}
 
 	// Footer
