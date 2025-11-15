@@ -4,6 +4,9 @@ import (
 	"context"
 	"strings"
 	"testing"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 func TestBuildParams_InsertsUndefForOptional(t *testing.T) {
@@ -20,10 +23,10 @@ func TestBuildParams_InsertsUndefForOptional(t *testing.T) {
 		t.Fatalf("expected 9 params, got %d", len(params))
 	}
 	// height and pcb_gap should be undef
-	if _, ok := params[2].(ScadRaw); !ok || params[2] != Undef {
+	if _, ok := params[2].(scad.Raw); !ok || params[2] != scad.Undef {
 		t.Fatalf("expected params[2] to be undef, got %#v", params[2])
 	}
-	if _, ok := params[3].(ScadRaw); !ok || params[3] != Undef {
+	if _, ok := params[3].(scad.Raw); !ok || params[3] != scad.Undef {
 		t.Fatalf("expected params[3] to be undef, got %#v", params[3])
 	}
 	// diameter should be at index 4
@@ -53,7 +56,7 @@ func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 	if params[4] != 4 {
 		t.Fatalf("expected radius 4 at index 4, got %#v", params[4])
 	}
-	if params[5] != ScadRaw("yappCircle") {
+	if params[5] != scad.Raw("yappCircle") {
 		t.Fatalf("expected yappCircle shape flag at index 5, got %#v", params[5])
 	}
 }
@@ -116,7 +119,7 @@ func TestBuildSnapJoins_SideFlag(t *testing.T) {
 	if len(list) != 1 {
 		t.Fatalf("expected one row")
 	}
-	if list[0][2] != ScadRaw("yappLeft") {
+	if list[0][2] != scad.Raw("yappLeft") {
 		t.Fatalf("expected yappLeft flag at index 2, got %#v", list[0][2])
 	}
 }
@@ -155,7 +158,7 @@ func TestBuildPushButtons_PolygonPreset(t *testing.T) {
 		},
 	}
 
-	list, err := buildPushButtons(items)
+	list, err := pushbuttons.Build(items)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -166,19 +169,19 @@ func TestBuildPushButtons_PolygonPreset(t *testing.T) {
 	if len(params) < 21 {
 		t.Fatalf("expected extended parameter list including flags, got %d", len(params))
 	}
-	if params[10] != ScadRaw("yappPolygon") {
+	if params[10] != scad.Raw("yappPolygon") {
 		t.Fatalf("expected polygon flag at index 10, got %#v", params[10])
 	}
-	if params[17] != ScadRaw("shapeArrow") {
+	if params[17] != scad.Raw("shapeArrow") {
 		t.Fatalf("expected shapeArrow token after base params, got %#v", params[17])
 	}
-	if params[18] != ScadRaw("yappCoordBox") {
+	if params[18] != scad.Raw("yappCoordBox") {
 		t.Fatalf("expected yappCoordBox token, got %#v", params[18])
 	}
-	if params[19] != ScadRaw("yappLeftOrigin") {
+	if params[19] != scad.Raw("yappLeftOrigin") {
 		t.Fatalf("expected yappLeftOrigin token, got %#v", params[19])
 	}
-	if params[20] != ScadRaw("yappNoFillet") {
+	if params[20] != scad.Raw("yappNoFillet") {
 		t.Fatalf("expected yappNoFillet token, got %#v", params[20])
 	}
 }

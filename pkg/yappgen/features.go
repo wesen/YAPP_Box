@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
 )
 
 // FeatureModule describes how a DSL feature is collected and emitted.
@@ -24,7 +26,7 @@ var featureModules = []FeatureModule{
 		buildConnectors, nil),
 	newArrayFeatureModule("push_buttons", "pushButtons",
 		func(m *Model) *[]map[string]any { return &m.PushButtons },
-		buildPushButtons,
+		pushbuttons.Build,
 		func(m *Model, items []map[string]any) {
 			m.PrintSwitchExtenders = len(items) > 0
 		}),

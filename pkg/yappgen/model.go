@@ -7,12 +7,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// ScadRaw represents an identifier or token that must be emitted as-is (no quotes).
-type ScadRaw string
-
-// Undef is the OpenSCAD 'undef' literal.
-const Undef ScadRaw = "undef"
-
 // Model holds the normalized, resolved configuration needed to emit a YAPP SCAD file.
 type Model struct {
 	ProjectName string

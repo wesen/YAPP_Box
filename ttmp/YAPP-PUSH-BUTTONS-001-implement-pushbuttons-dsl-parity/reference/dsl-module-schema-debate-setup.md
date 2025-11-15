@@ -44,7 +44,7 @@ This debate will explore how to let modules contribute those artifacts with mini
 | **B. Module Author** — representing future contributors | Wants a gentle authoring experience with minimal boilerplate | Ergonomics, IDE support, keeping module code in a single folder | Works from `pkg/yappgen/modules/pushbuttons`, runs `go test` |
 | **C. Validation Engine** — personified `pkg/resolver` | Focuses on schema fidelity + evaluation pipeline | Needs canonical schema definitions, wants cross-module expression/var rules | Uses `pkg/resolver/resolver.go`, YAML fixtures, resolver tracing |
 | **D. Documentation Librarian** — `pkg/docs/tutorials/*` maintainer | Needs rich metadata for docs/help | Ensuring module schemas include descriptions/examples, hooking into Glazed exporters | References `pkg/docs/tutorials`, `glaze help` content |
-| **E. Runtime Pragmatist** — `cmd/yappctl generate` maintainer | Needs predictable structs at runtime and sane defaults | Ensuring parsed structs survive versioning, enabling feature detection in CLI | Uses `cmd/yappctl`, `pkg/cli/generatorcli`, integration playbooks |
+| **E. Tooling Engineer** — `cmd/schemagen` builder | Focuses on developer tooling, code generation quality, and migration workflows | Schema validation UX, error messages, debugging experience, safe migrations, IDE integration | Builds/maintains code generation tools, tests schema converters, ensures good DX |
 
 ## Debate Questions
 

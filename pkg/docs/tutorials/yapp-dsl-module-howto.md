@@ -100,7 +100,7 @@ Under the hood the helper:
 - Runs your builder when emitting SCAD and writes the resulting array.
 - Runs the optional `afterCollect` hook so you can toggle globals (like `PrintSwitchExtenders`).
 
-Need more control (e.g., `cutouts` routing to six faces)? Implement `FeatureModule` directly—see `cutoutFeatureModule` for a template.
+Need more control (e.g., `cutouts` routing to six faces)? Implement `FeatureModule` directly—see `cutoutFeatureModule` for a template. For a full working example, browse `pkg/yappgen/modules/pushbuttons`: it exports a pure builder that the registry wires up via `newArrayFeatureModule`.
 
 ## Step 4 — Update the model and SCAD emission (automatic now!)
 

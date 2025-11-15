@@ -1,5 +1,7 @@
 package yappgen
 
+import "github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
+
 // ParamSpec describes a positional parameter for a YAPP feature.
 type ParamSpec struct {
 	Name     string
@@ -51,37 +53,36 @@ var cutoutsSchema = []ParamSpec{
 
 // ShapeFlag returns the YAPP flag for a cutout shape and indicates which dimension fields are used.
 // Unused dimensions should be emitted as 0.
-func ShapeFlag(shape string) (flag ScadRaw, usesWidth bool, usesLength bool, usesRadius bool, ok bool) {
+func ShapeFlag(shape string) (flag scad.Raw, usesWidth bool, usesLength bool, usesRadius bool, ok bool) {
 	switch shape {
 	case "rectangle":
-		return ScadRaw("yappRectangle"), true, true, false, true
+		return scad.Raw("yappRectangle"), true, true, false, true
 	case "circle":
-		return ScadRaw("yappCircle"), false, false, true, true
+		return scad.Raw("yappCircle"), false, false, true, true
 	case "rounded_rect":
-		return ScadRaw("yappRoundedRect"), true, true, true, true
+		return scad.Raw("yappRoundedRect"), true, true, true, true
 	case "circle_with_flats":
-		return ScadRaw("yappCircleWithFlats"), true, true, true, true // width, length (distance between flats), radius
+		return scad.Raw("yappCircleWithFlats"), true, true, true, true // width, length (distance between flats), radius
 	case "circle_with_key":
-		return ScadRaw("yappCircleWithKey"), true, true, true, true // width=key width, length=key depth, radius
+		return scad.Raw("yappCircleWithKey"), true, true, true, true // width=key width, length=key depth, radius
 	default:
 		return "", false, false, false, false
 	}
 }
 
 // SnapSideFlag maps DSL side enum to the YAPP side flag.
-func SnapSideFlag(side string) (ScadRaw, bool) {
+func SnapSideFlag(side string) (scad.Raw, bool) {
 	switch side {
 	case "left":
-		return ScadRaw("yappLeft"), true
+		return scad.Raw("yappLeft"), true
 	case "right":
-		return ScadRaw("yappRight"), true
+		return scad.Raw("yappRight"), true
 	case "front":
-		return ScadRaw("yappFront"), true
+		return scad.Raw("yappFront"), true
 	case "back":
-		return ScadRaw("yappBack"), true
+		return scad.Raw("yappBack"), true
 	default:
 		return "", false
 	}
 }
-
 

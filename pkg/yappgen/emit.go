@@ -1,9 +1,11 @@
 package yappgen
 
 import (
-	"context"
-	"fmt"
-	"strings"
+    "context"
+    "fmt"
+    "strings"
+
+    "github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // EmitSCAD renders a complete SCAD file for YAPP based on the given model.
@@ -95,8 +97,8 @@ func writeArrayDecl(b *strings.Builder, name string, rows [][]any) {
 
 func writeScadValue(b *strings.Builder, v any) {
 	switch t := v.(type) {
-	case ScadRaw:
-		b.WriteString(string(t))
+    case scad.Raw:
+        b.WriteString(string(t))
 	case string:
 		// strings are quoted; MVP rarely uses quoted strings in arrays
 		fmt.Fprintf(b, "%q", t)
