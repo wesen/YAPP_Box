@@ -61,12 +61,38 @@ Downstream tooling (manual playbooks + `yappctl generate`) still relies on runni
 - Updated the CLI docs/playbooks so `yappctl help` surfaces the DSL material once the schema lands.
 - Built a registry-driven feature plumbing layer (`pkg/yappgen/features.go`) so future DSL modules only need to register a `FeatureModule`; documented the approach in `design/feature-module-registry.md`.
 
-## Upcoming Focus
+## Module System Architecture Design (COMPLETED → SPUN OFF)
 
-1. Harden the schema with validation helpers (shape-specific dimension checks, future polygon point arrays).
-2. Add CLI/integration tests that diff generated SCAD/STLs against the legacy SCAD references.
-3. Update manual playbooks to describe the new push button smoke test (run `yappctl generate` on both YAML examples and inspect lids for extenders).
-4. Plan incremental features (e.g., per-button coordinate/origin defaults, advanced presets) once parity work soaks.
+This ticket conducted the **design phase** for a complete module system redesign via three debate rounds. The architecture is now finalized, and **implementation has been spun off** to ticket **YAPP-MODULE-SYSTEM-001**.
+
+### Debate Rounds (Design Documentation)
+1. **Round 1: Validation + Parsing Flow** (`reference/debate-round-01-validation-parsing-flow.md`)
+   - How modules define validation logic once for YAML ingestion, expression evaluation, and typed struct creation
+   - Consensus: YAML schemas with code generation, two-phase validation
+   
+2. **Round 2: Registration Mechanics** (`reference/debate-round-02-registration-mechanics.md`)
+   - How modules register with the central registry without touching core files
+   - Consensus: Discovery-based registration via `schemagen discover`
+   
+3. **Round 3: Prototype Implementation** (`reference/debate-round-03-prototype-implementation.md`)
+   - Hands-on prototyping of the architecture, identifying what works and what needs refinement
+   - Confirmed: YAML-only approach (no hybrid), 6-week implementation timeline
+
+### Architecture Summary (Final Consensus)
+- **All modules use YAML schemas** (no hybrid with struct tags)
+- **Code generation** via `schemagen` tool (generates structs, tests, registry)
+- **Top-level `pkg/registry` package** breaks circular dependencies
+- **Two-phase validation** (structure before resolution, constraints after)
+- **Auto-generated documentation** from schemas
+- **Discovery-based registration** (no core file edits to add modules)
+
+### Implementation Status
+
+**Implementation work moved to:** YAPP-MODULE-SYSTEM-001
+- See that ticket for roadmap, tasks, and implementation guide
+- This ticket retains design debates as documentation of architectural decisions
+
+## Current Focus (Push Buttons Feature Work)
 
 ## Open Questions
 
