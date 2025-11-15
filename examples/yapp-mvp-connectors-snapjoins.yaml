@@ -1,0 +1,39 @@
+project: demo-mvp-connectors-snapjoins
+version: 0
+units: mm
+yapp_version: v3.3.7
+
+pcb:
+  length: 80
+  width: 50
+  thickness: 1.6
+  z_clearance: 3.0
+
+enclosure:
+  wall:
+    thickness: 2.5
+    clearance: 2.0
+    fillet_radius: 2.0
+  base:
+    thickness: 2.0
+
+features:
+  connectors:
+    - x: 20
+      y: 15
+      stand_height: 5.0
+      screw_d: 2.0
+      screw_head_d: 4.0
+      insert_d: 3.0
+      outside_d: 7.0
+  snap_joins:
+    - pos: 25
+      width: 8
+      side: left
+    - pos: 30
+      width: 8
+      side: right
+
+
+
+

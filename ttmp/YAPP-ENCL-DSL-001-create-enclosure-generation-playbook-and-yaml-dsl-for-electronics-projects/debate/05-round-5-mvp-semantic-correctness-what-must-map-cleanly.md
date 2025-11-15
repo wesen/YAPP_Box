@@ -16,7 +16,7 @@ RelatedFiles:
     - Path: reference/01-enclosure-dsl-language-reference.md
       Note: DSL spec
 ExternalSources: []
-Summary: Debate round 5 analyzing MVP semantic correctness with relaxed constraints (single coord system OK, maintenance not a concern)
+Summary: "Round 5 debate on MVP semantic issues with relaxed constraints"
 LastUpdated: 2025-11-09
 ---
 

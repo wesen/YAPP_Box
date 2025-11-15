@@ -1,0 +1,43 @@
+project: demo-mvp-pcbstands-cutouts
+version: 0
+units: mm
+yapp_version: v3.3.7
+
+pcb:
+  length: 60
+  width: 40
+  thickness: 1.6
+  z_clearance: 2.0
+
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 2.0
+    fillet_radius: 3.0
+  base:
+    thickness: 1.5
+
+features:
+  pcb_stands:
+    - x: 10
+      y: 10
+      diameter: 6.0
+    - x: 50
+      y: 30
+      height: 3.0
+  cutouts:
+    - face: front
+      shape: rectangle
+      from_back: 20
+      from_left: 10
+      width: 15
+      length: 10
+    - face: right
+      shape: circle
+      from_back: 30
+      from_left: 12
+      radius: 4
+
+
+
+

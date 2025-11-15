@@ -64,3 +64,38 @@ Moved examples to top-level; added 'DSL to YAPP OpenSCAD Mapping' reference with
 
 Added 'YAPP Documentation Study Playbook' with steps to query DB, browse examples, and locate implementation; linked analysis assets and examples
 
+
+## 2025-11-08
+
+Ran 5-round debate on DSL-to-YAPP translation correctness; identified 3 semantic issues (1 resolved by removing coordinates.origin)
+
+
+## 2025-11-08
+
+Created MVP path forward document with implementation checklist (~2 days effort)
+
+
+## 2025-11-08
+
+Added debate doc-type to vocabulary; created debate infrastructure (candidates, questions, 5 rounds)
+
+
+## 2025-11-08
+
+Simplified coordinate system design: use YAPP defaults (pcbStands→PCB, cutouts→Box) instead of global setting
+
+
+## 2025-11-08
+
+Added MVP YAML→YAPP generator design doc; related key files; seeded implementation tasks
+
+
+## 2025-11-08
+
+Implemented MVP yapp-gen CLI and yappgen package; schemas+emitter; build succeeded
+
+
+## 2025-11-08
+
+Checked off tasks: examples created & SCAD generated; unit tests added & passing; golden coverage included
+

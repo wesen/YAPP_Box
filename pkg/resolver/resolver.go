@@ -413,6 +413,10 @@ func isStringFieldPath(path string) bool {
 	if strings.HasSuffix(path, ".face") {
 		return true
 	}
+	// Treat common enum-like fields as strings
+	if strings.HasSuffix(path, ".shape") || strings.HasSuffix(path, ".side") {
+		return true
+	}
 	return false
 }
 

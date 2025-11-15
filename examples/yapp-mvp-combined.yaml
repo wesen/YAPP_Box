@@ -1,0 +1,60 @@
+project: demo-mvp-combined
+version: 0
+units: mm
+yapp_version: v3.3.7
+
+pcb:
+  length: 70
+  width: 45
+  thickness: 1.6
+  z_clearance: 2.5
+
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 2.0
+    fillet_radius: 2.5
+  base:
+    thickness: 1.8
+
+features:
+  pcb_stands:
+    - x: 8
+      y: 8
+    - x: 62
+      y: 37
+      diameter: 6.5
+  connectors:
+    - x: 15
+      y: 10
+      stand_height: 4.0
+      screw_d: 2.2
+      screw_head_d: 4.2
+      insert_d: 3.2
+      outside_d: 7.5
+  cutouts:
+    - face: back
+      shape: rounded_rect
+      from_back: 25
+      from_left: 12
+      width: 16
+      length: 10
+      radius: 2
+    - face: left
+      shape: circle_with_flats
+      from_back: 30
+      from_left: 10
+      width: 8
+      length: 6
+      radius: 6
+  snap_joins:
+    - pos: 20
+      width: 7
+      side: front
+    - pos: 25
+      width: 7
+      side: back
+
+
+
+

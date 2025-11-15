@@ -2,8 +2,6 @@
 
 ## TODO
 
-- [ ] Add tasks here
-
 - [ ] Draft playbook structure and scope
 - [ ] Design YAML DSL schema v0
 - [ ] Collect relevant docs from ticket YAPP-DOCS-001
@@ -16,3 +14,12 @@
 - [ ] Add schema validation, error reporting, and CLI flags (input/output)
 - [x] Write unit tests incl. cycles, unresolved refs, and numeric ops
 - [ ] Document CLI usage and integrate into playbook Commands section
+- [ ] Update DSL spec: remove coordinates section, document YAPP defaults (1-2h)
+- [x] Build parameter schemas for pcbStands, connectors, snapJoins, cutouts (4-6h)
+- [x] Implement generator with semantic fixes (6-10h)
+- [ ] Test generated SCAD against real examples (2-4h)
+- [x] Emit SCAD header/globals/features/footer; prepare template bindings
+- [x] Add unit tests and golden outputs for generator mapping
+- [x] Integrate Cobra CLI yapp-gen end-to-end (resolver+emitter)
+- [x] Add YAML examples under examples/ and generate SCAD outputs
+- [x] Write unit tests for mapping, cutout shapes, snap sides, emitter

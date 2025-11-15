@@ -16,9 +16,10 @@ RelatedFiles:
     - Path: reference/01-enclosure-dsl-language-reference.md
       Note: DSL spec to be updated
 ExternalSources: []
-Summary: MVP implementation path with three critical semantic fixes required before generating SCAD
-LastUpdated: 2025-11-09
+Summary: MVP implementation path with 2 critical semantic fixes and ~2 day effort estimate
+LastUpdated: 2025-11-08T19:40:13.076998328-05:00
 ---
+
 
 # MVP Path Forward — Semantic Fixes Required
 

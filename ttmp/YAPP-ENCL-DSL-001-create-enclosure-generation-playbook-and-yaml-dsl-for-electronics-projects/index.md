@@ -14,6 +14,28 @@ Intent: long-term
 Owners:
     - manuel
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/YAPP_Template_v3.scad
+      Note: Canonical YAPP parameter orders and defaults
+    - Path: /home/manuel/code/others/YAPP_Box/YAPPgenerator_v3.scad
+      Note: Upstream OpenSCAD generator include
+    - Path: /home/manuel/code/others/YAPP_Box/cmd/yapp-gen/main.go
+      Note: Cobra CLI for YAML→YAPP generation (uses resolver)
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/emit.go
+      Note: SCAD emitter for YAPP arrays and globals
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/map.go
+      Note: Schema-based mapping to positional arrays with undef
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/model.go
+      Note: Generator model and normalization
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/schema.go
+      Note: YAPP parameter schemas and shape/flag mappings
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-ENCL-DSL-001-create-enclosure-generation-playbook-and-yaml-dsl-for-electronics-projects/analysis/04-mvp-path-forward-semantic-fixes-required.md
+      Note: MVP plan & semantic fixes
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-ENCL-DSL-001-create-enclosure-generation-playbook-and-yaml-dsl-for-electronics-projects/debate/05-round-5-mvp-semantic-correctness-what-must-map-cleanly.md
+      Note: Semantic rationale and alternatives
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/YAPP-ENCL-DSL-001-create-enclosure-generation-playbook-and-yaml-dsl-for-electronics-projects/reference/01-enclosure-dsl-language-reference.md
+      Note: DSL spec to align (remove coordinates
+    - Path: YAPP_Template_v3.scad
+      Note: Canonical YAPP structure with parameter orders and defaults
     - Path: cmd/encl-resolve/main.go
       Note: Glazed v0.7.0 BareCommand CLI to resolve DSL
     - Path: go.mod
@@ -40,6 +62,18 @@ RelatedFiles:
       Note: Reference defaults to seed DSL default values
     - Path: ttmp/YAPP-DOCS-001-fix-yappgenerator-documentation-issues-and-update-gitbook/reference/pcb-stands-parameter-order-verification.md
       Note: Ordering and naming caveats for stands mapping
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/analysis/03-debate-synthesis-dsl-to-yapp-translation-evaluation.md
+      Note: Initial debate synthesis (4 rounds)
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/analysis/04-mvp-path-forward-semantic-fixes-required.md
+      Note: Primary implementation guide with semantic fixes and checklist
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/debate/05-round-5-mvp-semantic-correctness-what-must-map-cleanly.md
+      Note: Round 5 debate identifying 3 critical semantic issues
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/reference/01-enclosure-dsl-language-reference.md
+      Note: 'DSL spec (needs update: remove coordinates section)'
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/reference/03-debate-format-and-candidates-dsl-to-yapp-translation.md
+      Note: Debate candidate profiles
+    - Path: ttmp/YAPP-ENCL-DSL-001-*/reference/04-debate-questions-dsl-to-yapp-translation.md
+      Note: Debate questions structure
     - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/01-minimal.resolved.yaml
       Note: Resolved output
     - Path: ttmp/YAPP-ENCL-DSL-001-.../examples/01-minimal.yaml
@@ -64,8 +98,20 @@ RelatedFiles:
       Note: 'Negative case: unresolved dependency'
 ExternalSources: []
 Summary: Create playbook and YAML DSL to generate electronics enclosures quickly
-LastUpdated: 2025-11-08T15:56:18.856504759-05:00
+LastUpdated: 2025-11-08T19:40:05.070921836-05:00
 ---
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
