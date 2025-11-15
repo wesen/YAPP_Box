@@ -5,6 +5,37 @@ This OpenSCAD project can be used to create extremely comprehensive and customiz
 
 The [complete and official documentation gitbook](https://mrwheel-docs.gitbook.io/yappgenerator_en/) explains the entire API.
 
+## Unified CLI (`yappctl`)
+
+The repo now ships a single Glazed-powered CLI that replaces the previous `encl-resolve` and `yapp-gen` binaries. Build and run it directly from the repo root:
+
+```bash
+go run ./cmd/yappctl --help
+```
+
+### Resolve DSL YAML
+
+```bash
+go run ./cmd/yappctl resolve \
+  --input examples/yapp-demo-buttons.yaml \
+  --out-file /tmp/buttons-resolved.yaml \
+  --format yaml
+```
+
+### Generate SCAD + STL
+
+```bash
+go run ./cmd/yappctl generate \
+  --input examples/yapp-demo-buttons.yaml \
+  --scad-out examples/yapp-demo-buttons.scad \
+  --stl-base examples/yapp-demo-buttons-base.stl \
+  --stl-lid examples/yapp-demo-buttons-lid.stl
+```
+
+- `yappctl generate` reuses the resolver pipeline, writes SCAD with the correct `YAPPgenerator_v3.scad` include, and optionally renders STL meshes via OpenSCAD.
+- `--render-timeout` (default `30s`) controls how long OpenSCAD is allowed to run per STL.
+- All verbs load the CLI tutorials embedded under `pkg/docs/tutorials`; run `yappctl help` to browse them within the terminal.
+
 You can open Issues here, but please also place them in a comment at one of the following blog posts:
 * "<a href="https://willem.aandewiel.nl/index.php/2022/01/02/yet-another-parametric-projectbox-generator/">Yet Another Parametric Projectbox generator blog post</a>" (English)
 * "<a href="https://willem.aandewiel.nl/index.php/2022/01/01/nog-een-geparameteriseerde-projectbox-generator/">Nog een geparametriseerde projectbox generator</a>" (Dutch).

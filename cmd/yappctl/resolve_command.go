@@ -10,13 +10,10 @@ import (
 	"github.com/go-go-golems/glazed/pkg/cmds"
 	"github.com/go-go-golems/glazed/pkg/cmds/layers"
 	"github.com/go-go-golems/glazed/pkg/cmds/parameters"
-	"github.com/go-go-golems/glazed/pkg/help"
-	help_cmd "github.com/go-go-golems/glazed/pkg/help/cmd"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
+	"github.com/wesen/yapp-encl-resolver/pkg/cli/resolvercli"
 )
 
 // Ensure interface compliance
@@ -48,10 +45,10 @@ Reads an input YAML describing an enclosure using the DSL, evaluates variables a
 to a fixed point, and outputs a fully-resolved configuration as YAML or JSON.
 
 Examples:
-  encl-resolve resolve --input enclosure.yaml
-  encl-resolve resolve --input enclosure.yaml --output resolved.yaml
-  encl-resolve resolve -i enclosure.yaml -o resolved.json --format json
-  encl-resolve resolve -i enclosure.yaml --max-iterations 12 --strict
+  yappctl resolve --input enclosure.yaml
+  yappctl resolve --input enclosure.yaml --out-file resolved.yaml
+  yappctl resolve -i enclosure.yaml -o resolved.json --format json
+  yappctl resolve -i enclosure.yaml --max-iterations 12 --strict
 `),
 		cmds.WithFlags(
 			parameters.NewParameterDefinition(
@@ -101,16 +98,7 @@ func (c *ResolveCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) e
 		return errors.Wrap(err, "parse parameters")
 	}
 
-	inBytes, err := os.ReadFile(settings.Input)
-	if err != nil {
-		return errors.Wrapf(err, "read input file %s", settings.Input)
-	}
-	var doc map[string]any
-	if err := yaml.Unmarshal(inBytes, &doc); err != nil {
-		return errors.Wrap(err, "parse YAML")
-	}
-
-	resolved, err := resolver.Resolve(ctx, doc, resolver.Options{
+	resolved, err := resolvercli.LoadAndResolve(ctx, settings.Input, resolvercli.LoadOptions{
 		MaxIterations: settings.MaxIterations,
 		Strict:        settings.Strict,
 	})
@@ -143,38 +131,3 @@ func (c *ResolveCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) e
 	}
 	return nil
 }
-
-func main() {
-	root := &cobra.Command{
-		Use:   "encl-resolve",
-		Short: "Enclosure DSL resolver",
-		Long:  "Resolve Enclosure DSL YAML (variables and expressions) into concrete numeric values",
-	}
-
-	cmd, err := NewResolveCommand()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error creating command: %v\n", err)
-		os.Exit(1)
-	}
-	cobraCmd, err := cli.BuildCobraCommand(cmd,
-		cli.WithParserConfig(cli.CobraParserConfig{
-			ShortHelpLayers: []string{layers.DefaultSlug},
-			MiddlewaresFunc: cli.CobraCommandDefaultMiddlewares,
-		}),
-	)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error building cobra command: %v\n", err)
-		os.Exit(1)
-	}
-	root.AddCommand(cobraCmd)
-
-	// Enhanced help
-	helpSystem := help.NewHelpSystem()
-	help_cmd.SetupCobraRootCommand(helpSystem, root)
-
-	if err := root.Execute(); err != nil {
-		os.Exit(1)
-	}
-}
-
-

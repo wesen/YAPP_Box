@@ -23,3 +23,4 @@
 - [x] Integrate Cobra CLI yapp-gen end-to-end (resolver+emitter)
 - [x] Add YAML examples under examples/ and generate SCAD outputs
 - [x] Write unit tests for mapping, cutout shapes, snap sides, emitter
+- [ ] Extend DSL/generator to support push buttons (from YAPP_Demo_buttons_v31.scad parity)

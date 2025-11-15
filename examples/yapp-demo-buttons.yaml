@@ -1,0 +1,40 @@
+project: yapp-demo-buttons
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+  z_clearance: 3.0
+  standoffs:
+    diameter: 6.0
+    screw_d: 2.4
+
+enclosure:
+  wall:
+    thickness: 2.4
+    clearance: 1.0
+    fillet_radius: 2.0
+  base:
+    thickness: 1.6
+  lid:
+    thickness: 1.6
+
+features:
+  pcb_stands:
+    - x: 5
+      y: 5
+    - x: 25
+      y: 5
+    - x: 5
+      y: 35
+    - x: 25
+      y: 35
+
+# TODO: push_buttons DSL feature not yet supported, so switches remain in SCAD only.
+
+tolerances:
+  holes: 0.4
+  perimeter: 1.0
