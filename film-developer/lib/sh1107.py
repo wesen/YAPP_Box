@@ -27,13 +27,17 @@ class SH1107:
     Target: 128x64 panels (W=128, H=64).
     """
 
-    def __init__(self, width: int, height: int, spi: SPI, dc: Pin, cs: Pin, rst: Pin) -> None:
+    def __init__(self, width: int, height: int, spi: SPI, dc: Pin, cs: Pin, rst: Pin, rotation: str = "cw", mirror: bool = False) -> None:
         self.width = width
         self.height = height
         self.spi = spi
         self.dc = dc
         self.cs = cs
         self.rst = rst
+        # rotation: "none" for 128x64 native panels,
+        #           "cw" to rotate logical 128x64 buffer to a physical 64x128 panel (90° clockwise)
+        self.rotation = rotation
+        self.mirror = mirror
 
         self.dc.init(Pin.OUT, value=0)
         self.cs.init(Pin.OUT, value=1)
@@ -67,15 +71,43 @@ class SH1107:
         self.fb.fill_rect(x, y, w, h, c)
 
     def show(self) -> None:
-        # SH1107 expects pages (8px tall), 0..7
-        for page in range(self.height // 8):
-            self._write_cmd(_SET_PAGE | page)
-            # Column 0..127; many SH1107 modules use column offset 0
-            self._write_cmd(_SET_COL_LOW | 0x00)
-            self._write_cmd(_SET_COL_HIGH | 0x00)
-            start = page * self.width
-            end = start + self.width
-            self._write_data(self.buffer[start:end])
+        if self.rotation == "none":
+            # SH1107 expects pages (8px tall)
+            for page in range(self.height // 8):
+                self._write_cmd(_SET_PAGE | page)
+                # Column 0..127; many SH1107 modules use column offset 0
+                self._write_cmd(_SET_COL_LOW | 0x00)
+                self._write_cmd(_SET_COL_HIGH | 0x00)
+                start = page * self.width
+                end = start + self.width
+                self._write_data(self.buffer[start:end])
+            return
+
+        if self.rotation == "cw":
+            # Logical buffer is 128x64; physical panel is 64x128 (portrait).
+            # Rotate 90° clockwise when sending to the panel.
+            phys_width = 64
+            phys_pages = 128 // 8  # 16 pages
+            for page in range(phys_pages):
+                self._write_cmd(_SET_PAGE | page)
+                self._write_cmd(_SET_COL_LOW | 0x00)
+                self._write_cmd(_SET_COL_HIGH | 0x00)
+                line = bytearray(phys_width)
+                # For each physical column (0..63), pack 8 vertical pixels from the logical buffer
+                for xp in range(phys_width):
+                    b = 0
+                    yl = (self.height - 1) - xp  # map to logical y
+                    for bit in range(8):
+                        yp = page * 8 + bit
+                        xl = yp  # map to logical x
+                        # Read pixel from logical framebuffer
+                        if self.fb.pixel(xl, yl):
+                            b |= (1 << bit)
+                    line[xp] = b
+                # Optional horizontal mirror at the panel level can be handled by SEG_REMAP,
+                # so do not reverse 'line' here. Rely on _init() mirror setting.
+                self._write_data(line)
+            return
 
     # Low-level
     def _reset(self) -> None:
@@ -92,7 +124,11 @@ class SH1107:
         self._write_cmd(0x60)  # typical offset for SH1107 64px height
         self._write_cmd(_SET_NORM_INV)  # normal display
         self._write_cmd(_SET_ENTIRE_ON)  # follow RAM content
-        self._write_cmd(_SEG_REMAP | 0x01)  # segment remap
+        # Mirror horizontally if requested
+        if self.mirror:
+            self._write_cmd(_SEG_REMAP | 0x01)
+        else:
+            self._write_cmd(_SEG_REMAP | 0x00)
         self._write_cmd(_SET_MUX_RATIO)
         self._write_cmd(0x3F)  # 1/64 duty
         self._write_cmd(_SET_DISP_CLK_DIV)

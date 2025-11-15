@@ -93,6 +93,10 @@ newArrayFeatureModule(
 4. Update unit tests (already covering push buttons) and add new docs describing how to register modules.
 5. Provide a developer tutorial (via the Glazed help system) that walks through building/registering a new module.
 
+### Reference implementation
+
+The push button feature now ships as an external module under `pkg/yappgen/modules/pushbuttons`. It exports a pure builder (`pushbuttons.Build`) that the registry wires up via `newArrayFeatureModule`. Because the module only depends on the shared `scad` types, it proves that future DSL capabilities can live in their own sub-packages without creating circular imports. This is the pattern new modules should follow until we formalize a full plugin API.
+
 ## Open Questions
 
 - Should modules support emit-time ordering hints beyond declaration order (e.g., allow grouping by SCAD dependency)?

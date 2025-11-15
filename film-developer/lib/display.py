@@ -4,7 +4,8 @@ from .sh1107 import SH1107
 
 class Display:
     """
-    Text-mode display helper targeting a 21x8 character grid on a 128x64 SH1107.
+    Text-mode display helper targeting a ~21x8 character grid.
+    Logical buffer is 128x64; rotated 90° CW for physical 64x128 SH1107 panels.
     """
 
     def __init__(self) -> None:
@@ -18,7 +19,9 @@ class Display:
             mosi=Pin(19),
         )
         # SH1107 pins: DC=GP20, CS=GP17, RST=GP21
-        self.dev = SH1107(width=128, height=64, spi=self.spi, dc=Pin(20), cs=Pin(17), rst=Pin(21))
+        # rotation="cw" maps 128x64 logical buffer to 64x128 physical panel.
+        # mirror=False to avoid mirrored characters; set True if hardware wiring mirrors X.
+        self.dev = SH1107(width=128, height=64, spi=self.spi, dc=Pin(20), cs=Pin(17), rst=Pin(21), rotation="cw", mirror=False)
         self.clear()
 
     def clear(self) -> None:
@@ -26,16 +29,16 @@ class Display:
 
     def text_at(self, row: int, col: int, s: str, color: int = 1) -> None:
         """
-        Draw text aligned to the 6x8 font grid.
-        Row range: 0..7, Col range: 0..20 (21 chars)
+        Draw text aligned to the 8x8 builtin font grid.
+        Row range: 0..7, Col range: 0..15 (16 chars)
         """
         if row < 0 or row > 7:
             return
         if col < 0:
             col = 0
-        # Ensure we do not overflow visible width
-        s = s[: max(0, 21 - col)]
-        x = col * 6
+        # Ensure we do not overflow visible width (128px / 8px = 16 chars)
+        s = s[: max(0, 16 - col)]
+        x = col * 8
         y = row * 8
         self.dev.text(s, x, y, color)
 

@@ -26,6 +26,10 @@ RelatedFiles:
       Note: Field reference for all DSL sections
     - Path: pkg/docs/tutorials/yapp-dsl-module-howto.md
       Note: Developer tutorial explaining how to add new DSL modules via the registry
+    - Path: pkg/yappgen/modules/pushbuttons/module.go
+      Note: Sub-package implementing the push buttons FeatureModule builder
+    - Path: pkg/yappgen/scad/scad.go
+      Note: Shared SCAD raw token type consumed by modules
 ExternalSources: []
 Summary: "Close the gap between the YAML DSL and SCAD-only pushButtons arrays so tactile switch caps can be described in YAML, generated via yappctl, and documented in the help system."
 LastUpdated: 2025-11-15T16:40:12-05:00

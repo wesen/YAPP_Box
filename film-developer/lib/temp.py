@@ -2,7 +2,6 @@ import onewire
 import ds18x20
 import time
 from machine import Pin
-from typing import Optional
 
 
 class Temp:
@@ -13,10 +12,10 @@ class Temp:
     def __init__(self, pin: int = 22) -> None:
         self.ds = ds18x20.DS18X20(onewire.OneWire(Pin(pin)))
         self.roms = self.ds.scan()
-        self.last_c: Optional[float] = None
+        self.last_c = None
         self._last_convert_ms: int = 0
 
-    def read_c(self) -> Optional[float]:
+    def read_c(self):
         """
         Trigger a conversion if needed, then read the first sensor.
         Returns None if no sensor found.
