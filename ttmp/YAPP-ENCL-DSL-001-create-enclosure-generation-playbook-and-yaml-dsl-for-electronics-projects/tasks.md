@@ -17,7 +17,7 @@
 - [x] Update DSL spec: remove coordinates section, document YAPP defaults (1-2h)
 - [x] Build parameter schemas for pcbStands, connectors, snapJoins, cutouts (4-6h)
 - [x] Implement generator with semantic fixes (6-10h)
-- [ ] Test generated SCAD against real examples (2-4h)
+- [x] Test generated SCAD against real examples (2-4h)
 - [x] Emit SCAD header/globals/features/footer; prepare template bindings
 - [x] Add unit tests and golden outputs for generator mapping
 - [x] Integrate Cobra CLI yapp-gen end-to-end (resolver+emitter)

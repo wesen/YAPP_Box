@@ -389,7 +389,7 @@ Should generate:
 - [x] Generate SCAD for box with connectors — `examples/yapp-mvp-connectors-snapjoins.yaml`
 - [x] Generate SCAD for box with cutouts (multiple shapes) — `examples/yapp-mvp-pcbstands-cutouts.yaml`
 - [x] Generate SCAD for box with snapJoins — `examples/yapp-mvp-connectors-snapjoins.yaml`
-- [ ] Validate OpenSCAD compilation (no syntax errors)
+- [x] Validate OpenSCAD compilation (no syntax errors)
 - [ ] Validate OpenSCAD rendering (visual inspection)
 
 **2025-11-15 validation log**
@@ -400,6 +400,10 @@ go run ./cmd/yapp-gen --in examples/yapp-mvp-combined.yaml --out /tmp/yapp-mvp-c
 go run ./cmd/yapp-gen --in examples/yapp-mvp-pcbstands-cutouts.yaml --out /tmp/yapp-mvp-pcbstands-cutouts.scad
 go run ./cmd/yapp-gen --in examples/yapp-mvp-connectors-snapjoins.yaml --out /tmp/yapp-mvp-connectors-snapjoins.scad
 # Outputs match the committed golden .scad files; diffs only show include-path adjustments
+# STL exports (base+lid) created via openscad CLI:
+go run ./cmd/yapp-gen --in examples/yapp-mvp-pcbstands-cutouts.yaml --out /tmp/yapp-mvp-pcbstands-cutouts.scad --stl-base examples/yapp-mvp-pcbstands-cutouts-base.stl --stl-lid examples/yapp-mvp-pcbstands-cutouts-lid.stl
+go run ./cmd/yapp-gen --in examples/yapp-mvp-connectors-snapjoins.yaml --out /tmp/yapp-mvp-connectors-snapjoins.scad --stl-base examples/yapp-mvp-connectors-snapjoins-base.stl --stl-lid examples/yapp-mvp-connectors-snapjoins-lid.stl
+go run ./cmd/yapp-gen --in examples/yapp-mvp-combined.yaml --out /tmp/yapp-mvp-combined.scad --stl-base examples/yapp-mvp-combined-base.stl --stl-lid examples/yapp-mvp-combined-lid.stl
 ```
 
 ---
