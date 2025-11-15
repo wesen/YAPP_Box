@@ -360,37 +360,47 @@ Should generate:
 
 ### Phase 1: Update DSL Spec
 
-- [ ] Remove `coordinates` section from DSL spec
-- [ ] Document YAPP default coordinate systems for each feature type
-- [ ] Add clear explanation of PCB-relative vs Box-relative coordinates
-- [ ] Define DSL field names for each feature type
-- [ ] Define DSL enum values (placement, type, corner, shape, etc.)
-- [ ] Add examples showing coordinate interpretation for each feature
+- [x] Remove `coordinates` section from DSL spec
+- [x] Document YAPP default coordinate systems for each feature type
+- [x] Add clear explanation of PCB-relative vs Box-relative coordinates
+- [x] Define DSL field names for each feature type
+- [x] Define DSL enum values (placement, type, corner, shape, etc.)
+- [x] Add examples showing coordinate interpretation for each feature
 
 ### Phase 2: Build Parameter Schemas
 
-- [ ] Create `pcbStands` parameter schema (9 positional params)
-- [ ] Create `connectors` parameter schema (10 positional params)
-- [ ] Create `snapJoins` parameter schema (2 positional params)
-- [ ] Create `cutouts` parameter schema (7 positional params)
-- [ ] Create cutout shape-specific parameter mapping
+- [x] Create `pcbStands` parameter schema (9 positional params)
+- [x] Create `connectors` parameter schema (10 positional params)
+- [x] Create `snapJoins` parameter schema (2 positional params)
+- [x] Create `cutouts` parameter schema (7 positional params)
+- [x] Create cutout shape-specific parameter mapping
 
 ### Phase 3: Implement Generator
 
-- [ ] Implement positional parameter generation (use schemas, insert `undef`)
-- [ ] Implement shape-specific parameter handling (cutouts)
-- [ ] Implement flag generation (placement, type, corner, shape, etc.)
-- [ ] Add validation (required parameters present, valid enum values)
-- [ ] Do NOT emit coordinate flags (rely on YAPP defaults)
+- [x] Implement positional parameter generation (use schemas, insert `undef`)
+- [x] Implement shape-specific parameter handling (cutouts)
+- [x] Implement flag generation (placement, type, corner, shape, etc.)
+- [x] Add validation (required parameters present, valid enum values)
+- [x] Do NOT emit coordinate flags (rely on YAPP defaults)
 
 ### Phase 4: Test Against Real Examples
 
-- [ ] Generate SCAD for simple box (pcbStands only)
-- [ ] Generate SCAD for box with connectors
-- [ ] Generate SCAD for box with cutouts (multiple shapes)
-- [ ] Generate SCAD for box with snapJoins
+- [x] Generate SCAD for simple box (pcbStands only) — `examples/yapp-mvp-pcbstands-cutouts.yaml`
+- [x] Generate SCAD for box with connectors — `examples/yapp-mvp-connectors-snapjoins.yaml`
+- [x] Generate SCAD for box with cutouts (multiple shapes) — `examples/yapp-mvp-pcbstands-cutouts.yaml`
+- [x] Generate SCAD for box with snapJoins — `examples/yapp-mvp-connectors-snapjoins.yaml`
 - [ ] Validate OpenSCAD compilation (no syntax errors)
 - [ ] Validate OpenSCAD rendering (visual inspection)
+
+**2025-11-15 validation log**
+
+```bash
+# All commands executed from the repo root
+go run ./cmd/yapp-gen --in examples/yapp-mvp-combined.yaml --out /tmp/yapp-mvp-combined.scad
+go run ./cmd/yapp-gen --in examples/yapp-mvp-pcbstands-cutouts.yaml --out /tmp/yapp-mvp-pcbstands-cutouts.scad
+go run ./cmd/yapp-gen --in examples/yapp-mvp-connectors-snapjoins.yaml --out /tmp/yapp-mvp-connectors-snapjoins.scad
+# Outputs match the committed golden .scad files; diffs only show include-path adjustments
+```
 
 ---
 

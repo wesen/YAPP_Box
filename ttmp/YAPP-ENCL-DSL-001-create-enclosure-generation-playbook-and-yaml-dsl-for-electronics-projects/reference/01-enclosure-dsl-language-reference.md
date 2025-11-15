@@ -13,9 +13,13 @@ DocType: reference
 Intent: long-term
 Owners:
     - manuel
-RelatedFiles: []
+RelatedFiles:
+    - Path: ../analysis/04-mvp-path-forward-semantic-fixes-required.md
+      Note: MVP semantic decisions (no coordinates block, schema-based params)
+    - Path: ../design/01-mvp-yaml-dsl-to-yapp-generator-design.md
+      Note: Generator architecture that consumes this DSL
 ExternalSources: []
-Summary: ""
+Summary: "Authoritative reference for the MVP enclosure DSL (metadata, PCB, enclosure, tolerances, and the four supported feature groups). Coordinates block removed; feature semantics rely on YAPP defaults."
 LastUpdated: 2025-11-08T16:18:37.598375185-05:00
 ---
 
@@ -32,15 +36,14 @@ This DSL is consumed by a resolver that evaluates variables and expressions to p
 
 ## Structure Overview
 
-The DSL is organized into seven top-level sections:
+The MVP DSL is organized into six top-level sections:
 
 1. **Metadata** — `project`, `version`, `units`, `yapp_version`
 2. **Variables** — `vars` (reusable computed values)
-3. **PCB** — `pcb` (dimensions, mounting holes, standoffs)
-4. **Enclosure** — `enclosure` (walls, base, lid)
-5. **Features** — `features` (holes, cutouts, light tubes, etc.)
-6. **Coordinates** — `coordinates` (origin and reference plane)
-7. **Tolerances** — `tolerances` (print fit adjustments)
+3. **PCB** — `pcb` (dimensions, z-clearance, optional hole metadata)
+4. **Enclosure** — `enclosure` (wall/base/lid thicknesses, fillets)
+5. **Features** — `features` (pcb_stands, connectors, cutouts, snap_joins)
+6. **Tolerances** — `tolerances` (print fit adjustments)
 
 ## Top-Level Keys
 
@@ -119,58 +122,62 @@ enclosure:
 
 ### Features
 
+MVP supports four feature groups that map cleanly to YAPP arrays. Each item is a map with named fields; omitted optional fields use generator defaults.
+
 ```yaml
 features:
-  holes:                        # Circular through-holes
-    - face: face_enum
-      x: number
-      y: number
-      d: number                 # Diameter
-  cutouts:                      # Rectangular cutouts
-    - face: face_enum
-      x: number
-      z: number                 # Z coordinate for side faces
-      width: number
-      height: number
-      fillet: number            # Corner fillet radius
-  light_tubes:                  # LED light pipes
-    - face: face_enum
-      x: number
-      y: number
-      lens_d: number            # Lens diameter
-      tube_d: number            # Tube outer diameter
-      depth: number             # Tube depth into enclosure
+  pcb_stands:
+    - x: number                 # Required (PCB X coordinate)
+      y: number                 # Required (PCB Y coordinate)
+      height: number            # Optional; default uses standoffHeight
+      pcb_gap: number           # Optional; default -1 (auto)
+      diameter: number          # Optional; default standoffDiameter
+      pin_diameter: number      # Optional; default standoffPinDiameter
+      hole_slack: number        # Optional; default tolerances.holes
+      fillet_radius: number     # Optional (0 = disable)
+      pin_length: number        # Optional (0 = disable)
+
+  connectors:
+    - x: number                 # Required (PCB X coordinate)
+      y: number                 # Required (PCB Y coordinate)
+      stand_height: number      # Required
+      screw_d: number           # Required (shaft diameter)
+      screw_head_d: number      # Required
+      insert_d: number          # Required (heat-set insert diameter)
+      outside_d: number         # Required (boss outer diameter)
+      insert_depth: number      # Optional
+      pcb_gap: number           # Optional; default depends on PCB thickness
+      fillet_radius: number     # Optional
+
+  cutouts:
+    - face: front|back|left|right|top|bottom   # Required YAPP face
+      shape: rectangle|circle|rounded_rect|circle_with_flats|circle_with_key
+      from_back: number        # Required; alias: x
+      from_left: number        # Required; alias: y/z depending on face
+      width: number            # Required for most shapes (set to 0 when unused)
+      length: number           # Required for rectangle/rounded/key (0 when unused)
+      radius: number           # Required for circle/rounded/flats/key (0 when unused)
+      depth: number            # Optional (defaults to plane thickness)
+      angle: number            # Optional rotation
+
+  snap_joins:
+    - pos: number              # Required; distance along wall
+      width: number            # Required; snap tab width
+      side: front|back|left|right   # Required; maps to yappFront/etc.
 ```
 
-**Face enum values:**
-- `top` — Lid top surface
-- `bottom` — Base bottom surface
-- `side_x+` — Side along positive X axis
-- `side_x-` — Side along negative X axis
-- `side_y+` — Side along positive Y axis
-- `side_y-` — Side along negative Y axis
+#### Feature Coordinate Semantics
 
-**Notes:**
-- Coordinates depend on `coordinates.origin` setting
-- For side faces, use `x` or `y` (parallel to face) and `z` (height from base)
-- `light_tubes` typically placed on `top` face aligned with PCB LEDs
+The DSL no longer exposes a global `coordinates` block. Instead, each feature uses the YAPP default coordinate space for that array:
 
-### Coordinates
+| Feature        | Coordinates relative to | Behavior when padding changes                  |
+|----------------|-------------------------|------------------------------------------------|
+| `pcb_stands`   | PCB origin (bottom-left of PCB top surface) | Moves with the PCB when you change padding |
+| `connectors`   | PCB origin                               | Moves with the PCB                          |
+| `cutouts`      | Box origin (outer bottom-left-back corner) | Stays anchored to the enclosure walls       |
+| `snap_joins`   | Box origin                               | Stays anchored to the enclosure walls       |
 
-```yaml
-coordinates:
-  origin: pcb|box|boxinside      # Coordinate system origin
-  reference_plane: base|lid      # Z-axis reference
-```
-
-**Origin options:**
-- `pcb` — Origin at PCB bottom-left corner
-- `box` — Origin at enclosure outer bottom-left corner
-- `boxinside` — Origin at enclosure inner bottom-left corner (recommended)
-
-**Reference plane:**
-- `base` — Z=0 at base bottom surface
-- `lid` — Z=0 at lid top surface
+The generator inserts the correct `undef` placeholders and relies on YAPP's positional defaults; no explicit coordinate flags are emitted for MVP.
 
 ### Tolerances
 
@@ -188,7 +195,7 @@ tolerances:
 
 ## Usage Examples
 
-Minimal example with expressions:
+Minimal MVP example with expressions and all four supported feature groups:
 
 ```yaml
 project: pico-temp-001
@@ -199,6 +206,8 @@ yapp_version: v3.3.8
 vars:
   wall_clearance: tolerances.perimeter
   standoff_height: pcb.z_clearance + 4.0
+  min_base_thickness: 1.8
+  snap_width: 7
 
 pcb:
   length: 51.0
@@ -218,6 +227,43 @@ enclosure:
     fillet_radius: 2.0
   base:
     thickness: max(vars.min_base_thickness, enclosure.wall.thickness)
+
+features:
+  pcb_stands:
+    - x: 8
+      y: 8
+      diameter: 6.5
+    - x: 43
+      y: 13
+      height: standoff_height
+  connectors:
+    - x: 15
+      y: 8
+      stand_height: 4.0
+      screw_d: 2.0
+      screw_head_d: 4.2
+      insert_d: 3.2
+      outside_d: 7.5
+  cutouts:
+    - face: back
+      shape: rounded_rect
+      from_back: 25
+      from_left: 12
+      width: 16
+      length: 10
+      radius: 2
+    - face: right
+      shape: circle
+      from_back: 30
+      from_left: 14
+      radius: 4
+  snap_joins:
+    - pos: 20
+      width: vars.snap_width
+      side: front
+    - pos: 25
+      width: vars.snap_width
+      side: back
 
 tolerances:
   perimeter: 0.5
@@ -284,19 +330,17 @@ total_height: (pcb.z_clearance + pcb.thickness + 10.0) * 1.1
 | `integer` | Whole number | `4`, `round(vars.count)` |
 | `string` | Text value | `"pico-temp-001"` |
 | `enum(...)` | One of specified values | `round`, `hex`, `none` |
-| `face_enum` | Face identifier | `top`, `side_x+` |
+| `face_enum` | Face identifier | `front`, `back`, `left`, `right`, `top`, `bottom` |
 | `expression` | Numeric expression | `max(a, b)`, `x + y` |
 
 ## Validation Rules
 
-- **Required fields:** `project`, `version`, `units`, `yapp_version`, `pcb.length`, `pcb.width`, `enclosure.wall.thickness`
+- **Required fields:** `project`, `version`, `units`, `yapp_version`, `pcb.length`, `pcb.width`, `pcb.thickness`, `enclosure.wall.thickness`
 - **Units:** Always `mm` (no other units supported)
-- **Minimum values:**
-  - `enclosure.wall.thickness >= 1.0`
-  - `enclosure.base.thickness >= 1.0`
-  - All dimensions > 0
-- **Enum values:** Must match exactly (case-sensitive)
-- **Coordinates:** Must be numeric after resolution
+- **Minimum values:** wall/base/lid thickness ≥ 1.0mm; all lengths/dimensions > 0
+- **Feature entries:** each required parameter listed in the feature definitions must be present; optional parameters may be omitted
+- **Enum values:** `face`, `shape`, and `side` must match the supported sets exactly (case-sensitive)
+- **Expressions:** must evaluate to numeric scalars after resolver runs; unresolved expressions are errors
 
 ## Related
 

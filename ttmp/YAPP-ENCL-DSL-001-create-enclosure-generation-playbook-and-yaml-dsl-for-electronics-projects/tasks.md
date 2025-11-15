@@ -14,7 +14,7 @@
 - [ ] Add schema validation, error reporting, and CLI flags (input/output)
 - [x] Write unit tests incl. cycles, unresolved refs, and numeric ops
 - [ ] Document CLI usage and integrate into playbook Commands section
-- [ ] Update DSL spec: remove coordinates section, document YAPP defaults (1-2h)
+- [x] Update DSL spec: remove coordinates section, document YAPP defaults (1-2h)
 - [x] Build parameter schemas for pcbStands, connectors, snapJoins, cutouts (4-6h)
 - [x] Implement generator with semantic fixes (6-10h)
 - [ ] Test generated SCAD against real examples (2-4h)
