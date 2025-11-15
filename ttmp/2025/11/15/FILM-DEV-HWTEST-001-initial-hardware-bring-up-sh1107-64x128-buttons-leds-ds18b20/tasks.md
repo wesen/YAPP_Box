@@ -10,3 +10,5 @@
 - [ ] Drive LEDs (GP10/11/12) on button press
 - [ ] Read DS18B20 temperature once (GP22)
 - [ ] Capture short video/photo of working test and link in changelog
+- [ ] Extract OLED test patterns into lib/test_display.py
+- [ ] Implement DS18B20 temperature smoke test in main.py
