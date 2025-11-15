@@ -32,8 +32,38 @@ features:
       y: 35
     - x: 25
       y: 35
+  push_buttons:
+    - name: select
+      x: 15
+      y: 14
+      shape: rectangle
+      cap:
+        length: 8
+        width: 6
+        radius: 0
+      lid:
+        protrusion: 3
+      switch:
+        height: 5.5
+        travel: 1.0
+        pole_diameter: 3.5
 
-# TODO: push_buttons DSL feature not yet supported, so switches remain in SCAD only.
+    - name: reset
+      x: 15
+      y: 28
+      shape: circle
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+        slack: 0.25
+        snap_slack: 0.2
+      switch:
+        height: 3.0
+        travel: 1.0
+        pole_diameter: 3.5
 
 tolerances:
   holes: 0.4

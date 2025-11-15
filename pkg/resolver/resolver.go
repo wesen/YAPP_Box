@@ -365,14 +365,14 @@ func joinPath(base, next string) string {
 func collectUnresolved(state any) []string {
 	var out []string
 	ignore := map[string]struct{}{
-		"project":      {},
-		"units":        {},
-		"yapp_version": {},
-		"enclosure.lid.type":           {},
+		"project":                        {},
+		"units":                          {},
+		"yapp_version":                   {},
+		"enclosure.lid.type":             {},
 		"enclosure.lid.screws.positions": {},
-		"coordinates.origin":           {},
-		"coordinates.reference_plane":  {},
-		"pcb.standoffs.type":           {},
+		"coordinates.origin":             {},
+		"coordinates.reference_plane":    {},
+		"pcb.standoffs.type":             {},
 	}
 	var walk func(path string, v any)
 	walk = func(path string, v any) {
@@ -414,7 +414,14 @@ func isStringFieldPath(path string) bool {
 		return true
 	}
 	// Treat common enum-like fields as strings
-	if strings.HasSuffix(path, ".shape") || strings.HasSuffix(path, ".side") {
+	if strings.HasSuffix(path, ".shape") ||
+		strings.HasSuffix(path, ".side") ||
+		strings.HasSuffix(path, ".name") ||
+		strings.HasSuffix(path, ".polygon") ||
+		strings.HasSuffix(path, ".polygon_preset") ||
+		strings.HasSuffix(path, ".shape_preset") ||
+		strings.HasSuffix(path, ".coordinate") ||
+		strings.HasSuffix(path, ".origin") {
 		return true
 	}
 	return false
@@ -535,5 +542,3 @@ func mergeMaps(dst, src map[string]any) {
 		dst[k] = v
 	}
 }
-
-

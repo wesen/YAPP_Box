@@ -37,17 +37,21 @@ type Model struct {
 	PaddingRight       float64
 
 	// Features
-	PcbStands  []map[string]any
-	Connectors []map[string]any
-	SnapJoins  []map[string]any
-	Cutouts    []Cutout
+	PcbStands   []map[string]any
+	Connectors  []map[string]any
+	SnapJoins   []map[string]any
+	Cutouts     []Cutout
+	PushButtons []map[string]any
+
+	// Derived feature toggles
+	PrintSwitchExtenders bool
 }
 
 // Cutout is a normalized representation that includes the target face.
 type Cutout struct {
-	Face string            // front|back|left|right|lid|base
-	Item map[string]any    // original item fields (already resolved)
-	Raw  map[string]any    // optional raw for future use
+	Face string         // front|back|left|right|lid|base
+	Item map[string]any // original item fields (already resolved)
+	Raw  map[string]any // optional raw for future use
 }
 
 // BuildModel converts a resolved DSL document into a Model.
@@ -138,6 +142,13 @@ func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
 					return nil, errors.Errorf("cutout missing required 'face'")
 				}
 				m.Cutouts = append(m.Cutouts, Cutout{Face: face, Item: item})
+			}
+		}
+		// push_buttons
+		if arr, ok := getArray(features, "push_buttons"); ok {
+			m.PushButtons = normalizeArrayOfMaps(arr)
+			if len(m.PushButtons) > 0 {
+				m.PrintSwitchExtenders = true
 			}
 		}
 	}
@@ -232,5 +243,3 @@ func must[T any](v T, err error) T {
 	}
 	return v
 }
-
-

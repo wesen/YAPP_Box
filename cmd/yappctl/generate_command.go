@@ -121,7 +121,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		return err
 	}
 
-	scadPath, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
+	scadPath, model, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
 		OutputPath: settings.SCADOut,
 	})
 	if err != nil {
@@ -149,8 +149,9 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 	}
 
 	return generatorcli.RenderSTLs(renderCtx, scadPath, generatorcli.STLOptions{
-		BasePath: settings.BaseSTL,
-		LidPath:  settings.LidSTL,
-		OpenSCAD: settings.OpenSCADBin,
+		BasePath:             settings.BaseSTL,
+		LidPath:              settings.LidSTL,
+		OpenSCAD:             settings.OpenSCADBin,
+		PrintSwitchExtenders: model != nil && model.PrintSwitchExtenders,
 	})
 }

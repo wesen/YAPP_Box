@@ -1,0 +1,128 @@
+project: yapp-demo-buttons2
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 100
+  width: 100
+  thickness: 1.6
+  z_clearance: 3.0
+  standoffs:
+    diameter: 6.0
+    screw_d: 2.4
+
+enclosure:
+  wall:
+    thickness: 1.4
+    clearance: 1.0
+    fillet_radius: 2.0
+  base:
+    thickness: 1.5
+  lid:
+    thickness: 1.0
+
+features:
+  push_buttons:
+    - name: circle-center
+      x: 20
+      y: pcb.width / 2
+      shape: circle
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+        no_fillet: true
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+
+    - name: circle-offset
+      x: 20
+      y: pcb.width / 2 - 20
+      shape: circle
+      angle: 0
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+        wall: 2.0
+        plate_thickness: 2.5
+        slack: 0.5
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+
+    - name: arrow-center
+      x: 40
+      y: pcb.width / 2
+      shape: polygon
+      polygon: arrow
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+
+    - name: arrow-rotated
+      x: 40
+      y: pcb.width / 2 - 20
+      shape: polygon
+      polygon: arrow
+      angle: 90
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+
+    - name: rounded-rect
+      x: 60
+      y: pcb.width / 2
+      shape: rounded_rect
+      cap:
+        length: 8
+        width: 8
+        radius: 2
+      lid:
+        protrusion: -1
+      switch:
+        height: 6
+        travel: 1.0
+        pole_diameter: 3
+
+    - name: rectangle
+      x: 80
+      y: pcb.width / 2
+      shape: rectangle
+      angle: 0
+      cap:
+        length: 8
+        width: 8
+        radius: 0
+      lid:
+        protrusion: 1
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+
+tolerances:
+  holes: 0.4
+  perimeter: 1.0

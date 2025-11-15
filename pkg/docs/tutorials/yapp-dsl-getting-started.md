@@ -84,7 +84,7 @@ The DSL uses a *clearance* value instead of separate paddings. When resolved, th
 
 ## Step 3 — Add features
 
-The fun part. Each subarray under `features` corresponds to a YAPP array—`pcb_stands`, `cutouts`, `connectors`, `snap_joins`, and soon `push_buttons`.
+The fun part. Each subarray under `features` corresponds to a YAPP array—`pcb_stands`, `cutouts`, `connectors`, `snap_joins`, and `push_buttons`.
 
 ```yaml
 features:
@@ -108,6 +108,54 @@ features:
 - Stands pin the PCB in place; each entry mirrors the SCAD positional parameters but with names instead of indices.
 - Cutouts always include a `face` plus coordinates relative to the box. The DSL converts the `shape` strings into the `yappRectangle`/`yappCircle` flags automatically.
 - Leave arrays empty if you don’t need them; the generator skips them.
+
+### Example: tactile push buttons
+
+Push buttons used to live exclusively in SCAD. The DSL now wraps all sixteen positional parameters (plus the polygon/origin flags) in a patient, named structure:
+
+```yaml
+features:
+  push_buttons:
+    - name: reset
+      x: 15
+      y: 28
+      shape: circle
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+        slack: 0.25
+        snap_slack: 0.2
+      switch:
+        height: 3.0
+        travel: 1.0
+        pole_diameter: 3.5
+
+    - name: arrow-rotated
+      x: 40
+      y: pcb.width / 2 - 20   # expressions are fair game
+      shape: polygon
+      polygon: arrow
+      angle: 90
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+      switch:
+        height: 5
+        travel: 0.5
+        pole_diameter: 3
+```
+
+- `cap.*` controls the lid geometry, `lid.*` handles tolerances and protrusion, and `switch.*` mirrors the actual tactile hardware.
+- `shape` accepts `rectangle`, `circle`, `rounded_rect`, `circle_with_flats`, `circle_with_key`, or polygon presets like `arrow`/`triangle`.
+- When at least one entry exists, `yappctl generate` automatically flips `printSwitchExtenders` on and propagates the right OpenSCAD flags so both the SCAD preview and STLs include the extenders.
+
+See `examples/yapp-demo-buttons.yaml` for the two-button lid equivalent to `examples/YAPP_Demo_buttons_v31.scad`, and `examples/yapp-demo-buttons2.yaml` for the polygon-heavy variant from `examples/YAPP_Demo_buttons2_v31.scad`.
 
 ## Step 4 — Set tolerances and defaults
 

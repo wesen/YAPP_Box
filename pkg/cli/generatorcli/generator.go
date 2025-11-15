@@ -25,25 +25,25 @@ type SCADOptions struct {
 }
 
 // WriteSCAD builds the YAPP model, emits the SCAD, adjusts include paths, and writes the file.
-func WriteSCAD(ctx context.Context, resolved map[string]any, opts SCADOptions) (string, error) {
+func WriteSCAD(ctx context.Context, resolved map[string]any, opts SCADOptions) (string, *yappgen.Model, error) {
 	if opts.OutputPath == "" {
-		return "", errors.New("output path is required")
+		return "", nil, errors.New("output path is required")
 	}
 	model, err := yappgen.BuildModel(ctx, resolved)
 	if err != nil {
-		return "", errors.Wrap(err, "build model")
+		return "", nil, errors.Wrap(err, "build model")
 	}
 	scad, err := yappgen.EmitSCAD(ctx, model)
 	if err != nil {
-		return "", errors.Wrap(err, "emit scad")
+		return "", nil, errors.Wrap(err, "emit scad")
 	}
 
 	scad = rewriteInclude(scad, opts.OutputPath, opts.GeneratorInclude)
 
 	if err := os.WriteFile(opts.OutputPath, scad, 0o644); err != nil {
-		return "", errors.Wrapf(err, "write SCAD %s", opts.OutputPath)
+		return "", nil, errors.Wrapf(err, "write SCAD %s", opts.OutputPath)
 	}
-	return opts.OutputPath, nil
+	return opts.OutputPath, model, nil
 }
 
 // STLOptions controls how OpenSCAD rendering runs.
@@ -51,6 +51,8 @@ type STLOptions struct {
 	BasePath string
 	LidPath  string
 	OpenSCAD string
+	// PrintSwitchExtenders toggles tactile button extender geometry.
+	PrintSwitchExtenders bool
 }
 
 // RenderSTLs renders any requested STL files using OpenSCAD.
@@ -63,19 +65,19 @@ func RenderSTLs(ctx context.Context, scadPath string, opts STLOptions) error {
 		bin = "openscad"
 	}
 	if opts.BasePath != "" {
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false); err != nil {
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false, opts.PrintSwitchExtenders); err != nil {
 			return errors.Wrap(err, "base STL")
 		}
 	}
 	if opts.LidPath != "" {
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.LidPath, false, true); err != nil {
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.LidPath, false, true, opts.PrintSwitchExtenders); err != nil {
 			return errors.Wrap(err, "lid STL")
 		}
 	}
 	return nil
 }
 
-func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBase, printLid bool) error {
+func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBase, printLid bool, printExtenders bool) error {
 	if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
 		return errors.Wrap(err, "create STL directory")
 	}
@@ -84,7 +86,7 @@ func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBa
 		"-o", outPath,
 		"-D", fmt.Sprintf("printBaseShell=%t", printBase),
 		"-D", fmt.Sprintf("printLidShell=%t", printLid),
-		"-D", "printSwitchExtenders=false",
+		"-D", fmt.Sprintf("printSwitchExtenders=%t", printExtenders),
 		"-D", "printDisplayClips=false",
 		scadPath,
 	}
