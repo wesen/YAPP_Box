@@ -24,9 +24,33 @@ type ConnectorsItem struct {
 	PcbGap *float64 `yaml:"pcb_gap,omitempty"`
 	// Fillet radius at base
 	FilletRadius *float64 `yaml:"fillet_radius,omitempty"`
+	// Corner placement flags (yappAllCorners/yappFrontLeft/etc.)
+	Corner *string `yaml:"corner,omitempty"`
+	// Coordinate system selector (yappCoordPCB/yappCoordBox/yappCoordBoxInside)
+	Coordinate *string `yaml:"coordinate,omitempty"`
+	// Disable external fillets (yappNoFillet)
+	NoFillet *bool `yaml:"no_fillet,omitempty"`
+	// Enable yappCountersink flag
+	Countersink *bool `yaml:"countersink,omitempty"`
+	// Target PCB name for multi-board projects (emits [yappPCBName, value])
+	PcbName *string `yaml:"pcb_name,omitempty"`
+	// Reverse screw direction (yappThroughLid)
+	ThroughLid *bool `yaml:"through_lid,omitempty"`
+	// Enable self-threading inserts (yappSelfThreading)
+	SelfThreading *bool `yaml:"self_threading,omitempty"`
+	// Disable internal fillets (yappNoInternalFillet)
+	NoInternalFillet *bool `yaml:"no_internal_fillet,omitempty"`
 }
 
 func (x *ConnectorsItem) ApplyDefaults() {
+	if x.Corner == nil {
+		v := "single"
+		x.Corner = &v
+	}
+	if x.Coordinate == nil {
+		v := "pcb"
+		x.Coordinate = &v
+	}
 }
 
 func (x *ConnectorsItem) CustomValidate() error {

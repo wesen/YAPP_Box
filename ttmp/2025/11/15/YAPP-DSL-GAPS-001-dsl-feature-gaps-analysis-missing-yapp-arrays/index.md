@@ -17,10 +17,42 @@ RelatedFiles:
       Note: user's target example
     - Path: examples/test-push-buttons.yaml
       Note: current DSL test case
+    - Path: pkg/yappgen/modules/boxmounts/module.go
+      Note: builder
+    - Path: pkg/yappgen/modules/boxmounts/module_test.go
+      Note: tests
+    - Path: pkg/yappgen/modules/boxmounts/registry.go
+      Note: module registration
+    - Path: pkg/yappgen/modules/boxmounts/schema.yaml
+      Note: box_mounts schema
+    - Path: pkg/yappgen/modules/boxmounts/schema_gen.go
+      Note: schemagen struct
+    - Path: pkg/yappgen/modules/connectors/module.go
+      Note: flag builder
+    - Path: pkg/yappgen/modules/connectors/module_test.go
+      Note: flag tests
+    - Path: pkg/yappgen/modules/connectors/schema.yaml
+      Note: schema flags
+    - Path: pkg/yappgen/modules/pcbstands/module.go
+      Note: flag builder
+    - Path: pkg/yappgen/modules/pcbstands/module_test.go
+      Note: flag tests
+    - Path: pkg/yappgen/modules/pcbstands/schema.yaml
+      Note: schema flags
+    - Path: pkg/yappgen/modules_gen.go
+      Note: includes box_mounts
+    - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/02-pcb-stand-flag-support.md
+      Note: design
+    - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/03-connector-flag-support.md
+      Note: design
+    - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/04-boxmounts-module-support.md
+      Note: design
 ExternalSources: []
 Summary: Analysis of missing YAPP features preventing DSL parity with SCAD examples - identifies 8 missing arrays and critical flag gaps
 LastUpdated: 2025-11-15T22:14:00.857144922-05:00
 ---
+
+
 
 
 
@@ -455,6 +487,37 @@ See [changelog.md](./changelog.md) for recent changes and decisions.
 **Impact:** Can't handle advanced use cases
 
 **Effort:** 6-8 weeks
+
+### Corner Placement Research (2025-11-16)
+
+- `pcbHolders()` mirrors a single `[x,y]` origin across the other three corners whenever `yappAllCorners` or individual `yappFront*/Back*` flags are present; if no flags are present (`primeOrigin`), only the literal coordinate is emitted, so DSL users must expose the same selector semantics instead of forcing four explicit entries.
+- `pcbPushdowns()` reuses the identical corner-selection logic but additionally respects `yappLidOnly`/`yappBaseOnly`, so part-selection flags have to flow through schema + builder alongside the placement flags.
+- `shellConnectors()` shares the same flag matrix and uses `translate2Box_*` to flip coordinates relative to the box or PCB coordinate system, confirming we can implement a single normalization helper for both pcb_stands and connectors.
+
+```2063:2083:YAPPgenerator_v3.scad
+allCorners = (isTrue(yappAllCorners, stand)) ? true : false;
+primeOrigin = (!isTrue(yappBackLeft, stand) && !isTrue(yappFrontLeft, stand) && !isTrue(yappFrontRight, stand) && !isTrue(yappBackRight, stand) && !isTrue(yappAllCorners, stand) ) ? true : false;
+if (!isTrue(yappLidOnly, stand))
+{
+  if (primeOrigin || allCorners || isTrue(yappBackLeft, stand))
+    translate([offsetX+connX, offsetY + connY, basePlaneThickness])
+      pcbStandoff(...);
+  if (allCorners || isTrue(yappFrontLeft, stand))
+    translate([offsetX + lengthX - connX, offsetY + connY, basePlaneThickness])
+      pcbStandoff(...);
+  // remaining corners omitted
+}
+```
+
+```4072:4124:YAPPgenerator_v3.scad
+allCorners = (isTrue(yappAllCorners, conn)) ? true : false;
+primeOrigin = (!isTrue(yappBackLeft, conn) && !isTrue(yappFrontLeft, conn) && !isTrue(yappFrontRight, conn) && !isTrue(yappBackRight, conn) && !isTrue(yappAllCorners, conn) ) ? true : false;
+if (primeOrigin || allCorners || isTrue(yappBackLeft, conn))
+  connectorNew(..., connX, connY, ...);
+if (allCorners || isTrue(yappFrontLeft, conn))
+  connectorNew(..., connX2, connY, ...);
+// additional mirrored placements omitted
+```
 
 ## Success Criteria
 

@@ -22,9 +22,39 @@ type PcbStandsItem struct {
 	FilletRadius *float64 `yaml:"fillet_radius,omitempty"`
 	// Pin length extending through PCB
 	PinLength *float64 `yaml:"pin_length,omitempty"`
+	// Which shell part receives the standoff (maps to yappBoth/yappBaseOnly/yappLidOnly)
+	ShellPart *string `yaml:"shell_part,omitempty"`
+	// Whether to cut holes, pins, or top pins (maps to yappHole/yappTopPin)
+	Treatment *string `yaml:"treatment,omitempty"`
+	// Corner placement flags (yappAllCorners/yappFrontLeft/etc.)
+	Corner *string `yaml:"corner,omitempty"`
+	// Coordinate system selector (yappCoordPCB/yappCoordBox/yappCoordBoxInside)
+	Coordinate *string `yaml:"coordinate,omitempty"`
+	// Disable automatic fillets (yappNoFillet)
+	NoFillet *bool `yaml:"no_fillet,omitempty"`
+	// Target PCB name for multi-board projects (emits [yappPCBName, value])
+	PcbName *string `yaml:"pcb_name,omitempty"`
+	// Enable self-threading holes (yappSelfThreading)
+	SelfThreading *bool `yaml:"self_threading,omitempty"`
 }
 
 func (x *PcbStandsItem) ApplyDefaults() {
+	if x.ShellPart == nil {
+		v := "both"
+		x.ShellPart = &v
+	}
+	if x.Treatment == nil {
+		v := "pin"
+		x.Treatment = &v
+	}
+	if x.Corner == nil {
+		v := "single"
+		x.Corner = &v
+	}
+	if x.Coordinate == nil {
+		v := "pcb"
+		x.Coordinate = &v
+	}
 }
 
 func (x *PcbStandsItem) CustomValidate() error {

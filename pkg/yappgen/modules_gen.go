@@ -4,6 +4,7 @@ package yappgen
 
 import (
 	"github.com/wesen/yapp-encl-resolver/pkg/registry"
+	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
 	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
 	cutouts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
@@ -12,6 +13,7 @@ import (
 )
 
 func init() {
+	registry.Register(boxmounts.NewModule())
 	registry.Register(connectors.NewModule())
 	registry.Register(cutouts.NewModule())
 	registry.Register(pcbstands.NewModule())

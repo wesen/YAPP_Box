@@ -23,6 +23,29 @@ x: 10
 	}
 }
 
+func TestConnectorsItem_FullFlaggedConnector(t *testing.T) {
+	var item ConnectorsItem
+	input := []byte(`coordinate: box_inside
+corner: all
+countersink: true
+insert_d: 4
+no_fillet: true
+no_internal_fillet: true
+outside_d: 8
+pcb_name: Aux
+screw_d: 3
+screw_head_d: 6
+self_threading: true
+stand_height: 6
+through_lid: true
+x: 22
+"y": 30
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestConnectorsItem_FullConnector(t *testing.T) {
 	var item ConnectorsItem
 	input := []byte(`fillet_radius: 1

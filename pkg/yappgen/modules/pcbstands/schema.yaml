@@ -45,12 +45,62 @@ fields:
     type: number
     desc: Pin length extending through PCB
 
+  shell_part:
+    type: string
+    default: both
+    enum: [both, base_only, lid_only]
+    desc: Which shell part receives the standoff (maps to yappBoth/yappBaseOnly/yappLidOnly)
+
+  treatment:
+    type: string
+    default: pin
+    enum: [pin, hole, top_pin]
+    desc: Whether to cut holes, pins, or top pins (maps to yappHole/yappTopPin)
+
+  corner:
+    type: string
+    default: single
+    enum: [single, all, front_left, front_right, back_left, back_right]
+    desc: Corner placement flags (yappAllCorners/yappFrontLeft/etc.)
+
+  coordinate:
+    type: string
+    default: pcb
+    enum: [pcb, box, box_inside]
+    desc: Coordinate system selector (yappCoordPCB/yappCoordBox/yappCoordBoxInside)
+
+  no_fillet:
+    type: bool
+    desc: Disable automatic fillets (yappNoFillet)
+
+  pcb_name:
+    type: string
+    desc: Target PCB name for multi-board projects (emits [yappPCBName, value])
+
+  self_threading:
+    type: bool
+    desc: Enable self-threading holes (yappSelfThreading)
+
 tests:
   - name: minimal_stand
     desc: Minimal valid PCB stand with required fields
     input:
       x: 5
       y: 5
+    expect_valid: true
+
+  - name: full_flagged_stand
+    desc: PCB stand exercising all flag fields
+    input:
+      x: 12
+      y: 18
+      shell_part: lid_only
+      treatment: hole
+      corner: all
+      coordinate: box_inside
+      no_fillet: true
+      pcb_name: Aux Board
+      self_threading: true
     expect_valid: true
 
   - name: full_stand
@@ -72,4 +122,12 @@ tests:
     input:
       y: 10
     expect_error: "missing required field"
+
+  - name: invalid_corner
+    desc: Should fail with unsupported corner selector
+    input:
+      x: 5
+      y: 5
+      corner: diagonal
+    expect_error: "invalid value"
 

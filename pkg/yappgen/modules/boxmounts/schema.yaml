@@ -1,0 +1,115 @@
+module: box_mounts
+order: 250
+scad_array: boxMounts
+go_package: boxmounts
+description: >
+  Defines external mounting tabs that attach to enclosure walls.
+  Each entry specifies the position along a wall, screw diameter, slot width, and height.
+
+fields:
+  pos:
+    type: number
+    required: true
+    desc: Position along the selected wall (mm)
+
+  offset:
+    type: number
+    desc: Secondary offset for angled/paired mounts (mm)
+
+  screw_d:
+    type: number
+    required: true
+    desc: Screw diameter (mm)
+
+  slot_width:
+    type: number
+    required: true
+    desc: Additional width beyond screw diameter (0 produces a circular hole)
+
+  height:
+    type: number
+    required: true
+    desc: Mount height (mm) measured from base reference
+
+  fillet_radius:
+    type: number
+    desc: Override fillet radius (0 = auto)
+
+  shell_part:
+    type: string
+    default: base
+    enum: [base, lid]
+    desc: Which shell is affected (maps to yappBase/yappLid flags)
+
+  alignment:
+    type: string
+    default: edge
+    enum: [edge, center]
+    desc: Edge aligns to left of slot (edge) or centers (`yappCenter`)
+
+  origin:
+    type: string
+    default: global
+    enum: [global, alt]
+    desc: Origin selector for back/right faces (`yappGlobalOrigin`/`yappAltOrigin`)
+
+  no_fillet:
+    type: bool
+    desc: Disable automatic fillets (yappNoFillet)
+
+  faces:
+    type: object
+    required: true
+    desc: Which enclosure walls receive this mount
+    fields:
+      left:
+        type: bool
+        desc: Apply mount to left wall
+      right:
+        type: bool
+        desc: Apply mount to right wall
+      front:
+        type: bool
+        desc: Apply mount to front wall
+      back:
+        type: bool
+        desc: Apply mount to back wall
+
+tests:
+  - name: minimal_mount
+    desc: Single left-wall mount
+    input:
+      pos: 12
+      screw_d: 3
+      slot_width: 0
+      height: 5
+      faces:
+        left: true
+    expect_valid: true
+
+  - name: centered_back_mount
+    desc: Back wall mount with center alignment and lid-only shell
+    input:
+      pos: 20
+      screw_d: 3.5
+      slot_width: 4
+      height: 8
+      fillet_radius: 1
+      faces:
+        back: true
+      shell_part: lid
+      alignment: center
+      origin: alt
+      no_fillet: true
+    expect_valid: true
+
+  - name: invalid_faces
+    desc: Should fail when no faces selected
+    input:
+      pos: 10
+      screw_d: 3
+      slot_width: 2
+      height: 5
+      faces: {}
+    expect_error: "faces"
+

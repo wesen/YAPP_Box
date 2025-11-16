@@ -18,6 +18,23 @@ func TestPcbStandsItem_MinimalStand(t *testing.T) {
 	}
 }
 
+func TestPcbStandsItem_FullFlaggedStand(t *testing.T) {
+	var item PcbStandsItem
+	input := []byte(`coordinate: box_inside
+corner: all
+no_fillet: true
+pcb_name: Aux Board
+self_threading: true
+shell_part: lid_only
+treatment: hole
+x: 12
+"y": 18
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func TestPcbStandsItem_FullStand(t *testing.T) {
 	var item PcbStandsItem
 	input := []byte(`diameter: 6

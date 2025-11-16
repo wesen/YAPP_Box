@@ -54,6 +54,42 @@ fields:
     type: number
     desc: Fillet radius at base
 
+  corner:
+    type: string
+    default: single
+    enum: [single, all, front_left, front_right, back_left, back_right]
+    desc: Corner placement flags (yappAllCorners/yappFrontLeft/etc.)
+
+  coordinate:
+    type: string
+    default: pcb
+    enum: [pcb, box, box_inside]
+    desc: Coordinate system selector (yappCoordPCB/yappCoordBox/yappCoordBoxInside)
+
+  no_fillet:
+    type: bool
+    desc: Disable external fillets (yappNoFillet)
+
+  countersink:
+    type: bool
+    desc: Enable yappCountersink flag
+
+  pcb_name:
+    type: string
+    desc: Target PCB name for multi-board projects (emits [yappPCBName, value])
+
+  through_lid:
+    type: bool
+    desc: Reverse screw direction (yappThroughLid)
+
+  self_threading:
+    type: bool
+    desc: Enable self-threading inserts (yappSelfThreading)
+
+  no_internal_fillet:
+    type: bool
+    desc: Disable internal fillets (yappNoInternalFillet)
+
 tests:
   - name: minimal_connector
     desc: Minimal valid connector with required fields
@@ -65,6 +101,26 @@ tests:
       screw_head_d: 6
       insert_d: 4
       outside_d: 8
+    expect_valid: true
+
+  - name: full_flagged_connector
+    desc: Connector with all optional flags exercised
+    input:
+      x: 22
+      y: 30
+      stand_height: 6
+      screw_d: 3
+      screw_head_d: 6
+      insert_d: 4
+      outside_d: 8
+      corner: all
+      coordinate: box_inside
+      no_fillet: true
+      countersink: true
+      through_lid: true
+      self_threading: true
+      no_internal_fillet: true
+      pcb_name: Aux
     expect_valid: true
 
   - name: full_connector
@@ -89,4 +145,17 @@ tests:
       y: 10
       stand_height: 5
     expect_error: "missing required"
+
+  - name: invalid_corner
+    desc: Should fail when corner enum is invalid
+    input:
+      x: 5
+      y: 5
+      stand_height: 4
+      screw_d: 3
+      screw_head_d: 5
+      insert_d: 4
+      outside_d: 7
+      corner: diagonal
+    expect_error: "invalid value"
 
