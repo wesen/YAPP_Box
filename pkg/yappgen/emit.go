@@ -44,6 +44,15 @@ func EmitSCAD(ctx context.Context, m *Model) ([]byte, error) {
 	if m.LidPlaneThickness > 0 {
 		writeVarFloat(&b, "lidPlaneThickness", m.LidPlaneThickness)
 	}
+	if m.BaseWallHeight > 0 {
+		writeVarFloat(&b, "baseWallHeight", m.BaseWallHeight)
+	}
+	if m.LidWallHeight > 0 {
+		writeVarFloat(&b, "lidWallHeight", m.LidWallHeight)
+	}
+	if m.RidgeHeight > 0 {
+		writeVarFloat(&b, "ridgeHeight", m.RidgeHeight)
+	}
 	if m.RoundRadius > 0 {
 		writeVarFloat(&b, "roundRadius", m.RoundRadius)
 	}

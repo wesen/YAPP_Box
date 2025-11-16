@@ -64,8 +64,12 @@ enclosure:
     fillet_radius: 2.0
   base:
     thickness: 1.5
+    wall_height: 10
   lid:
     thickness: 1.0
+    wall_height: 10
+  ridge:
+    height: 3.0
 
 features:
   pcb_stands:
@@ -100,6 +104,19 @@ features:
       length: back_open_length
       radius: back_open_radius
       shape: rounded_rect
+
+  snap_joins:
+    - pos: shell_length / 2 - 10
+      width: 4
+      side: left
+      alignment: center
+      symmetric: true
+    - pos: shell_length / 2 - 12
+      width: 4
+      side: right
+      alignment: center
+      symmetric: true
+      diamond: true
 
   push_buttons:
     - name: circle_button

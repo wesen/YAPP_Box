@@ -7,10 +7,11 @@ import (
 
 	"github.com/pkg/errors"
 
-	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
 	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
+	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
+	snapjoins "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/snapjoins"
 )
 
 // FeatureModule describes how a DSL feature is collected and emitted.
@@ -38,7 +39,7 @@ var featureModules = []FeatureModule{
 		}),
 	newArrayFeatureModule("snap_joins", "snapJoins",
 		func(m *Model) *[]map[string]any { return &m.SnapJoins },
-		buildSnapJoins, nil),
+		snapjoins.Build, nil),
 	newCutoutFeatureModule(),
 }
 

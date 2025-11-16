@@ -18,3 +18,30 @@ width: 10
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func TestSnapJoinsItem_CenteredSymmetric(t *testing.T) {
+	var item SnapJoinsItem
+	input := []byte(`alignment: center
+pos: 25
+side: left
+symmetric: true
+width: 8
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestSnapJoinsItem_DiamondSnap(t *testing.T) {
+	var item SnapJoinsItem
+	input := []byte(`alignment: center
+diamond: true
+pos: 30
+side: right
+symmetric: true
+width: 4
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}

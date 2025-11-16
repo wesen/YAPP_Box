@@ -23,6 +23,20 @@ fields:
     enum: [left, right, front, back]
     desc: Which side of enclosure (appended as YAPP flag)
 
+  alignment:
+    type: string
+    enum: [origin, center]
+    default: origin
+    desc: Position reference (maps to yappOrigin/yappCenter)
+
+  symmetric:
+    type: bool
+    desc: Mirror snap to opposite edge (yappSymmetric)
+
+  diamond:
+    type: bool
+    desc: Use diamond-shaped snap instead of round (yappRectangle)
+
 tests:
   - name: left_snap
     desc: Snap join on left side
@@ -30,6 +44,27 @@ tests:
       pos: 20
       width: 10
       side: left
+    expect_valid: true
+
+  - name: centered_symmetric
+    desc: Snap with center alignment and symmetric flag
+    input:
+      pos: 25
+      width: 8
+      side: left
+      alignment: center
+      symmetric: true
+    expect_valid: true
+
+  - name: diamond_snap
+    desc: Diamond-shaped snap join
+    input:
+      pos: 30
+      width: 4
+      side: right
+      alignment: center
+      diamond: true
+      symmetric: true
     expect_valid: true
 
   - name: missing_side

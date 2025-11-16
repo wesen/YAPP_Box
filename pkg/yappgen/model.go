@@ -24,6 +24,9 @@ type Model struct {
 	WallThickness      float64
 	BasePlaneThickness float64
 	LidPlaneThickness  float64
+	BaseWallHeight     float64
+	LidWallHeight      float64
+	RidgeHeight        float64
 	RoundRadius        float64
 	PaddingFront       float64
 	PaddingBack        float64
@@ -98,6 +101,15 @@ func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
 	}
 	if v, ok := getFloat(resolved, "enclosure.lid.thickness"); ok {
 		m.LidPlaneThickness = v
+	}
+	if v, ok := getFloat(resolved, "enclosure.base.wall_height"); ok {
+		m.BaseWallHeight = v
+	}
+	if v, ok := getFloat(resolved, "enclosure.lid.wall_height"); ok {
+		m.LidWallHeight = v
+	}
+	if v, ok := getFloat(resolved, "enclosure.ridge.height"); ok {
+		m.RidgeHeight = v
 	}
 	if v, ok := getFloat(resolved, "enclosure.wall.fillet_radius"); ok {
 		m.RoundRadius = v

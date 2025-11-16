@@ -16,15 +16,15 @@ RelatedFiles:
     - Path: examples/YAPP_Demo_buttons2_v31.scad
       Note: user's target example
     - Path: examples/YAPP_Demo_buttons_v30.scad
-      Note: v30 demo to match
+      Note: reference for parity
     - Path: examples/test-push-buttons.yaml
       Note: current DSL test case
     - Path: examples/yapp-demo-buttons-v30.yaml
-      Note: DSL parity candidate
+      Note: updated with vars and cutouts base/front/back
     - Path: pkg/resolver/resolver.go
-      Note: enum/array field literal handling
+      Note: treats enum arrays as literals (corners)
     - Path: pkg/yappgen/features.go
-      Note: module wiring for flags
+      Note: builder wiring for flags
     - Path: pkg/yappgen/modules/boxmounts/module.go
       Note: builder
     - Path: pkg/yappgen/modules/boxmounts/module_test.go
@@ -44,11 +44,17 @@ RelatedFiles:
     - Path: pkg/yappgen/modules/cutouts/schema.yaml
       Note: cutout shapes; polygon/mask TODO
     - Path: pkg/yappgen/modules/pcbstands/module.go
-      Note: corners[]/corner flags emit
+      Note: corners[] flags
     - Path: pkg/yappgen/modules/pcbstands/module_test.go
       Note: flag tests
     - Path: pkg/yappgen/modules/pcbstands/schema.yaml
       Note: corners[] schema
+    - Path: pkg/yappgen/modules/snapjoins/module.go
+      Note: flag builder
+    - Path: pkg/yappgen/modules/snapjoins/module_test.go
+      Note: flag tests
+    - Path: pkg/yappgen/modules/snapjoins/schema.yaml
+      Note: snap flags schema
     - Path: pkg/yappgen/modules_gen.go
       Note: includes box_mounts
     - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/02-pcb-stand-flag-support.md
@@ -61,6 +67,8 @@ ExternalSources: []
 Summary: Analysis of missing YAPP features preventing DSL parity with SCAD examples - identifies 8 missing arrays and critical flag gaps
 LastUpdated: 2025-11-15T22:14:00.857144922-05:00
 ---
+
+
 
 
 

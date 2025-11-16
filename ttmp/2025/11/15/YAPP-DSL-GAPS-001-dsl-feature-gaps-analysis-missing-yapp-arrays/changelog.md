@@ -50,3 +50,28 @@ Coverage audit against YAPP_Demo_buttons_v30.scad:\n- pcb_stands: DSL now emits 
 - pkg/yappgen/modules/pcbstands/module.go — emits shell/corners/treatment/coord flags
 - pkg/yappgen/modules/pcbstands/schema.yaml — adds corners[]
 
+
+## 2025-11-16
+
+DSL parity improvements for v30 demo: added vars/expressions to YAML, derived shellWidth/shellHeight equivalents, added cutoutsBase/front/back, pcb_stands corners/shell flags now emitted via module builders; regenerated SCAD/STLs.
+
+### Related Files
+
+- examples/yapp-demo-buttons-v30.yaml — parameterized with vars and expressions
+- pkg/yappgen/features.go — now uses module builders for stands/boxMounts
+- pkg/yappgen/modules/pcbstands/module.go — corners[] support and flags
+- tmp/yapp-demo-buttons-v30.scad — generated SCAD reflecting changes
+
+
+## 2025-11-16
+
+Implemented snap_joins flag support: alignment (yappOrigin/yappCenter), symmetric (yappSymmetric), diamond (yappRectangle). Wired module builder to features.go. Generated and tested v30 example with snap joins.
+
+### Related Files
+
+- examples/yapp-demo-buttons-v30.yaml — includes snap_joins with flags
+- pkg/yappgen/features.go — wired snapjoins.Build
+- pkg/yappgen/modules/snapjoins/module.go — flag encoding
+- pkg/yappgen/modules/snapjoins/module_test.go — flag tests
+- pkg/yappgen/modules/snapjoins/schema.yaml — added alignment/symmetric/diamond flags
+

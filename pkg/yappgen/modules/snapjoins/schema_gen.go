@@ -10,9 +10,19 @@ type SnapJoinsItem struct {
 	Width float64 `yaml:"width"`
 	// Which side of enclosure (appended as YAPP flag)
 	Side string `yaml:"side"`
+	// Position reference (maps to yappOrigin/yappCenter)
+	Alignment *string `yaml:"alignment,omitempty"`
+	// Mirror snap to opposite edge (yappSymmetric)
+	Symmetric *bool `yaml:"symmetric,omitempty"`
+	// Use diamond-shaped snap instead of round (yappRectangle)
+	Diamond *bool `yaml:"diamond,omitempty"`
 }
 
 func (x *SnapJoinsItem) ApplyDefaults() {
+	if x.Alignment == nil {
+		v := "origin"
+		x.Alignment = &v
+	}
 }
 
 func (x *SnapJoinsItem) CustomValidate() error {

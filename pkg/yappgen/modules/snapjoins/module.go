@@ -48,6 +48,13 @@ func Build(items []map[string]any) ([][]any, error) {
 			sideFlag,
 		}
 
+		// Add optional flags
+		flags, err := encodeSnapFlags(item)
+		if err != nil {
+			return nil, errors.Wrapf(err, "%s", label)
+		}
+		params = append(params, flags...)
+
 		out = append(out, params)
 	}
 	return out, nil
@@ -66,4 +73,25 @@ func snapSideFlag(side string) (scad.Raw, error) {
 	default:
 		return "", errors.Errorf("invalid snap side: %s", side)
 	}
+}
+
+func encodeSnapFlags(item SnapJoinsItem) ([]any, error) {
+	var flags []any
+
+	// Alignment: yappOrigin (default) or yappCenter
+	if item.Alignment != nil && strings.ToLower(*item.Alignment) == "center" {
+		flags = append(flags, scad.Raw("yappCenter"))
+	}
+
+	// Symmetric: mirror to opposite edge
+	if item.Symmetric != nil && *item.Symmetric {
+		flags = append(flags, scad.Raw("yappSymmetric"))
+	}
+
+	// Diamond: use diamond shape instead of round
+	if item.Diamond != nil && *item.Diamond {
+		flags = append(flags, scad.Raw("yappRectangle"))
+	}
+
+	return flags, nil
 }
