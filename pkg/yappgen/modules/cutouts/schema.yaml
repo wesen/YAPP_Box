@@ -1,0 +1,90 @@
+module: cutouts
+order: 400
+scad_array: cutouts
+go_package: cutouts
+description: >
+  Defines cutouts (holes) in enclosure faces that map to the legacy cutouts arrays.
+  Each entry must specify face, position, dimensions, and shape.
+
+fields:
+  face:
+    type: string
+    required: true
+    enum: [front, back, left, right, top, lid, bottom, base]
+    desc: Which face of the enclosure
+
+  from_back:
+    type: number
+    required: true
+    desc: Distance from back edge (mm)
+
+  from_left:
+    type: number
+    required: true
+    desc: Distance from left edge (mm)
+
+  width:
+    type: number
+    required: true
+    desc: Cutout width (set to 0 for circles)
+
+  length:
+    type: number
+    required: true
+    desc: Cutout length (set to 0 for circles)
+
+  radius:
+    type: number
+    required: true
+    desc: Corner/circle radius (set to 0 for rectangles)
+
+  shape:
+    type: string
+    required: true
+    enum: [rectangle, circle, rounded_rect, circle_with_flats, circle_with_key]
+    desc: Cutout shape (maps to YAPP shape flag)
+
+  depth:
+    type: number
+    desc: Cutout depth (defaults to shell thickness)
+
+  angle:
+    type: number
+    desc: Rotation angle in degrees
+
+tests:
+  - name: rectangle_cutout
+    desc: Simple rectangular cutout
+    input:
+      face: front
+      from_back: 10
+      from_left: 15
+      width: 20
+      length: 10
+      radius: 0
+      shape: rectangle
+    expect_valid: true
+
+  - name: circle_cutout
+    desc: Circular cutout
+    input:
+      face: back
+      from_back: 25
+      from_left: 20
+      width: 0
+      length: 0
+      radius: 5
+      shape: circle
+    expect_valid: true
+
+  - name: missing_face
+    desc: Should fail when face is missing
+    input:
+      from_back: 10
+      from_left: 15
+      width: 20
+      length: 10
+      radius: 0
+      shape: rectangle
+    expect_error: "missing required field"
+

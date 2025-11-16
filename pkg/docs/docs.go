@@ -11,5 +11,14 @@ var tutorialFS embed.FS
 
 // Load registers all embedded documentation sections with the Glazed help system.
 func Load(helpSystem *help.HelpSystem) error {
-	return helpSystem.LoadSectionsFromFS(tutorialFS, "tutorials")
+	if err := helpSystem.LoadSectionsFromFS(tutorialFS, "tutorials"); err != nil {
+		return err
+	}
+
+	// Load auto-generated module help pages
+	if err := LoadModuleHelp(helpSystem); err != nil {
+		return err
+	}
+
+	return nil
 }

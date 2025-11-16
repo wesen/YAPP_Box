@@ -4,11 +4,17 @@ package yappgen
 
 import (
 	"github.com/wesen/yapp-encl-resolver/pkg/registry"
+	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
+	cutouts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	pushbuttons "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
+	snapjoins "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/snapjoins"
 )
 
 func init() {
+	registry.Register(connectors.NewModule())
+	registry.Register(cutouts.NewModule())
 	registry.Register(pcbstands.NewModule())
 	registry.Register(pushbuttons.NewModule())
+	registry.Register(snapjoins.NewModule())
 }

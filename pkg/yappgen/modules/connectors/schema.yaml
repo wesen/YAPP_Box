@@ -1,0 +1,92 @@
+module: connectors
+order: 150
+scad_array: connectors
+go_package: connectors
+description: >
+  Defines connector mounting points (screw-based standoffs) that map to the legacy connectors array.
+  Each entry specifies position, standoff height, and screw/insert dimensions.
+
+fields:
+  x:
+    type: number
+    required: true
+    desc: X coordinate on PCB (mm)
+
+  y:
+    type: number
+    required: true
+    desc: Y coordinate on PCB (mm)
+
+  stand_height:
+    type: number
+    required: true
+    desc: Height of connector standoff (mm)
+
+  screw_d:
+    type: number
+    required: true
+    desc: Screw diameter (mm)
+
+  screw_head_d:
+    type: number
+    required: true
+    desc: Screw head diameter (mm)
+
+  insert_d:
+    type: number
+    required: true
+    desc: Heat-set insert outer diameter (mm)
+
+  outside_d:
+    type: number
+    required: true
+    desc: Standoff outer diameter (mm)
+
+  insert_depth:
+    type: number
+    desc: Depth of heat-set insert
+
+  pcb_gap:
+    type: number
+    desc: Gap between PCB and standoff top
+
+  fillet_radius:
+    type: number
+    desc: Fillet radius at base
+
+tests:
+  - name: minimal_connector
+    desc: Minimal valid connector with required fields
+    input:
+      x: 10
+      y: 10
+      stand_height: 5
+      screw_d: 3
+      screw_head_d: 6
+      insert_d: 4
+      outside_d: 8
+    expect_valid: true
+
+  - name: full_connector
+    desc: Connector with all optional fields
+    input:
+      x: 20
+      y: 25
+      stand_height: 6
+      screw_d: 3
+      screw_head_d: 6
+      insert_d: 4
+      outside_d: 8
+      insert_depth: 5
+      pcb_gap: 0.5
+      fillet_radius: 1.0
+    expect_valid: true
+
+  - name: missing_required
+    desc: Should fail when required field missing
+    input:
+      x: 10
+      y: 10
+      stand_height: 5
+    expect_error: "missing required"
+

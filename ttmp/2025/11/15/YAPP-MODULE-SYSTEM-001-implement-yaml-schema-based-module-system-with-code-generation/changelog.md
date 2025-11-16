@@ -161,3 +161,24 @@ Wired resolver two-phase validation and confirmed end-to-end YAML to SCAD works
 - pkg/resolver/strict.go — strict mode helpers
 - pkg/resolver/validation.go — schema validation hooks
 
+
+## 2025-11-15
+
+Converted connectors, snap_joins, cutouts modules to schema pipeline - all 5 core modules now use generated code
+
+### Related Files
+
+- pkg/yappgen/modules/connectors/schema.yaml — connectors schema
+- pkg/yappgen/modules/cutouts/schema.yaml — cutouts schema
+- pkg/yappgen/modules/snapjoins/schema.yaml — snap_joins schema
+
+
+## 2025-11-15
+
+Auto-generated help pages from schemas integrated into yappctl
+
+### Related Files
+
+- pkg/docs/docs.go — LoadModuleHelp integration
+- pkg/docs/schema_help.go — schema to markdown renderer
+

@@ -222,3 +222,12 @@ Presets UI now hierarchical: Developer → Film → Target ISO. Seeded XTOL push
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/presets.py — Grouping + best-preset selection (prefer 1+1 @20C)
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Added DEV/FILM/ISO states and logic
 
+
+## 2025-11-15
+
+Main screen now scrolls long preset labels (marquee). Presets lists show only available rows (no duplicate fill when list shorter than 3).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Marquee on main; list rendering capped to min(3
+

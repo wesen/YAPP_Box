@@ -15,8 +15,10 @@ RelatedFiles:
       Note: discover wiring
     - Path: examples/test-push-buttons.yaml
       Note: end-to-end test case
+    - Path: pkg/docs/docs.go
+      Note: loads module help into CLI
     - Path: pkg/docs/schema_help.go
-      Note: Auto-generate help pages from schemas
+      Note: auto-generates help from schemas
     - Path: pkg/registry/registry.go
       Note: Register/Get/All and SetTestRegistry implementations
     - Path: pkg/registry/registry_test.go
@@ -31,8 +33,14 @@ RelatedFiles:
       Note: two-phase schema validation
     - Path: pkg/schemagen/codegen.go
       Note: generates ModuleSchema + registry init
+    - Path: pkg/schemagen/codegen_test.go
+      Note: codegen tests
     - Path: pkg/schemagen/context.go
       Note: snippet rendering + source context
+    - Path: pkg/schemagen/discover.go
+      Note: schema discovery and validation
+    - Path: pkg/schemagen/discover_test.go
+      Note: discovery tests
     - Path: pkg/schemagen/errors.go
       Note: ValidationError snippet/hint support
     - Path: pkg/schemagen/module_path.go
@@ -40,37 +48,68 @@ RelatedFiles:
     - Path: pkg/schemagen/schema_doc.go
       Note: ModuleSchema metadata
     - Path: pkg/schemagen/templates/modules_gen.go.tmpl
-      Note: registry generation template
+      Note: registry template
     - Path: pkg/schemagen/templates/schema_gen.go.tmpl
-      Note: struct generation template
+      Note: struct template
     - Path: pkg/schemagen/templates/schema_gen_test.go.tmpl
-      Note: test generation template
+      Note: test template
     - Path: pkg/schemagen/validate.go
       Note: enhanced error reporting
     - Path: pkg/schemagen/validate_test.go
       Note: tests for snippet/hint + syntax errors
+    - Path: pkg/yappgen/modules/connectors/module.go
+      Note: connectors typed builder
+    - Path: pkg/yappgen/modules/connectors/registry.go
+      Note: connectors module registration
+    - Path: pkg/yappgen/modules/connectors/schema.yaml
+      Note: connectors module schema
+    - Path: pkg/yappgen/modules/connectors/schema_gen.go
+      Note: generated connectors structs
+    - Path: pkg/yappgen/modules/cutouts/module.go
+      Note: cutouts typed builder
+    - Path: pkg/yappgen/modules/cutouts/registry.go
+      Note: cutouts module registration
+    - Path: pkg/yappgen/modules/cutouts/schema.yaml
+      Note: cutouts module schema
+    - Path: pkg/yappgen/modules/cutouts/schema_gen.go
+      Note: generated cutouts structs
     - Path: pkg/yappgen/modules/pcbstands/module.go
       Note: typed builder implementation
     - Path: pkg/yappgen/modules/pcbstands/registry.go
-      Note: module registration
+      Note: pcb_stands module registration
     - Path: pkg/yappgen/modules/pcbstands/schema.yaml
       Note: pcb_stands schema definition
+    - Path: pkg/yappgen/modules/pcbstands/schema_gen.go
+      Note: generated pcb_stands structs
     - Path: pkg/yappgen/modules/pushbuttons/module.go
       Note: builder now uses generated structs
     - Path: pkg/yappgen/modules/pushbuttons/registry.go
-      Note: exposes registry FeatureModule
+      Note: push_buttons module registration
     - Path: pkg/yappgen/modules/pushbuttons/schema.yaml
       Note: added shape_preset
     - Path: pkg/yappgen/modules/pushbuttons/schema_gen.go
-      Note: generated structs
+      Note: generated push_buttons structs
+    - Path: pkg/yappgen/modules/snapjoins/module.go
+      Note: snap_joins typed builder
+    - Path: pkg/yappgen/modules/snapjoins/registry.go
+      Note: snap_joins module registration
+    - Path: pkg/yappgen/modules/snapjoins/schema.yaml
+      Note: snap_joins module schema
+    - Path: pkg/yappgen/modules/snapjoins/schema_gen.go
+      Note: generated snap_joins structs
     - Path: pkg/yappgen/modules_gen.go
-      Note: AUTO-GENERATED registry file
+      Note: auto-generated registry init
 ExternalSources:
     - https://github.com/deepmap/oapi-codegen
     - https://gqlgen.com/
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
+
+
+
+
 
 
 
