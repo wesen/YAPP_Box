@@ -160,3 +160,13 @@ Switched back to main UI for testing; disabled temperature reads (enable_temp=Fa
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — UI now supports enable_temp flag to skip temp reads
 - /home/manuel/code/others/YAPP_Box/film-developer/main.py — Runs UI with enable_temp=False and AsyncInput(ghost=40ms)
 
+
+## 2025-11-15
+
+Implemented functional multi-stage timer: start/pause/resume/next integrated with UI. Shows remaining time and progress bar; temperature disabled for now to avoid blocking.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/timer.py — New TimerEngine with non-blocking tick and multi-stage support
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — UI wires TimerEngine into states
+

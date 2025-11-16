@@ -13,6 +13,8 @@ Owners: []
 RelatedFiles:
     - Path: cmd/schemagen/main.go
       Note: discover wiring
+    - Path: examples/test-push-buttons.yaml
+      Note: end-to-end test case
     - Path: pkg/docs/schema_help.go
       Note: Auto-generate help pages from schemas
     - Path: pkg/registry/registry.go
@@ -23,8 +25,10 @@ RelatedFiles:
       Note: Defines FieldSpec
     - Path: pkg/resolver/resolver.go
       Note: integrates registry schema validation
+    - Path: pkg/resolver/strict.go
+      Note: strict mode validation helpers
     - Path: pkg/resolver/validation.go
-      Note: Two-phase validation integration
+      Note: two-phase schema validation
     - Path: pkg/schemagen/codegen.go
       Note: generates ModuleSchema + registry init
     - Path: pkg/schemagen/context.go
@@ -67,6 +71,7 @@ ExternalSources:
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
 
 
 

@@ -1,0 +1,76 @@
+project: Test Push Buttons
+yapp_version: v3
+
+vars:
+  pcb_length: 65
+  pcb_width: 45
+  pcb_thickness: 1.6
+  standoff_height: 8
+
+enclosure:
+  shell_thickness: 2.0
+  lid:
+    type: plane
+
+pcb:
+  length: pcb_length
+  width: pcb_width
+  thickness: pcb_thickness
+  standoffs:
+    height: standoff_height
+
+features:
+  pcb_stands:
+    - x: 3
+      y: 3
+      diameter: 6
+      pin_diameter: 2.5
+    - x: pcb_length - 3
+      y: 3
+      diameter: 6
+      pin_diameter: 2.5
+    - x: 3
+      y: pcb_width - 3
+      diameter: 6
+      pin_diameter: 2.5
+    - x: pcb_length - 3
+      y: pcb_width - 3
+      diameter: 6
+      pin_diameter: 2.5
+
+  push_buttons:
+    - name: reset
+      x: 15
+      y: 10
+      cap:
+        length: 8
+        width: 6
+        radius: 0.5
+      lid:
+        protrusion: 2.5
+        wall: 2.0
+        plate_thickness: 2.5
+        slack: 0.25
+      switch:
+        height: 5.5
+        travel: 1.0
+        pole_diameter: 3.5
+      shape: rectangle
+      coordinate: pcb
+
+    - name: power
+      x: 50
+      y: 10
+      cap:
+        length: 10
+        width: 10
+        radius: 5
+      lid:
+        protrusion: 3.0
+      switch:
+        height: 5.5
+        travel: 1.0
+        pole_diameter: 3.5
+      shape: circle
+      coordinate: pcb
+

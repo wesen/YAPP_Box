@@ -32,7 +32,7 @@
 ### Phase 3: Timer Engine
 - [ ] Implement timer state machine (READY/RUNNING/PAUSED/COMPLETE)
 - [ ] Create multi-stage workflow (Developer/Stop/Fixer/Wash)
-- [ ] Implement pause/resume functionality
+- [x] Implement pause/resume functionality
 - [ ] Add real-time timer adjustment (+/- time)
 - [ ] Implement overtime tracking
 - [ ] Create alert system (visual and LED blink patterns)
@@ -44,8 +44,8 @@
 - [ ] Build session logging with run ID generation (YYYY-MMDD-NNN)
 - [ ] Implement favourites storage and retrieval
 - [ ] Create atomic file write operations with backup
-- [ ] Add error recovery for corrupted files
-- [ ] Test data persistence across reboots
+- [x] Add error recovery for corrupted files
+- [x] Test data persistence across reboots
 
 ### Phase 5: Integration
 - [ ] Connect UI controller to timer engine

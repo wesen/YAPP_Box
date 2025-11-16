@@ -150,3 +150,14 @@ Converted pcb_stands to schema-based builder
 - pkg/yappgen/modules/pcbstands/registry.go — module registration
 - pkg/yappgen/modules/pcbstands/schema.yaml — pcb_stands schema
 
+
+## 2025-11-15
+
+Wired resolver two-phase validation and confirmed end-to-end YAML to SCAD works
+
+### Related Files
+
+- examples/test-push-buttons.yaml — test case with expressions
+- pkg/resolver/strict.go — strict mode helpers
+- pkg/resolver/validation.go — schema validation hooks
+

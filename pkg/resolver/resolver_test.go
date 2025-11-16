@@ -125,5 +125,3 @@ enclosure:
 		t.Fatalf("expected 4, got %#v", base["thickness"])
 	}
 }
-
-

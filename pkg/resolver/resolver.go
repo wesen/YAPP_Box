@@ -35,6 +35,11 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 		}
 	}
 
+	// Phase 1: Validate structure before expression resolution
+	if err := validateStructure(state); err != nil {
+		return nil, errors.Wrap(err, "structure validation")
+	}
+
 	// Track used variables (vars.*) to optionally validate unused vars in strict mode.
 	usedVars := map[string]struct{}{}
 
@@ -73,6 +78,11 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 		if err := validateUnusedVars(state, usedVars); err != nil {
 			return nil, err
 		}
+	}
+
+	// Phase 2: Validate constraints after expression resolution
+	if err := validateConstraints(state); err != nil {
+		return nil, errors.Wrap(err, "constraint validation")
 	}
 
 	return state, nil
@@ -500,41 +510,6 @@ func isSyntaxError(err error) bool {
 	// Best-effort: expr returns descriptive errors, consider unexpected tokens fatal.
 	msg := strings.ToLower(err.Error())
 	return strings.Contains(msg, "unexpected") || strings.Contains(msg, "syntax")
-}
-
-func validateTopLevelKeys(state map[string]any) error {
-	allowed := map[string]struct{}{
-		"project": {}, "version": {}, "units": {}, "yapp_version": {},
-		"vars": {}, "pcb": {}, "enclosure": {}, "features": {}, "coordinates": {}, "tolerances": {},
-	}
-	var unknown []string
-	for k := range state {
-		if _, ok := allowed[k]; !ok {
-			unknown = append(unknown, k)
-		}
-	}
-	if len(unknown) > 0 {
-		return errors.Errorf("unknown top-level keys (strict mode): %v", unknown)
-	}
-	return nil
-}
-
-func validateUnusedVars(state map[string]any, used map[string]struct{}) error {
-	varsMap, ok := state["vars"].(map[string]any)
-	if !ok {
-		return nil
-	}
-	var unused []string
-	for k := range varsMap {
-		full := "vars." + k
-		if _, ok := used[full]; !ok {
-			unused = append(unused, full)
-		}
-	}
-	if len(unused) > 0 {
-		return errors.Errorf("unused variables (strict mode): %v", unused)
-	}
-	return nil
 }
 
 func mergeMaps(dst, src map[string]any) {

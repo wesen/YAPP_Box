@@ -27,7 +27,7 @@
 - [ ] Week 5: Create cutouts schema.yaml and convert module
 - [ ] Week 5: Run full test suite across all converted modules
 - [ ] Week 5: Verify all existing YAML examples still work with new validation
-- [ ] Week 6: Implement pkg/resolver/validation.go with validateAgainstSchemas() and validateConstraints()
+- [x] Week 6: Implement pkg/resolver/validation.go with validateAgainstSchemas() and validateConstraints()
 - [ ] Week 6: Integrate two-phase validation into Resolve() function
 - [ ] Week 6: Implement pkg/docs/schema_help.go for schema → markdown rendering
 - [ ] Week 6: Integrate LoadModuleHelp() with Glazed help system
