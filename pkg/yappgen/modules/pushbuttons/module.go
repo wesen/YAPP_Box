@@ -5,160 +5,141 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // Build converts DSL push button entries into the YAPP array format.
 func Build(items []map[string]any) ([][]any, error) {
+	typedItems, err := decodePushButtonsItems(items)
+	if err != nil {
+		return nil, err
+	}
+
 	var out [][]any
-	for idx, it := range items {
+	for idx, item := range typedItems {
 		label := fmt.Sprintf("push_buttons[%d]", idx)
-		if name, _ := it["name"].(string); name != "" {
-			label = fmt.Sprintf("%s (%s)", label, name)
-		}
-		capMap, err := getMapField(it, "cap", label, true)
-		if err != nil {
-			return nil, err
-		}
-		lidMap, err := getMapField(it, "lid", label, true)
-		if err != nil {
-			return nil, err
-		}
-		switchMap, err := getMapField(it, "switch", label, true)
-		if err != nil {
-			return nil, err
+		if item.Name != nil && strings.TrimSpace(*item.Name) != "" {
+			label = fmt.Sprintf("%s (%s)", label, *item.Name)
 		}
 
-		x, err := requireNumber(it, "x", label)
+		params, err := buildPushButtonParams(label, &item)
 		if err != nil {
 			return nil, err
 		}
-		y, err := requireNumber(it, "y", label)
-		if err != nil {
-			return nil, err
-		}
-		capLength, err := requireNumber(capMap, "length", label+".cap")
-		if err != nil {
-			return nil, err
-		}
-		capWidth, err := requireNumber(capMap, "width", label+".cap")
-		if err != nil {
-			return nil, err
-		}
-		capRadius, err := requireNumber(capMap, "radius", label+".cap")
-		if err != nil {
-			return nil, err
-		}
-		protrusion, err := requireNumber(lidMap, "protrusion", label+".lid")
-		if err != nil {
-			return nil, err
-		}
-		switchHeight, err := requireNumber(switchMap, "height", label+".switch")
-		if err != nil {
-			return nil, err
-		}
-		switchTravel, err := requireNumber(switchMap, "travel", label+".switch")
-		if err != nil {
-			return nil, err
-		}
-		poleDiameter, err := requireNumber(switchMap, "pole_diameter", label+".switch")
-		if err != nil {
-			return nil, err
-		}
-		heightToPCB, hasHeightToPCB, err := optionalNumber(switchMap, "top_height", label+".switch")
-		if err != nil {
-			return nil, err
-		}
-
-		shapeStr, _ := optionalString(it, "shape")
-		presetStr := firstNonEmptyString(
-			getOptionalString(it, "polygon"),
-			getOptionalString(it, "polygon_preset"),
-			getOptionalString(it, "shape_preset"),
-		)
-		shapeFlag, shapeExtras, err := pushButtonShapeTokens(shapeStr, presetStr)
-		if err != nil {
-			return nil, errors.Wrapf(err, "%s", label)
-		}
-
-		angle, hasAngle, err := optionalNumber(it, "angle", label)
-		if err != nil {
-			return nil, err
-		}
-		filletRadius, hasFillet, err := optionalNumber(it, "fillet_radius", label)
-		if err != nil {
-			return nil, err
-		}
-		buttonWall, hasWall, err := optionalNumber(lidMap, "wall", label+".lid")
-		if err != nil {
-			return nil, err
-		}
-		plateThickness, hasPlate, err := optionalNumber(lidMap, "plate_thickness", label+".lid")
-		if err != nil {
-			return nil, err
-		}
-		buttonSlack, hasSlack, err := optionalNumber(lidMap, "slack", label+".lid")
-		if err != nil {
-			return nil, err
-		}
-		snapSlack, hasSnapSlack, err := optionalNumber(lidMap, "snap_slack", label+".lid")
-		if err != nil {
-			return nil, err
-		}
-
-		coordStr, _ := optionalString(it, "coordinate")
-		originStr, _ := optionalString(it, "origin")
-		noFillet, _ := optionalBool(lidMap, "no_fillet")
-		if !noFillet {
-			// allow root override
-			noFillet, _ = optionalBool(it, "no_fillet")
-		}
-
-		params := []any{
-			x,
-			y,
-			capLength,
-			capWidth,
-			capRadius,
-			protrusion,
-			switchHeight,
-			switchTravel,
-			poleDiameter,
-			valueOrUndef(heightToPCB, hasHeightToPCB),
-			shapeFlag,
-			valueOrUndef(angle, hasAngle),
-			valueOrUndef(filletRadius, hasFillet),
-			valueOrUndef(buttonWall, hasWall),
-			valueOrUndef(plateThickness, hasPlate),
-			valueOrUndef(buttonSlack, hasSlack),
-			valueOrUndef(snapSlack, hasSnapSlack),
-		}
-
-		if len(shapeExtras) > 0 {
-			params = append(params, shapeExtras...)
-		}
-		if coordStr != "" {
-			flag, err := pushButtonCoordinateFlag(coordStr)
-			if err != nil {
-				return nil, errors.Wrapf(err, "%s.coordinate", label)
-			}
-			params = append(params, flag)
-		}
-		if originStr != "" {
-			flag, err := pushButtonOriginFlag(originStr)
-			if err != nil {
-				return nil, errors.Wrapf(err, "%s.origin", label)
-			}
-			params = append(params, flag)
-		}
-		if noFillet {
-			params = append(params, scad.Raw("yappNoFillet"))
-		}
-
 		out = append(out, params)
 	}
 	return out, nil
+}
+
+func buildPushButtonParams(label string, item *PushButtonsItem) ([]any, error) {
+	shape := stringOr(item.Shape, "rectangle")
+	preset := firstNonEmptyPointer(
+		item.Polygon,
+		item.PolygonPreset,
+		item.ShapePreset,
+	)
+	shapeFlag, shapeExtras, err := pushButtonShapeTokens(shape, preset)
+	if err != nil {
+		return nil, errors.Wrapf(err, "%s", label)
+	}
+
+	angle, hasAngle := floatFromPtr(item.Angle)
+	filletRadius, hasFillet := floatFromPtr(item.FilletRadius)
+	buttonWall, hasWall := floatFromPtr(item.Lid.Wall)
+	plateThickness, hasPlate := floatFromPtr(item.Lid.PlateThickness)
+	buttonSlack, hasSlack := floatFromPtr(item.Lid.Slack)
+	snapSlack, hasSnapSlack := floatFromPtr(item.Lid.SnapSlack)
+	heightToPCB, hasHeightToPCB := floatFromPtr(item.Switch.TopHeight)
+
+	params := []any{
+		item.X,
+		item.Y,
+		item.Cap.Length,
+		item.Cap.Width,
+		item.Cap.Radius,
+		item.Lid.Protrusion,
+		item.Switch.Height,
+		item.Switch.Travel,
+		item.Switch.PoleDiameter,
+		valueOrUndef(heightToPCB, hasHeightToPCB),
+		shapeFlag,
+		valueOrUndef(angle, hasAngle),
+		valueOrUndef(filletRadius, hasFillet),
+		valueOrUndef(buttonWall, hasWall),
+		valueOrUndef(plateThickness, hasPlate),
+		valueOrUndef(buttonSlack, hasSlack),
+		valueOrUndef(snapSlack, hasSnapSlack),
+	}
+
+	if len(shapeExtras) > 0 {
+		params = append(params, shapeExtras...)
+	}
+
+	if coord := stringOr(item.Coordinate, ""); coord != "" {
+		flag, err := pushButtonCoordinateFlag(coord)
+		if err != nil {
+			return nil, errors.Wrapf(err, "%s.coordinate", label)
+		}
+		params = append(params, flag)
+	}
+
+	if origin := stringOr(item.Origin, ""); origin != "" {
+		flag, err := pushButtonOriginFlag(origin)
+		if err != nil {
+			return nil, errors.Wrapf(err, "%s.origin", label)
+		}
+		params = append(params, flag)
+	}
+
+	if noFilletSet(item) {
+		params = append(params, scad.Raw("yappNoFillet"))
+	}
+
+	return params, nil
+}
+
+func decodePushButtonsItems(items []map[string]any) ([]PushButtonsItem, error) {
+	typed := make([]PushButtonsItem, len(items))
+	for idx, raw := range items {
+		label := fmt.Sprintf("push_buttons[%d]", idx)
+		if _, err := requireNumber(raw, "x", label); err != nil {
+			return nil, err
+		}
+		if _, err := requireNumber(raw, "y", label); err != nil {
+			return nil, err
+		}
+		if err := ensureNestedObject(raw, "cap", label); err != nil {
+			return nil, err
+		}
+		if err := ensureNestedObject(raw, "lid", label); err != nil {
+			return nil, err
+		}
+		if err := ensureNestedObject(raw, "switch", label); err != nil {
+			return nil, err
+		}
+
+		data, err := yaml.Marshal(raw)
+		if err != nil {
+			return nil, errors.Wrapf(err, "%s: encode for schema decoding", label)
+		}
+		if err := yaml.Unmarshal(data, &typed[idx]); err != nil {
+			return nil, errors.Wrapf(err, "%s: decode typed schema", label)
+		}
+	}
+	return typed, nil
+}
+
+func ensureNestedObject(item map[string]any, key, label string) error {
+	obj, err := getMapField(item, key, label, true)
+	if err != nil {
+		return err
+	}
+	if obj == nil {
+		return errors.Errorf("%s missing required object '%s'", label, key)
+	}
+	return nil
 }
 
 func requireNumber(m map[string]any, key, ctx string) (float64, error) {
@@ -174,46 +155,6 @@ func requireNumber(m map[string]any, key, ctx string) (float64, error) {
 		return 0, errors.Wrapf(err, "%s.%s", ctx, key)
 	}
 	return f, nil
-}
-
-func optionalNumber(m map[string]any, key, ctx string) (float64, bool, error) {
-	v, ok := m[key]
-	if !ok || v == nil {
-		return 0, false, nil
-	}
-	f, err := toFloat64(v)
-	if err != nil {
-		return 0, false, errors.Wrapf(err, "%s.%s", ctx, key)
-	}
-	return f, true, nil
-}
-
-func optionalString(m map[string]any, key string) (string, bool) {
-	v, ok := m[key]
-	if !ok || v == nil {
-		return "", false
-	}
-	s, ok := v.(string)
-	if !ok {
-		return "", false
-	}
-	return strings.TrimSpace(s), true
-}
-
-func getOptionalString(m map[string]any, key string) string {
-	if s, ok := optionalString(m, key); ok {
-		return s
-	}
-	return ""
-}
-
-func optionalBool(m map[string]any, key string) (bool, bool) {
-	v, ok := m[key]
-	if !ok || v == nil {
-		return false, false
-	}
-	b, ok := v.(bool)
-	return b, ok
 }
 
 func getMapField(root map[string]any, key, ctx string, required bool) (map[string]any, error) {
@@ -367,11 +308,41 @@ func pushButtonOriginFlag(origin string) (scad.Raw, error) {
 	}
 }
 
-func firstNonEmptyString(values ...string) string {
-	for _, v := range values {
-		if strings.TrimSpace(v) != "" {
-			return v
+func floatFromPtr(ptr *float64) (float64, bool) {
+	if ptr == nil {
+		return 0, false
+	}
+	return *ptr, true
+}
+
+func stringOr(ptr *string, fallback string) string {
+	if ptr == nil {
+		return fallback
+	}
+	if strings.TrimSpace(*ptr) == "" {
+		return fallback
+	}
+	return strings.TrimSpace(*ptr)
+}
+
+func firstNonEmptyPointer(values ...*string) string {
+	for _, ptr := range values {
+		if ptr != nil && strings.TrimSpace(*ptr) != "" {
+			return strings.TrimSpace(*ptr)
 		}
 	}
 	return ""
+}
+
+func noFilletSet(item *PushButtonsItem) bool {
+	if item == nil {
+		return false
+	}
+	if item.Lid.NoFillet != nil && *item.Lid.NoFillet {
+		return true
+	}
+	if item.NoFillet != nil && *item.NoFillet {
+		return true
+	}
+	return false
 }

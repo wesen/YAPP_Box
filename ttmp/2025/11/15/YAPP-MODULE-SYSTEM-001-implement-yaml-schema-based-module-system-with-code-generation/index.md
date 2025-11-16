@@ -12,7 +12,7 @@ Intent: long-term
 Owners: []
 RelatedFiles:
     - Path: cmd/schemagen/main.go
-      Note: Code generation tool - validate and discover commands
+      Note: discover wiring
     - Path: pkg/docs/schema_help.go
       Note: Auto-generate help pages from schemas
     - Path: pkg/registry/registry.go
@@ -21,18 +21,32 @@ RelatedFiles:
       Note: verified via go test ./...
     - Path: pkg/registry/schema.go
       Note: Defines FieldSpec
+    - Path: pkg/resolver/resolver.go
+      Note: integrates registry schema validation
     - Path: pkg/resolver/validation.go
       Note: Two-phase validation integration
+    - Path: pkg/schemagen/codegen.go
+      Note: generates ModuleSchema + registry init
     - Path: pkg/schemagen/context.go
       Note: snippet rendering + source context
     - Path: pkg/schemagen/errors.go
       Note: ValidationError snippet/hint support
+    - Path: pkg/schemagen/module_path.go
+      Note: detects module path for codegen
+    - Path: pkg/schemagen/schema_doc.go
+      Note: ModuleSchema metadata
     - Path: pkg/schemagen/validate.go
       Note: enhanced error reporting
     - Path: pkg/schemagen/validate_test.go
       Note: tests for snippet/hint + syntax errors
+    - Path: pkg/yappgen/modules/pushbuttons/module.go
+      Note: builder now uses generated structs
+    - Path: pkg/yappgen/modules/pushbuttons/registry.go
+      Note: exposes registry FeatureModule
     - Path: pkg/yappgen/modules/pushbuttons/schema.yaml
-      Note: Example YAML schema for pilot module
+      Note: added shape_preset
+    - Path: pkg/yappgen/modules/pushbuttons/schema_gen.go
+      Note: generated structs
     - Path: pkg/yappgen/modules_gen.go
       Note: AUTO-GENERATED registry file
 ExternalSources:
@@ -41,6 +55,10 @@ ExternalSources:
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
+
+
+
 
 
 

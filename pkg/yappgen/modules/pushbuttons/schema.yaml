@@ -44,6 +44,10 @@ fields:
     type: string
     desc: Alternate alias for polygon preset (arrow, hexagon, etc.)
 
+  shape_preset:
+    type: string
+    desc: Legacy alias for polygon preset
+
   coordinate:
     type: string
     enum: [pcb, box, box_inside]

@@ -34,23 +34,26 @@ func DiscoverSchemaFiles(modulesDir string) ([]string, error) {
 	return files, nil
 }
 
-// ValidateSchemaFiles validates each schema path and aggregates errors.
-func ValidateSchemaFiles(paths []string) error {
+// LoadSchemaDocs validates and loads schema metadata.
+func LoadSchemaDocs(paths []string) ([]*SchemaDoc, error) {
 	var aggregated ValidationErrors
+	var docs []*SchemaDoc
 	for _, path := range paths {
 		if err := ValidateSchemaFile(path); err != nil {
 			if verrs, ok := err.(ValidationErrors); ok {
 				aggregated = append(aggregated, verrs...)
 				continue
 			}
-			return errors.Wrapf(err, "validate schema %s", path)
+			return nil, errors.Wrapf(err, "validate schema %s", path)
 		}
+		doc, err := LoadSchemaDoc(path)
+		if err != nil {
+			return nil, errors.Wrapf(err, "load schema %s", path)
+		}
+		docs = append(docs, doc)
 	}
 	if len(aggregated) > 0 {
-		return aggregated
+		return nil, aggregated
 	}
-	return nil
+	return docs, nil
 }
-
-// ErrCodeGenerationNotImplemented is returned until codegen is finished.
-var ErrCodeGenerationNotImplemented = errors.New("code generation not implemented yet")

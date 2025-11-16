@@ -28,7 +28,7 @@ func TestDiscoverSchemaFiles_FindsSchemas(t *testing.T) {
 	}
 }
 
-func TestValidateSchemaFiles_AggregatesErrors(t *testing.T) {
+func TestLoadSchemaDocs_AggregatesErrors(t *testing.T) {
 	dir := t.TempDir()
 	badDir := filepath.Join(dir, "bad")
 	if err := os.MkdirAll(badDir, 0o755); err != nil {
@@ -47,7 +47,7 @@ fields:
 		t.Fatalf("write schema: %v", err)
 	}
 
-	err := ValidateSchemaFiles([]string{path})
+	_, err := LoadSchemaDocs([]string{path})
 	if err == nil {
 		t.Fatalf("expected validation error")
 	}

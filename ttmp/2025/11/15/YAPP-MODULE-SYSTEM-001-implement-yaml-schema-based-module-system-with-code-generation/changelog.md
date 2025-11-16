@@ -92,3 +92,38 @@ Added push_buttons schema.yaml and validator bool support
 - pkg/schemagen/validate.go — bool field support
 - pkg/yappgen/modules/pushbuttons/schema.yaml — push button schema
 
+
+## 2025-11-15
+
+schemagen discover now generates Go structs/tests and modules registry
+
+### Related Files
+
+- cmd/schemagen/main.go — discover wiring
+- pkg/schemagen/codegen.go — struct/test generation
+- pkg/schemagen/schema_doc.go — schema loader
+- pkg/yappgen/modules/pushbuttons/schema_gen.go — generated output
+
+
+## 2025-11-15
+
+Auto-registered schemagen modules and rewrote push_buttons builder to use generated structs
+
+### Related Files
+
+- pkg/schemagen/codegen.go — registry imports + module path
+- pkg/schemagen/module_path.go — go.mod parser
+- pkg/yappgen/modules/pushbuttons/module.go — typed builder
+- pkg/yappgen/modules_gen.go — generated registry init
+
+
+## 2025-11-15
+
+schemagen now emits ModuleSchema implementations and resolver validates via registry
+
+### Related Files
+
+- pkg/resolver/resolver.go — calls registry schema validation
+- pkg/schemagen/codegen.go — generated ModuleSchema code
+- pkg/schemagen/schema_doc.go — field metadata for ModuleSchema
+

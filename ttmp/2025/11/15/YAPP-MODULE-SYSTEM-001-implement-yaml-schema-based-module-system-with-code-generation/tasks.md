@@ -21,9 +21,9 @@
 - [ ] Week 3: Implement CustomValidate() for conditional push_buttons validation
 - [ ] Week 3: Test full YAML → validation → SCAD pipeline with push_buttons examples
 - [ ] Week 3: Fix any issues discovered with generated code or validation flow
-- [ ] Week 4: Create pcb_stands schema.yaml and convert module
-- [ ] Week 4: Create connectors schema.yaml and convert module
-- [ ] Week 4: Create snap_joins schema.yaml and convert module
+- [x] Week 4: Create pcb_stands schema.yaml and convert module
+- [x] Week 4: Create connectors schema.yaml and convert module
+- [x] Week 4: Create snap_joins schema.yaml and convert module
 - [ ] Week 5: Create cutouts schema.yaml and convert module
 - [ ] Week 5: Run full test suite across all converted modules
 - [ ] Week 5: Verify all existing YAML examples still work with new validation

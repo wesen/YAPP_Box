@@ -103,6 +103,10 @@ func runDiscover(ctx context.Context, opts discoverOptions) error {
 	if opts.ModulesDir == "" {
 		return errors.New("modules directory is required")
 	}
+	modulePath, err := schemagen.DetectModulePath(".")
+	if err != nil {
+		return err
+	}
 	schemaFiles, err := schemagen.DiscoverSchemaFiles(opts.ModulesDir)
 	if err != nil {
 		return err
@@ -117,10 +121,16 @@ func runDiscover(ctx context.Context, opts discoverOptions) error {
 		fmt.Fprintf(os.Stdout, " - %s\n", path)
 	}
 
-	if err := schemagen.ValidateSchemaFiles(schemaFiles); err != nil {
+	docs, err := schemagen.LoadSchemaDocs(schemaFiles)
+	if err != nil {
 		return err
 	}
-
-	fmt.Fprintf(os.Stdout, "Validation succeeded for all schemas. Code generation coming soon.\n")
-	return schemagen.ErrCodeGenerationNotImplemented
+	if err := schemagen.GenerateCode(docs, schemagen.GenerateOptions{
+		RootDir:    ".",
+		ModulePath: modulePath,
+	}); err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stdout, "Generated code for %d schema(s).\n", len(docs))
+	return nil
 }
