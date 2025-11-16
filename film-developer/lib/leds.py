@@ -19,6 +19,7 @@ class LedSnake:
         self._last_period_ms = self._period_ms
         self._debug = debug
         self._blink_on = False
+        self._mode = "snake"  # snake | blink60 | blink30 | blink10 | overtime
 
     def _all_off(self) -> None:
         for led in self._pins:
@@ -54,23 +55,26 @@ class LedSnake:
         if not active:
             self._all_off()
             return
-        # Overtime: blink all LEDs in unison (fast)
-        if overtime_sec and overtime_sec > 0:
-            # Fixed fast blink in overtime
+        # Choose mode: snake during countdown (speed ramps at 60/30/10s), unison blink only in overtime
+        if (overtime_sec and overtime_sec > 0) or remaining_sec <= 0:
+            mode = "overtime"
             period = 100
-            now = time.ticks_ms()
-            if time.ticks_diff(now, self._last_ms) >= period:
-                self._last_ms = now
+        else:
+            mode = "snake"
+            self._update_period(remaining_sec)  # sets self._period_ms for snake based on thresholds
+            period = self._period_ms
+        if mode != self._mode:
+            if self._debug:
+                print("leds: mode ->", mode)
+            self._mode = mode
+        now = time.ticks_ms()
+        if time.ticks_diff(now, self._last_ms) >= period:
+            self._last_ms = now
+            if mode == "snake":
+                self._step()
+            else:
                 self._blink_on = not self._blink_on
-                if self._debug:
-                    print("leds: overtime blink ->", int(self._blink_on))
                 for led in self._pins:
                     led.value(1 if self._blink_on else 0)
-            return
-        self._update_period(remaining_sec)
-        now = time.ticks_ms()
-        if time.ticks_diff(now, self._last_ms) >= self._period_ms:
-            self._last_ms = now
-            self._step()
 
 

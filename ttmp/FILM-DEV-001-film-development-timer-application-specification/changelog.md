@@ -272,3 +272,13 @@ Added targeted serial logs: once-per-second timer remaining/ratio; LED snake per
 
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Overtime line replaces 'remain' when remaining=0
 
+
+## 2025-11-15
+
+LED behavior: in overtime, all three LEDs blink in unison (100ms) instead of the snake pattern; normal operation retains snake with threshold speeds.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/leds.py — Overtime blink-all mode added
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Passes overtime seconds to LED controller
+

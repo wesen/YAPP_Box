@@ -131,6 +131,17 @@
     },
     {
       "id": "test_1min_all_stages",
+      "film": "FAST",
+      "developer": "FAST",
+      "dilution": "",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "00:10",
+     "stages": { "stop_bath": "00:10", "fixer": "00:10", "wash": "00:10" },
+      "label": "FAST 10s EACH"
+    },
+    {
+      "id": "test_1min_all_stages",
       "film": "TEST",
       "developer": "TEST",
       "dilution": "",
