@@ -170,3 +170,35 @@ Implemented functional multi-stage timer: start/pause/resume/next integrated wit
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/timer.py — New TimerEngine with non-blocking tick and multi-stage support
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — UI wires TimerEngine into states
 
+
+## 2025-11-15
+
+Implemented non-blocking DS18B20 temperature updates: periodic conversion with cooperative polling; UI displays latest reading without blocking.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/temp.py — Added TempNonBlocking with poll()+get_c()
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Polls temperature each loop; renders via get_c()
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Runs UI with TempNonBlocking
+- enable_temp — True
+
+
+## 2025-11-15
+
+Wired temperature into Timer/Paused screens using non-blocking TempNonBlocking; UI now shows Temp on main and during runs.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Enabled _render_temp_line on timer screens
+
+
+## 2025-11-15
+
+Added presets system: JSON-backed presets (data/presets.json) and Presets menu in UI. Default preset: Kodak TMax 400 + Xtol 1+1 @ 20C; applies developer time to timer.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/data/presets.json — Seed presets for testing (TMX400/TRX400 with XTOL 1+1)
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/presets.py — Loader for JSON presets
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Presets menu
+

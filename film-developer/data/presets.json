@@ -1,0 +1,31 @@
+{
+  "presets": [
+    {
+      "id": "kodak_tmax_400_xtol_1_1_20c",
+      "film": "Kodak TMax 400",
+      "developer": "Xtol 1+1",
+      "target_temperature_c": 20.0,
+      "developer_time": "09:00",
+      "stages": {
+        "stop_bath": "00:30",
+        "fixer": "10:00",
+        "wash": "15:00"
+      },
+      "label": "TMX400 XTOL 1+1 20C"
+    },
+    {
+      "id": "kodak_tri_x_400_xtol_1_1_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "Xtol 1+1",
+      "target_temperature_c": 20.0,
+      "developer_time": "10:30",
+      "stages": {
+        "stop_bath": "00:30",
+        "fixer": "10:00",
+        "wash": "15:00"
+      },
+      "label": "TRX400 XTOL 1+1 20C"
+    }
+  ]
+}
+

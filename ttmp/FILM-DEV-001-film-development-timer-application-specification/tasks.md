@@ -49,7 +49,7 @@
 
 ### Phase 5: Integration
 - [ ] Connect UI controller to timer engine
-- [ ] Integrate temperature monitoring into displays
+- [x] Integrate temperature monitoring into displays
 - [ ] Wire up film database to timer configuration
 - [ ] Connect session logging to timer events
 - [ ] Implement favourites add/select workflow

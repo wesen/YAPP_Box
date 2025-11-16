@@ -3,6 +3,7 @@ from .display import Display
 from .input import Input
 from .temp import Temp
 from .timer import TimerEngine, format_mmss
+from .presets import load_presets, get_preset_by_id
 
 
 class UI:
@@ -47,6 +48,11 @@ class UI:
             {"name": "wash", "planned_sec": 15 * 60},
         ]
         self.timer = TimerEngine(default_stages)
+        # Presets
+        self.presets = load_presets()
+        # Default to TMax 400 + Xtol if available
+        self.current_preset = get_preset_by_id(self.presets, "kodak_tmax_400_xtol_1_1_20c") or (self.presets[0] if self.presets else None)
+        self.presets_index = 0
  
     # ----------------------------
     # Rendering helpers
@@ -70,7 +76,11 @@ class UI:
         if not self.enable_temp:
             txt = "Temp: --.-C"
         else:
-            c = self.temp.read_c()
+            # Prefer non-blocking getter if available
+            try:
+                c = self.temp.get_c()
+            except Exception:
+                c = self.temp.read_c()
             txt = "Temp: --.-C" if c is None else "Temp: {:>4.1f}C".format(c)
         self.display.text_at(row, 0, txt[:16])
  
@@ -91,8 +101,11 @@ class UI:
  
         elif self.state == self.S_MAIN:
             self._render_header("FILM DEV TIMER")
-            d.text_at(2, 0, "TRX+2 D76 22C")
-            d.text_at(3, 0, "Timer: 14:30")
+            # Show current preset (compact label) and planned time
+            label = (self.current_preset.get("label") if self.current_preset else "No preset") if self.current_preset else "No preset"
+            d.text_at(2, 0, label[:16])
+            planned = format_mmss(self.timer.get_planned_sec())
+            d.text_at(3, 0, "Timer: {}".format(planned)[:16])
             self._render_temp_line(4)
             self._draw_buttons("STA", "MEN", "    ")  # START / MENU
  
@@ -103,6 +116,22 @@ class UI:
                 d.text_at(2 + i, 0, (prefix + name)[:16])
             self._draw_buttons("SEL", "NAV", "BACK")
  
+        elif self.state == self.S_PRESETS:
+            self._render_header("TIMER PRESETS")
+            n = len(self.presets)
+            if n == 0:
+                d.text_at(3, 0, "No presets")
+            else:
+                # Show up to 3 items around current index
+                start = self.presets_index
+                # Display three in a looped list for simplicity
+                for row_offset in range(3):
+                    idx = (start + row_offset) % n
+                    name = self.presets[idx].get("label", self.presets[idx].get("id", "preset"))
+                    prefix = "\u25BA " if row_offset == 0 else "  "
+                    d.text_at(2 + row_offset, 0, (prefix + name)[:16])
+            self._draw_buttons("SEL", "NAV", "BACK")
+
         elif self.state == self.S_SYSTEM:
             self._render_header("SYSTEM INFO")
             d.text_at(2, 0, "FW: v0.0.1")
@@ -125,8 +154,8 @@ class UI:
             d.text_at(2, 0, "TRX+2 D76 22C")
             d.text_at(3, 0, "{} [{}]".format(planned, bar)[:16])
             d.text_at(4, 0, "{} remain".format(remain)[:16])
-            # Optional temp line (disabled currently)
-            # self._render_temp_line(5 - 1)
+            # Temperature (non-blocking)
+            self._render_temp_line(5)
             if self.state == self.S_TIMER:
                 self._draw_buttons("PAU", "   ", "NEXT")
             else:
@@ -152,6 +181,12 @@ class UI:
             self.state = self.S_DONE
  
     def handle(self) -> None:
+        # Non-blocking temperature polling (if supported)
+        if self.enable_temp and hasattr(self.temp, "poll"):
+            try:
+                self.temp.poll()
+            except Exception:
+                pass
         for e in self.input.read():
             # BTN1=left, BTN2=middle, BTN3=right
             print("ui: recv event={} in {}".format(e, self.state))
@@ -173,14 +208,34 @@ class UI:
                 elif e == 1:  # SEL
                     sel = self.menu_items[self.menu_index]
                     if sel == "Timer Presets":
-                        # Stub for MVP: return to main for now
-                        self.state = self.S_MAIN
+                        self.state = self.S_PRESETS
                     elif sel == "System Info":
                         self.state = self.S_SYSTEM
                     else:
                         self.state = self.S_MAIN
                 elif e == 3:  # BACK
                     self.state = self.S_MAIN
+            elif self.state == self.S_PRESETS:
+                if e == 2:  # NAV
+                    if self.presets:
+                        self.presets_index = (self.presets_index + 1) % len(self.presets)
+                elif e == 1:  # SEL
+                    if self.presets:
+                        # Pick current (top of the list)
+                        chosen = self.presets[self.presets_index]
+                        self.current_preset = chosen
+                        # Apply times to timer
+                        dev_time = chosen.get("developer_time", "10:00")
+                        try:
+                            # Reload current stage with new dev time
+                            self.timer.stage_index = 0
+                            self.timer.stages[0]["planned_sec"] = (int(dev_time.split(":")[0]) * 60 + int(dev_time.split(":")[1]))
+                            self.timer._load_current_stage()
+                        except Exception:
+                            pass
+                        self.state = self.S_MAIN
+                elif e == 3:  # BACK
+                    self.state = self.S_MENU
  
             elif self.state == self.S_SYSTEM:
                 if e == 3:  # BACK

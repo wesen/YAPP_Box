@@ -286,12 +286,12 @@ async def amain2():
     )
 
 def main() -> None:
-    # Main UI with temperature disabled (avoid DS18B20 blocking)
+    # Main UI with non-blocking temperature
     try:
         from lib.input_irq import AsyncInput as InputLike
     except Exception:
         from lib.input import Input as InputLike
-    from lib.temp import Temp
+    from lib.temp import TempNonBlocking
     from lib.ui import UI
     d = Display(spi_baudrate=1_000_000)
     try:
@@ -300,8 +300,8 @@ def main() -> None:
     except TypeError:
         # Fallback to polling signature
         i = InputLike(debounce_ms=40, debug=True)
-    t = Temp()
-    ui = UI(d, i, t, enable_temp=False)
+    t = TempNonBlocking()
+    ui = UI(d, i, t, enable_temp=True)
     while True:
         ui.handle()
         ui.render()
