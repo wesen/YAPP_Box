@@ -23,8 +23,16 @@ RelatedFiles:
       Note: current DSL test case
     - Path: examples/yapp-demo-buttons-v30.yaml
       Note: updated with vars and cutouts base/front/back
+    - Path: examples/yapp-demo-lighttubes-with-errors.yaml
+      Note: test case with resolver errors (snap_joins uses 'sides' array instead of 'side' string) - useful for testing resolver error message improvements
+    - Path: examples/yapp-demo-lighttubes.yaml
+      Note: Fixed cutouts structure (flat list with face field) and changed polygon to rounded_rect
+    - Path: log/01-2025-11-16-implementation-diary-lighttubes-module.md
+      Note: Complete implementation diary documenting lightTubes module implementation process
     - Path: pkg/resolver/resolver.go
       Note: treats enum arrays as literals (corners)
+    - Path: pkg/resolver/validation.go
+      Note: Calls ValidateStructure/ValidateConstraints but they return nil without checking
     - Path: pkg/yappgen/emit.go
       Note: emit wall heights
     - Path: pkg/yappgen/features.go
@@ -47,8 +55,16 @@ RelatedFiles:
       Note: flag tests
     - Path: pkg/yappgen/modules/connectors/schema.yaml
       Note: schema flags
+    - Path: pkg/yappgen/modules/cutouts/registry.go
+      Note: ValidateStructure and ValidateConstraints are stubbed out (TODO) - enum validation not implemented
     - Path: pkg/yappgen/modules/cutouts/schema.yaml
-      Note: cutout shapes; polygon/mask TODO
+      Note: Defines enum for shape field but validation not enforced
+    - Path: pkg/yappgen/modules/lighttubes/module.go
+      Note: Build function converting DSL to YAPP array format with positional params and flags
+    - Path: pkg/yappgen/modules/lighttubes/registry.go
+      Note: FeatureModule registration
+    - Path: pkg/yappgen/modules/lighttubes/schema.yaml
+      Note: lightTubes schema with required fields (x
     - Path: pkg/yappgen/modules/pcbstands/module.go
       Note: corners[] flags
     - Path: pkg/yappgen/modules/pcbstands/module_test.go
@@ -73,6 +89,10 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
+
+
+
 
 
 
@@ -140,24 +160,42 @@ This ticket analyzes missing YAPP features that prevent the DSL from achieving p
 - `YAPP_Reference_Shapes_v30.scad` - Shape examples
 - `YAPP_Reference_Masks_v30.scad` - Ventilation masks
 
-### 3. Understand the Module System
+### 3. Understand the Module System ⚠️ CRITICAL
 
-**Read the implementation guide:**
+**⚠️ READ THIS FIRST:** The module system is the foundation for all feature implementation. Every new feature follows this pattern.
+
+**Primary documentation:**
+- **Module System Implementation Guide:** `../YAPP-MODULE-SYSTEM-001-*/playbook/module-system-implementation-guide.md`
+  - Complete guide for newcomers
+  - Explains architecture, code generation, validation
+  - Step-by-step module authoring instructions
+  - Troubleshooting and best practices
+
+**Quick reference:**
 ```bash
-cd ttmp/2025/11/15/YAPP-MODULE-SYSTEM-001-*
-cat playbook/module-system-implementation-guide.md
+# View the full guide
+cat ../YAPP-MODULE-SYSTEM-001-*/playbook/module-system-implementation-guide.md
+
+# Or use the help command
+go run ./cmd/yappctl help yapp-module-authoring-guide
 ```
 
-**Key concepts:**
+**Key concepts (from the guide):**
 - Schema-driven validation (YAML schemas define fields)
 - Code generation (schemagen tool)
 - Auto-registration (modules_gen.go)
 - Two-phase validation (structure + constraints)
+- Module = schema.yaml + module.go + registry.go
 
-**How to add a new module:**
-```bash
-go run ./cmd/yappctl help yapp-module-authoring-guide
-```
+**How to add a new module (summary):**
+1. Create `pkg/yappgen/modules/yourmodule/schema.yaml`
+2. Run `go run ./cmd/schemagen discover` (generates schema_gen.go)
+3. Write `module.go` with Build() function
+4. Write `registry.go` with NewModule() function
+5. Add to `features.go` and `model.go`
+6. Test end-to-end
+
+**See the guide for complete details!**
 
 **Existing module examples:**
 - `pkg/yappgen/modules/pushbuttons/` - Complex (nested objects, shape flags)
@@ -265,8 +303,8 @@ go run ./cmd/yappctl help module-box_mounts
 
 | File | Purpose | Location |
 |------|---------|----------|
-| Module authoring guide | How to add features | `../../pkg/docs/tutorials/yapp-module-authoring-guide.md` |
-| Implementation guide | Module system architecture | `../YAPP-MODULE-SYSTEM-001-*/playbook/module-system-implementation-guide.md` |
+| **⚠️ Module System Implementation Guide** | **CRITICAL - Complete guide for implementing modules** | `../YAPP-MODULE-SYSTEM-001-*/playbook/module-system-implementation-guide.md` |
+| Module authoring guide | Quick reference for adding features | `../../pkg/docs/tutorials/yapp-module-authoring-guide.md` |
 | Registry package | Core interfaces | `../../pkg/registry/` |
 | Schemagen tool | Code generator | `../../cmd/schemagen/` |
 
@@ -393,10 +431,13 @@ go run ./cmd/yappctl help module-box_mounts
 
 ### Related Tickets
 
-- **YAPP-MODULE-SYSTEM-001** - Module system implementation (completed)
+- **⚠️ YAPP-MODULE-SYSTEM-001** - Module system implementation (completed) - **CRITICAL REFERENCE**
   - Location: `../YAPP-MODULE-SYSTEM-001-*/`
   - Status: 28/32 tasks complete, end-to-end pipeline working
-  - Key docs: `playbook/module-system-implementation-guide.md`
+  - **Key docs:** `playbook/module-system-implementation-guide.md` - **READ THIS FIRST**
+  - This is the authoritative guide for implementing any new YAPP DSL module
+  - Explains the entire architecture, code generation, validation, and module authoring workflow
+  - Every feature implementation in this ticket follows patterns from this guide
 
 - **YAPP-PUSH-BUTTONS-001** - Push buttons implementation (completed)
   - Location: `../../YAPP-PUSH-BUTTONS-001-*/`
@@ -608,9 +649,12 @@ if (allCorners || isTrue(yappFrontLeft, conn))
 - Query docs DB: See `yapp-docs-analysis-playbook`
 
 **Stuck on module system?**
-- Read module authoring guide: `go run ./cmd/yappctl help yapp-module-authoring-guide`
-- Study existing modules in `pkg/yappgen/modules/`
-- Check implementation guide: `../YAPP-MODULE-SYSTEM-001-*/playbook/`
+- **⚠️ READ FIRST:** `../YAPP-MODULE-SYSTEM-001-*/playbook/module-system-implementation-guide.md`
+  - Complete guide covering architecture, code generation, validation, module authoring
+  - Written for newcomers with step-by-step instructions
+  - Includes troubleshooting and best practices
+- Quick reference: `go run ./cmd/yappctl help yapp-module-authoring-guide`
+- Study existing modules in `pkg/yappgen/modules/` (especially `boxmounts/` and `lighttubes/`)
 
 **Stuck on code generation?**
 - Check schemagen templates: `pkg/schemagen/templates/`

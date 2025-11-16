@@ -7,6 +7,7 @@ import (
 	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
 	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
 	cutouts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
+	lighttubes "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/lighttubes"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	pushbuttons "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
 	snapjoins "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/snapjoins"
@@ -16,6 +17,7 @@ func init() {
 	registry.Register(boxmounts.NewModule())
 	registry.Register(connectors.NewModule())
 	registry.Register(cutouts.NewModule())
+	registry.Register(lighttubes.NewModule())
 	registry.Register(pcbstands.NewModule())
 	registry.Register(pushbuttons.NewModule())
 	registry.Register(snapjoins.NewModule())

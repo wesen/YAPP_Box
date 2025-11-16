@@ -40,6 +40,7 @@ type Model struct {
 	SnapJoins   []map[string]any
 	Cutouts     []Cutout
 	PushButtons []map[string]any
+	LightTubes  []map[string]any
 
 	// Derived feature toggles
 	PrintSwitchExtenders bool

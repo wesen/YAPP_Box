@@ -86,3 +86,53 @@ Added vertical dimension support: baseWallHeight, lidWallHeight, ridgeHeight now
 - pkg/yappgen/emit.go — emit wall heights and ridge
 - pkg/yappgen/model.go — added wall height fields
 
+
+## 2025-11-16
+
+Implemented lightTubes module - LED light pipes with circle/rectangle shapes, lens thickness, coordinate flags, and PCB name support
+
+### Related Files
+
+- examples/yapp-demo-lighttubes.yaml — test example matching YAPP_Demo_lightTubes_v30.scad
+- pkg/yappgen/modules/lighttubes/module.go — builder implementation
+- pkg/yappgen/modules/lighttubes/registry.go — module registration
+- pkg/yappgen/modules/lighttubes/schema.yaml — schema definition
+
+
+## 2025-11-16
+
+Added test case file with resolver errors (yapp-demo-lighttubes-with-errors.yaml) for testing resolver error message improvements
+
+### Related Files
+
+- examples/yapp-demo-lighttubes-with-errors.yaml — test case demonstrating resolver error when snap_joins uses 'sides' array instead of 'side' string
+
+
+## 2025-11-16
+
+Added prominent links to module system implementation guide in index.md - marked as CRITICAL reference for all feature implementations
+
+
+## 2025-11-16
+
+Created comprehensive implementation diary for lightTubes module - documents step-by-step process, challenges, learnings, and recommendations for future implementations
+
+
+## 2025-11-16
+
+Updated implementation diary with STL rendering section - documented YAML structure fixes, STL generation process, and file comparison results
+
+
+## 2025-11-16
+
+Identified validation gap: cutouts schema defines enum for shape field but ValidateStructure/ValidateConstraints are stubbed out (TODO) - invalid enum values like 'polygon' only caught during Build phase, not resolve phase
+
+### Related Files
+
+- pkg/yappgen/modules/cutouts/registry.go — ValidateStructure and ValidateConstraints return nil without checking enum values
+
+
+## 2025-11-16
+
+Added tasks for validation gap: ValidateConstraints/ValidateStructure implementation needed for enum checking. Fixed yapp-demo-lighttubes.yaml cutouts structure and shape value
+

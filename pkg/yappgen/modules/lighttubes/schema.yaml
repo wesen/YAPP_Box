@@ -1,0 +1,135 @@
+module: light_tubes
+order: 250
+scad_array: lightTubes
+go_package: lighttubes
+description: >
+  Defines LED light pipes that extend from the PCB through the lid.
+  Each entry specifies position, tube dimensions, gap above PCB, and shape.
+
+fields:
+  x:
+    type: number
+    required: true
+    desc: X coordinate position (mm)
+
+  y:
+    type: number
+    required: true
+    desc: Y coordinate position (mm)
+
+  tube_length:
+    type: number
+    required: true
+    desc: Length of the light tube (mm)
+
+  tube_width:
+    type: number
+    required: true
+    desc: Width/diameter of the light tube (mm)
+
+  tube_wall:
+    type: number
+    required: true
+    desc: Wall thickness of the tube (mm)
+
+  gap_above_pcb:
+    type: number
+    required: true
+    desc: Gap between PCB and bottom of tube (mm)
+
+  shape:
+    type: string
+    required: true
+    enum: [circle, rectangle]
+    desc: Tube cross-section shape (yappCircle/yappRectangle)
+
+  lens_thickness:
+    type: number
+    default: 0.0
+    desc: Thickness of lid material left at top (0 = open hole, mm)
+
+  height:
+    type: number
+    desc: Height to top of PCB (defaults to standoffHeight+pcbThickness)
+
+  fillet_radius:
+    type: number
+    desc: Fillet radius at base (0 = auto)
+
+  coordinate:
+    type: string
+    default: pcb
+    enum: [pcb, box, box_inside]
+    desc: Coordinate system selector (yappCoordPCB/yappCoordBox/yappCoordBoxInside)
+
+  origin:
+    type: string
+    default: global
+    enum: [global, alt]
+    desc: Origin selector (yappGlobalOrigin/yappAltOrigin)
+
+  no_fillet:
+    type: bool
+    desc: Disable automatic fillets (yappNoFillet)
+
+  pcb_name:
+    type: string
+    desc: Target PCB name for multi-board projects (emits [yappPCBName, value])
+
+tests:
+  - name: minimal_circle
+    desc: Minimal circle light tube
+    input:
+      x: 15
+      y: 10
+      tube_length: 5
+      tube_width: 6
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: circle
+    expect_valid: true
+
+  - name: rectangle_with_lens
+    desc: Rectangle tube with lens thickness
+    input:
+      x: 15
+      y: 30
+      tube_length: 1.5
+      tube_width: 5
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: rectangle
+      lens_thickness: 0.5
+    expect_valid: true
+
+  - name: with_all_flags
+    desc: Full configuration with all optional flags
+    input:
+      x: 20
+      y: 25
+      tube_length: 8
+      tube_width: 4
+      tube_wall: 0.8
+      gap_above_pcb: 0.2
+      shape: circle
+      lens_thickness: 1.0
+      height: 10
+      fillet_radius: 0.5
+      coordinate: box
+      origin: alt
+      no_fillet: true
+      pcb_name: Main
+    expect_valid: true
+
+  - name: missing_required
+    desc: Should fail when required field missing
+    input:
+      x: 15
+      # missing y
+      tube_length: 5
+      tube_width: 6
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: circle
+    expect_error: "missing required field"
+

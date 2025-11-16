@@ -9,6 +9,7 @@ import (
 
 	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
 	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
+	lighttubes "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/lighttubes"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
 	snapjoins "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/snapjoins"
@@ -40,6 +41,9 @@ var featureModules = []FeatureModule{
 	newArrayFeatureModule("snap_joins", "snapJoins",
 		func(m *Model) *[]map[string]any { return &m.SnapJoins },
 		snapjoins.Build, nil),
+	newArrayFeatureModule("light_tubes", "lightTubes",
+		func(m *Model) *[]map[string]any { return &m.LightTubes },
+		lighttubes.Build, nil),
 	newCutoutFeatureModule(),
 }
 

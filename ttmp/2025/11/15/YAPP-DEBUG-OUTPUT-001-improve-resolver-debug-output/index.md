@@ -12,12 +12,15 @@ Owners: []
 RelatedFiles:
     - Path: examples/yapp-demo-buttons.yaml
       Note: repro sample
+    - Path: examples/yapp-demo-lighttubes-with-errors.yaml
+      Note: test case demonstrating resolver error when snap_joins uses 'sides' array instead of 'side' string - useful for testing improved error messages
     - Path: pkg/resolver/resolver.go
       Note: unresolved expression diagnostics
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-15T23:16:25.576380464-05:00
 ---
+
 
 
 
