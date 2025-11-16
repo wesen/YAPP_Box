@@ -286,40 +286,42 @@ async def amain2():
     )
 
 def main() -> None:
-    # Minimal UI mode for responsiveness (no temp or timer)
+    # Main UI with temperature disabled (avoid DS18B20 blocking)
     try:
         from lib.input_irq import AsyncInput as InputLike
     except Exception:
         from lib.input import Input as InputLike
-    from lib.ui_min import MinimalUI
+    from lib.temp import Temp
+    from lib.ui import UI
     d = Display(spi_baudrate=1_000_000)
     try:
         # Prefer IRQ-backed input for reliable short presses
-        i = InputLike(ghost_ms=15, debug=True)
+        i = InputLike(ghost_ms=40, debug=True)
     except TypeError:
         # Fallback to polling signature
-        i = InputLike(debounce_ms=20, debug=True)
-    ui = MinimalUI(d, i)
+        i = InputLike(debounce_ms=40, debug=True)
+    t = Temp()
+    ui = UI(d, i, t, enable_temp=False)
     while True:
         ui.handle()
         ui.render()
-        time.sleep_ms(50)
+        time.sleep_ms(20)
 
         
 def main3():
     import uasyncio as asyncio
     from lib.test_async_button_demo import run_async_button_demo3
-    asyncio.run(run_async_button_demo3(ghost_ms=30))
+    asyncio.run(run_async_button_demo3(ghost_ms=40))
 
 def main4():
     from lib.display import Display
     from lib.input import Input
     from lib.test_input import run_input_demo
-    run_input_demo(Display(), Input(debounce_ms=30))
+    run_input_demo(Display(), Input(debounce_ms=40))
 
 if __name__ == "__main__":
     try:
-        main3()
+        main()
     except KeyboardInterrupt:
         pass
 

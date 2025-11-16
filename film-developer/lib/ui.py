@@ -25,10 +25,11 @@ class UI:
     # Development stages (timer)
     STAGES = ("developer", "stop_bath", "fixer", "wash")
  
-    def __init__(self, display: Display, input_dev: Input, temp: Temp) -> None:
+    def __init__(self, display: Display, input_dev: Input, temp: Temp, enable_temp: bool = True) -> None:
         self.display = display
         self.input = input_dev
         self.temp = temp
+        self.enable_temp = enable_temp
  
         self.state = self.S_SPLASH
         self.splash_start_ms = time.ticks_ms()
@@ -60,8 +61,11 @@ class UI:
         self.display.text_at(0, 0, title[:16])
  
     def _render_temp_line(self, row: int) -> None:
-        c = self.temp.read_c()
-        txt = "Temp: --.-C" if c is None else "Temp: {:>4.1f}C".format(c)
+        if not self.enable_temp:
+            txt = "Temp: --.-C"
+        else:
+            c = self.temp.read_c()
+            txt = "Temp: --.-C" if c is None else "Temp: {:>4.1f}C".format(c)
         self.display.text_at(row, 0, txt[:16])
  
     # ----------------------------

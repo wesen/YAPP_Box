@@ -150,3 +150,13 @@ Added IRQ-backed AsyncInput to avoid missed presses under slower UI loops; Minim
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/input_irq.py — Event-queued
 - /home/manuel/code/others/YAPP_Box/film-developer/main.py — Prefer AsyncInput for Minimal UI; fallback maintained
 
+
+## 2025-11-15
+
+Switched back to main UI for testing; disabled temperature reads (enable_temp=False) to prevent DS18B20 blocking. Prefer IRQ-backed input for responsiveness.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — UI now supports enable_temp flag to skip temp reads
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Runs UI with enable_temp=False and AsyncInput(ghost=40ms)
+
