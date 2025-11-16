@@ -75,3 +75,14 @@ Implemented snap_joins flag support: alignment (yappOrigin/yappCenter), symmetri
 - pkg/yappgen/modules/snapjoins/module_test.go — flag tests
 - pkg/yappgen/modules/snapjoins/schema.yaml — added alignment/symmetric/diamond flags
 
+
+## 2025-11-16
+
+Added vertical dimension support: baseWallHeight, lidWallHeight, ridgeHeight now configurable via enclosure.base.wall_height, enclosure.lid.wall_height, enclosure.ridge.height. Fixed ridge mismatch (was defaulting to 5mm, now respects YAML value). Generated v30 STLs now match original dimensions.
+
+### Related Files
+
+- examples/yapp-demo-buttons-v30.yaml — includes wall heights and ridge
+- pkg/yappgen/emit.go — emit wall heights and ridge
+- pkg/yappgen/model.go — added wall height fields
+

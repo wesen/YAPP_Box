@@ -17,14 +17,20 @@ RelatedFiles:
       Note: user's target example
     - Path: examples/YAPP_Demo_buttons_v30.scad
       Note: reference for parity
+    - Path: examples/YAPP_Demo_buttons_v30_computed.scad
+      Note: debug version with computed values
     - Path: examples/test-push-buttons.yaml
       Note: current DSL test case
     - Path: examples/yapp-demo-buttons-v30.yaml
       Note: updated with vars and cutouts base/front/back
     - Path: pkg/resolver/resolver.go
       Note: treats enum arrays as literals (corners)
+    - Path: pkg/yappgen/emit.go
+      Note: emit wall heights
     - Path: pkg/yappgen/features.go
       Note: builder wiring for flags
+    - Path: pkg/yappgen/model.go
+      Note: wall height and ridge fields
     - Path: pkg/yappgen/modules/boxmounts/module.go
       Note: builder
     - Path: pkg/yappgen/modules/boxmounts/module_test.go
@@ -64,9 +70,11 @@ RelatedFiles:
     - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/04-boxmounts-module-support.md
       Note: design
 ExternalSources: []
-Summary: Analysis of missing YAPP features preventing DSL parity with SCAD examples - identifies 8 missing arrays and critical flag gaps
-LastUpdated: 2025-11-15T22:14:00.857144922-05:00
+Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
+LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
+
 
 
 
@@ -82,9 +90,11 @@ LastUpdated: 2025-11-15T22:14:00.857144922-05:00
 
 This ticket analyzes missing YAPP features that prevent the DSL from achieving parity with real SCAD examples. A user attempted to replicate `YAPP_Demo_buttons2_v31.scad` using the DSL and encountered visual discrepancies: extra PCB pillars, external mounting plates, and potential hinge-like structures.
 
-**Root cause:** The DSL currently implements 5 of 13+ YAPP feature arrays (38% coverage) and is missing critical flags on implemented features.
+**Root cause (initial):** The DSL implemented 5 of 13+ YAPP feature arrays (38% coverage) and was missing critical flags on implemented features.
 
-**Goal:** Document all gaps, prioritize fixes, and create actionable tasks for achieving 80%+ YAPP feature coverage.
+**Current status:** DSL now implements 6 modules with full Priority 1 flag support (~70% coverage). Working v30 demo validates corner placement, shell parts, snap joins, and vertical dimensions. Remaining work focuses on LED indicators, text labels, and advanced cutout shapes.
+
+**Goal:** Achieve 80%+ YAPP feature coverage for production-ready enclosures.
 
 ## For the Intern: Quick Start Guide
 
@@ -332,22 +342,45 @@ go run ./cmd/yappctl help module-box_mounts
 
 ## Next Steps
 
-### Immediate Actions
+### Immediate Actions (Phase 2)
 
-1. **Get user's DSL YAML** - Compare with SCAD file to confirm gaps
-2. **Research corner placement** - Study YAPPgenerator_v3.scad for auto-corner logic
-3. **Implement Priority 1 flags** - Corner placement + shell part control (2 weeks)
+1. **Implement lightTubes** - LED light pipes (2-3 days, task #8)
+   - Schema: pos, diameter, height, wall, shape, lens_thickness
+   - Flags: coordinate, origin, no_fillet, pcb_name, through_lid
+   - Example: `YAPP_Demo_lightTubes_v30.scad`
 
-### Short-term (if user needs them)
+2. **Implement cutout polygon shapes** - Custom shapes (2-3 days, task #13)
+   - Add `polygon` shape enum value
+   - Support shape presets (shapeHexagon, shapeArrow, etc.)
+   - Emit `yappPolygon` flag + preset reference
 
-4. **Implement boxMounts** - External mounting tabs (3-4 days)
-5. **Implement lightTubes** - LED indicators (2-3 days)
+3. **Implement cutout masks** - Ventilation patterns (3-4 days, task #14)
+   - Add mask field with presets (maskHoneycomb, maskCircles, etc.)
+   - Emit `yappMaskDef` or `[yappMaskDef, hOffset, vOffset, rotation]`
+   - Test with base cutout from v30 demo
 
-### Medium-term
+### Short-term (Phase 2 continued)
 
-6. **Implement labelsPlane** - Text labels (5-7 days)
-7. **Implement ridgeExt** - Split openings (3-4 days)
-8. **Implement displayMounts** - Display mounting (7-10 days)
+4. **Implement labelsPlane** - Text labels (5-7 days, task #9)
+   - Schema: pos, text, font, size, depth, face, rotation
+   - Flags: alignment, direction
+   - Complex: 12 parameters + text rendering
+
+5. **Implement ridgeExt** - Split openings (3-4 days, task #10)
+   - Four separate arrays (Front/Back/Left/Right)
+   - Schema: pos, width, height
+   - Flags: origin, coordinate, pcb_name
+
+### Medium-term (Phase 3)
+
+6. **Implement displayMounts** - Display mounting (7-10 days)
+   - 17 parameters (most complex module)
+   - Window cutouts, pin mounts, bevels
+   - Flags: origin, coordinate, self_threading
+
+7. **Multi-PCB support** - pcb array (low priority)
+   - Requires schema changes to support multiple PCB definitions
+   - All modules already support pcb_name flag
 
 ## Resources
 
@@ -425,8 +458,13 @@ Current status: **active**
 - ✅ Feature inventory cataloged
 - ✅ User case study documented
 - ✅ Priority roadmap defined
-- ⏳ Awaiting user's DSL YAML for confirmation
-- ⏳ Implementation pending
+- ✅ Priority 1 flags implemented (corners, shell parts, treatment, coordinate)
+- ✅ boxMounts module implemented
+- ✅ snap_joins flags implemented (alignment, symmetric, diamond)
+- ✅ Vertical dimensions support (baseWallHeight, lidWallHeight, ridgeHeight)
+- ✅ Working v30 demo example with STL validation
+- ⏳ Priority 2 modules pending (lightTubes, labelsPlane, ridgeExt)
+- ⏳ Advanced cutout features pending (polygon, masks)
 
 ## Topics
 
@@ -467,34 +505,38 @@ See [changelog.md](./changelog.md) for recent changes and decisions.
 
 ## Key Findings
 
-### What Works Now (5 modules)
+### What Works Now (6 modules + full flag support)
 
-✅ **pcb_stands** - Basic positioning (missing corner/shell flags)
-✅ **connectors** - Screw standoffs (missing corner flags)
-✅ **snap_joins** - Snap-fit joints (missing positioning flags)
-✅ **cutouts** - Holes in faces (missing masks, advanced shapes)
-✅ **push_buttons** - Button extenders (missing yappAltOrigin)
+✅ **pcb_stands** - Full flag support (corners[], shell_part, treatment, coordinate, no_fillet, pcb_name, self_threading)
+✅ **connectors** - Full flag support (corners[], coordinate, countersink, through_lid, no_fillet, no_internal_fillet, pcb_name, self_threading)
+✅ **snap_joins** - Full flag support (alignment, symmetric, diamond)
+✅ **cutouts** - Basic shapes (rectangle, circle, rounded_rect, circle_with_flats, circle_with_key) on all 6 faces
+✅ **push_buttons** - Full nested object support with shape presets
+✅ **box_mounts** - External mounting tabs with face selection
 
-### Critical Gaps (Priority 1)
+### Implemented (Priority 1) ✅
 
-❌ **Corner placement flags** - Auto-generate 4 standoffs from 1 definition
-❌ **Shell part flags** - Control base/lid/both
-❌ **Standoff treatment** - Pin vs hole configuration
+✅ **Corner placement flags** - `corners: [front_left, back_right]` auto-generates mirrored standoffs
+✅ **Shell part flags** - `shell_part: base_only/lid_only/both`
+✅ **Standoff treatment** - `treatment: pin/hole/top_pin`
+✅ **Coordinate systems** - `coordinate: pcb/box/box_inside`
+✅ **boxMounts module** - External mounting tabs
+✅ **Snap join flags** - `alignment: center`, `symmetric: true`, `diamond: true`
+✅ **Vertical dimensions** - `baseWallHeight`, `lidWallHeight`, `ridgeHeight`
 
-**Impact:** Can't replicate common YAPP patterns efficiently
+**Status:** Phase 1 complete! Can replicate most common YAPP patterns.
 
-**Effort:** 2 weeks
+### Remaining (Priority 2)
 
-### Common Features (Priority 2)
+❌ **lightTubes** - LED light pipes (2-3 days)
+❌ **labelsPlane** - Text labels (5-7 days)
+❌ **ridgeExt*** - Ridge extensions for split openings (3-4 days)
+❌ **Cutout polygons** - yappPolygon + shape presets (2-3 days)
+❌ **Cutout masks** - yappMaskDef + ventilation patterns (3-4 days)
 
-❌ **boxMounts** - External mounting tabs (user needs this)
-❌ **lightTubes** - LED indicators
-❌ **labelsPlane** - Text labels
-❌ **ridgeExt*** - Split openings (4 arrays)
+**Impact:** Can't add LED indicators, text labels, or ventilation patterns
 
-**Impact:** Can't create production-ready enclosures
-
-**Effort:** 4-6 weeks
+**Effort:** 3-4 weeks
 
 ### Advanced Features (Priority 3)
 

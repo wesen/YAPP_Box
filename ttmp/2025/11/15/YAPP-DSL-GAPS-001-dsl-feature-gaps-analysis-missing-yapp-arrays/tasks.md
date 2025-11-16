@@ -13,3 +13,9 @@
 - [ ] Implement lightTubes module
 - [ ] Implement labelsPlane module
 - [ ] Implement ridgeExt modules
+- [x] Implement snap_joins flags (alignment/symmetric/diamond)
+- [x] Add vertical dimension support (baseWallHeight, lidWallHeight, ridgeHeight)
+- [ ] Implement cutout polygon shapes (yappPolygon + shape presets)
+- [ ] Implement cutout mask support (yappMaskDef + mask presets)
+- [ ] Add cutout coordinate/origin flags (yappCoordBox, yappCenter, yappAltOrigin)
+- [ ] Add push_buttons missing flags (yappAltOrigin, yappPCBName)

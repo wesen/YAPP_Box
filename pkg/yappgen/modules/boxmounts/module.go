@@ -31,15 +31,13 @@ func Build(items []map[string]any) ([][]any, error) {
 			return nil, errors.Wrapf(err, "%s", label)
 		}
 
-		if err := validateFaces(item.Faces); err != nil {
-			return nil, errors.Wrapf(err, "%s: %v", label, err)
-		}
+	if err := validateFaces(item.Faces); err != nil {
+		return nil, errors.Wrapf(err, "%s: %v", label, err)
+	}
 
-		if item.SlotWidth < 0 {
-			return nil, errors.Wrapf(errNegativeSlotWidth, "%s", label)
-		}
+	// Note: negative slot_width is valid in YAPP (indicates vertical orientation)
 
-		posVal := positionValue(item.Pos, item.Offset)
+	posVal := positionValue(item.Pos, item.Offset)
 
 		params := []any{
 			posVal,
@@ -73,7 +71,7 @@ func Build(items []map[string]any) ([][]any, error) {
 	return out, nil
 }
 
-var errNegativeSlotWidth = errors.New("slot_width must be >= 0")
+// Removed: negative slot_width is valid (indicates vertical slot orientation in YAPP)
 
 func ptrOrUndef(ptr *float64) any {
 	if ptr == nil {

@@ -118,6 +118,25 @@ features:
       symmetric: true
       diamond: true
 
+  box_mounts:
+    - pos: shell_length / 2
+      screw_d: 3
+      slot_width: 6
+      height: 2.5
+      alignment: center
+      faces:
+        left: true
+        right: true
+    - pos: shell_length / 2
+      screw_d: 3
+      slot_width: -2
+      height: 2.5
+      shell_part: lid
+      alignment: center
+      faces:
+        left: true
+        right: true
+
   push_buttons:
     - name: circle_button
       x: circle_btn_x
