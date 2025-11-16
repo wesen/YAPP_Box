@@ -140,6 +140,7 @@ class UI:
     def handle(self) -> None:
         for e in self.input.read():
             # BTN1=left, BTN2=middle, BTN3=right
+            print("ui: recv event={} in {}".format(e, self.state))
             prev = self.state
             if self.state == self.S_MAIN:
                 if e == 1:  # START

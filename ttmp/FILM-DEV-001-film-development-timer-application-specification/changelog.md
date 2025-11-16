@@ -119,3 +119,34 @@ Added serial debug for button input (edge/bounce logs) and UI state transitions 
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/input.py — Debug logs for press/release/bounce; toggle via constructor
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — State transition logs on events for navigation
 
+
+## 2025-11-15
+
+UI input diagnostics: print every button event and state; reduced Input debounce to 20ms to improve responsiveness.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Log each event regardless of transition
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Instantiate Input(debounce_ms=20
+- debug — True)
+
+
+## 2025-11-15
+
+Added Minimal UI mode for performance testing (no temp/timer); redraws only on change to avoid blocking from DS18B20. Main runs Minimal UI by default for now.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui_min.py — Non-blocking input/display test UI
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Switch to MinimalUI loop for debugging responsiveness
+
+
+## 2025-11-15
+
+Added IRQ-backed AsyncInput to avoid missed presses under slower UI loops; Minimal UI now prefers AsyncInput (ghost=15ms), falls back to polling if unavailable.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/input_irq.py — Event-queued
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Prefer AsyncInput for Minimal UI; fallback maintained
+

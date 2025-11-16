@@ -286,23 +286,40 @@ async def amain2():
     )
 
 def main() -> None:
-    # Run UI state machine by default (integrated tests remain available via amain()/amain2())
-    from lib.input import Input
-    from lib.temp import Temp
-    from lib.ui import UI
+    # Minimal UI mode for responsiveness (no temp or timer)
+    try:
+        from lib.input_irq import AsyncInput as InputLike
+    except Exception:
+        from lib.input import Input as InputLike
+    from lib.ui_min import MinimalUI
     d = Display(spi_baudrate=1_000_000)
-    i = Input(debug=True)
-    t = Temp()
-    ui = UI(d, i, t)
+    try:
+        # Prefer IRQ-backed input for reliable short presses
+        i = InputLike(ghost_ms=15, debug=True)
+    except TypeError:
+        # Fallback to polling signature
+        i = InputLike(debounce_ms=20, debug=True)
+    ui = MinimalUI(d, i)
     while True:
         ui.handle()
         ui.render()
         time.sleep_ms(50)
 
+        
+def main3():
+    import uasyncio as asyncio
+    from lib.test_async_button_demo import run_async_button_demo3
+    asyncio.run(run_async_button_demo3(ghost_ms=30))
+
+def main4():
+    from lib.display import Display
+    from lib.input import Input
+    from lib.test_input import run_input_demo
+    run_input_demo(Display(), Input(debounce_ms=30))
 
 if __name__ == "__main__":
     try:
-        main()
+        main3()
     except KeyboardInterrupt:
         pass
 
