@@ -9,7 +9,7 @@
 - [x] Week 1: Create cmd/schemagen skeleton with CLI structure and command parsing
 - [x] Week 2: Implement schemagen validate command with YAML parsing and line number tracking
 - [x] Week 2: Add schema structure validation (field types, nested objects, test cases)
-- [ ] Week 2: Implement helpful error messages with context and suggestions
+- [x] Week 2: Implement helpful error messages with context and suggestions
 - [ ] Week 2: Implement schemagen discover command with filesystem scanning
 - [ ] Week 2: Add code generation templates for Go structs from YAML schemas
 - [ ] Week 2: Add test code generation from schema test cases

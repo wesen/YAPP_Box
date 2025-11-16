@@ -12,21 +12,33 @@ type ValidationError struct {
 	Line    int
 	Column  int
 	Message string
+	Snippet string
+	Hint    string
 }
 
 func (e ValidationError) Error() string {
 	loc := e.File
-	if e.Line > 0 {
+	switch {
+	case e.Line > 0 && e.Column > 0:
+		loc = fmt.Sprintf("%s:%d:%d", loc, e.Line, e.Column)
+	case e.Line > 0:
 		loc = fmt.Sprintf("%s:%d", loc, e.Line)
-		if e.Column > 0 {
-			loc = fmt.Sprintf("%s:%d:%d", e.File, e.Line, e.Column)
-		}
 	}
-	path := e.Path
-	if path != "" {
-		path = " [" + path + "]"
+
+	path := ""
+	if e.Path != "" {
+		path = " [" + e.Path + "]"
 	}
-	return fmt.Sprintf("%s%s: %s", loc, path, e.Message)
+
+	var b strings.Builder
+	fmt.Fprintf(&b, "%s%s: %s", loc, path, e.Message)
+	if e.Snippet != "" {
+		fmt.Fprintf(&b, "\n%s", e.Snippet)
+	}
+	if e.Hint != "" {
+		fmt.Fprintf(&b, "\nHint: %s", e.Hint)
+	}
+	return b.String()
 }
 
 // ValidationErrors aggregates multiple validation errors.
@@ -43,7 +55,7 @@ func (ve ValidationErrors) Error() string {
 	fmt.Fprintf(&b, "%d schema validation errors:\n", len(ve))
 	for _, err := range ve {
 		b.WriteString(" - ")
-		b.WriteString(err.Error())
+		b.WriteString(strings.ReplaceAll(err.Error(), "\n", "\n   "))
 		b.WriteByte('\n')
 	}
 	return strings.TrimRight(b.String(), "\n")

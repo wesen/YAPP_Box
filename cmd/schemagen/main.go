@@ -103,5 +103,24 @@ func runDiscover(ctx context.Context, opts discoverOptions) error {
 	if opts.ModulesDir == "" {
 		return errors.New("modules directory is required")
 	}
-	return errors.New("schemagen discover not implemented yet")
+	schemaFiles, err := schemagen.DiscoverSchemaFiles(opts.ModulesDir)
+	if err != nil {
+		return err
+	}
+	if len(schemaFiles) == 0 {
+		fmt.Fprintf(os.Stdout, "No schema.yaml files found under %s\n", opts.ModulesDir)
+		return nil
+	}
+
+	fmt.Fprintf(os.Stdout, "Found %d schema file(s):\n", len(schemaFiles))
+	for _, path := range schemaFiles {
+		fmt.Fprintf(os.Stdout, " - %s\n", path)
+	}
+
+	if err := schemagen.ValidateSchemaFiles(schemaFiles); err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stdout, "Validation succeeded for all schemas. Code generation coming soon.\n")
+	return schemagen.ErrCodeGenerationNotImplemented
 }

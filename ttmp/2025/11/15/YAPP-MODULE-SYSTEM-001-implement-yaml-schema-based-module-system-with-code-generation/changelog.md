@@ -65,3 +65,20 @@ Implemented schemagen validate with YAML parser, nested field checks, and CLI in
 - pkg/schemagen/validate.go — validation walker
 - pkg/schemagen/validate_test.go — tests for validator
 
+
+## 2025-11-15
+
+Upgraded schemagen error UX with context snippets, hints, and tests
+
+### Related Files
+
+- pkg/schemagen/context.go — snippet renderer
+- pkg/schemagen/errors.go — enhanced ValidationError
+- pkg/schemagen/validate.go — parser wrapper and helpful messages
+- pkg/schemagen/validate_test.go — error UX tests
+
+
+## 2025-11-15
+
+Attempted schemagen validate on pushbuttons schema; blocked because schema.yaml not present yet
+

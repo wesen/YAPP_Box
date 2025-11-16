@@ -1,6 +1,9 @@
 package schemagen
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 const minimalSchema = `
 module: test_feature
@@ -42,6 +45,10 @@ fields:
 	}
 	if len(errs) == 0 {
 		t.Fatalf("expected validation errors")
+	}
+
+	if errs[0].Snippet == "" {
+		t.Fatalf("expected snippet for missing module error")
 	}
 
 	found := false
@@ -86,5 +93,46 @@ tests:
 	}
 	if !found {
 		t.Fatalf("expected invalid field type error, got %v", errs)
+	}
+	if errs[0].Snippet == "" {
+		t.Fatalf("expected snippet for invalid field type error")
+	}
+}
+
+func TestValidateSchemaBytes_SyntaxError(t *testing.T) {
+	doc := `
+module broken
+scad_array: broken
+go_package: broken
+description: Missing colon
+fields:
+  x:
+    type number
+`
+	_, err := ValidateSchemaBytes("broken.yaml", []byte(doc))
+	if err == nil {
+		t.Fatalf("expected syntax error")
+	}
+	ve, ok := err.(ValidationErrors)
+	if !ok {
+		t.Fatalf("expected ValidationErrors, got %T", err)
+	}
+	if len(ve) == 0 {
+		t.Fatalf("expected at least one error, got none")
+	}
+	if ve[0].Snippet == "" {
+		t.Fatalf("expected snippet for syntax error")
+	}
+}
+
+func TestWrapYAMLErrorAddsHint(t *testing.T) {
+	ctx := newSchemaContext("fake.yaml", []byte("foo\nbar\n"))
+	err := wrapYAMLError(ctx, errors.New("yaml: line 2: could not find expected ':'"))
+	ve, ok := err.(ValidationErrors)
+	if !ok || len(ve) == 0 {
+		t.Fatalf("expected ValidationErrors, got %T", err)
+	}
+	if ve[0].Hint == "" {
+		t.Fatalf("expected hint to be populated, got %+v", ve[0])
 	}
 }
