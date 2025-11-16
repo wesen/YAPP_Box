@@ -18,6 +18,7 @@ class LedSnake:
         self._period_ms = 3500
         self._last_period_ms = self._period_ms
         self._debug = debug
+        self._blink_on = False
 
     def _all_off(self) -> None:
         for led in self._pins:
@@ -45,13 +46,26 @@ class LedSnake:
                 print("leds: period_ms ->", self._period_ms, "remain_s=", remaining_sec)
             self._last_period_ms = self._period_ms
 
-    def update(self, remaining_sec: int, active: bool) -> None:
+    def update(self, remaining_sec: int, active: bool, overtime_sec: int = 0) -> None:
         """
         Call frequently. If active, advance snake based on time.
         When remaining reaches 0 or inactive, turn LEDs off.
         """
-        if not active or remaining_sec <= 0:
+        if not active:
             self._all_off()
+            return
+        # Overtime: blink all LEDs in unison (fast)
+        if overtime_sec and overtime_sec > 0:
+            # Fixed fast blink in overtime
+            period = 100
+            now = time.ticks_ms()
+            if time.ticks_diff(now, self._last_ms) >= period:
+                self._last_ms = now
+                self._blink_on = not self._blink_on
+                if self._debug:
+                    print("leds: overtime blink ->", int(self._blink_on))
+                for led in self._pins:
+                    led.value(1 if self._blink_on else 0)
             return
         self._update_period(remaining_sec)
         now = time.ticks_ms()

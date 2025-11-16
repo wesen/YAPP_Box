@@ -263,3 +263,12 @@ Added targeted serial logs: once-per-second timer remaining/ratio; LED snake per
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Logs remaining each second in timer screens
 - /home/manuel/code/others/YAPP_Box/film-developer/main.py — Try/except prints exceptions via sys.print_exception
 
+
+## 2025-11-15
+
++OVERTIME display: when timer exceeds planned duration, show '+MM:SS OVERTIME!' clearly on timer screen.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Overtime line replaces 'remain' when remaining=0
+

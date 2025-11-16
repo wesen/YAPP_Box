@@ -232,7 +232,11 @@ class UI:
             bar = ("#" * filled) + (" " * (bar_len - filled))
             d.text_at(2, 0, "TRX+2 D76 22C")
             d.text_at(3, 0, "{} [{}]".format(planned, bar)[:16])
-            d.text_at(4, 0, "{} remain".format(remain)[:16])
+            if rem_sec > 0:
+                d.text_at(4, 0, "{} remain".format(remain)[:16])
+            else:
+                over = self.timer.get_overtime_sec()
+                d.text_at(4, 0, "+{} OVERTIME!".format(format_mmss(over))[:16])
             # Debug: log once per second when remaining changes
             if self._dbg_last_remain_sec != rem_sec:
                 self._dbg_last_remain_sec = rem_sec
@@ -244,10 +248,10 @@ class UI:
                     pass
             # Temperature (non-blocking)
             self._render_temp_line(5)
-            # LED snake pattern (rates vary with remaining seconds)
+            # LED pattern: snake normally; blink-all in overtime
             if self.leds is not None:
                 try:
-                    self.leds.update(self.timer.get_remaining_sec(), active=(self.state == self.S_TIMER))
+                    self.leds.update(rem_sec, active=(self.state == self.S_TIMER), overtime_sec=self.timer.get_overtime_sec())
                 except Exception:
                     pass
             if self.state == self.S_TIMER:
