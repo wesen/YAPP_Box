@@ -2,6 +2,7 @@ import time
 from .display import Display
 from .input import Input
 from .temp import Temp
+from .timer import TimerEngine, format_mmss
 
 
 class UI:
@@ -39,8 +40,13 @@ class UI:
         self.menu_index = 0
  
         # Timer context
-        self.stage_idx = 0  # index into STAGES
-        self.run_started = False
+        default_stages = [
+            {"name": "developer", "planned_sec": 14 * 60 + 30},
+            {"name": "stop_bath", "planned_sec": 30},
+            {"name": "fixer", "planned_sec": 10 * 60},
+            {"name": "wash", "planned_sec": 15 * 60},
+        ]
+        self.timer = TimerEngine(default_stages)
  
     # ----------------------------
     # Rendering helpers
@@ -105,18 +111,22 @@ class UI:
             self._draw_buttons("   ", "   ", "BACK")
  
         elif self.state in (self.S_TIMER, self.S_PAUSED):
-            stage = self.STAGES[self.stage_idx]
-            title = {
-                "developer": "DEVELOPING...",
-                "stop_bath": "STOP BATH",
-                "fixer": "FIXER",
-                "wash": "WASH",
-            }.get(stage, "TIMER")
+            stage = self.timer.get_stage_name()
+            title = {"developer": "DEVELOPING...", "stop_bath": "STOP BATH", "fixer": "FIXER", "wash": "WASH"}.get(stage, "TIMER")
             self._render_header(title)
+            # Status lines
+            planned = format_mmss(self.timer.get_planned_sec())
+            remain = self.timer.get_remaining_str()
+            ratio = self.timer.get_progress_ratio()
+            bar_len = 10
+            filled = int(ratio * bar_len)
+            filled = bar_len if filled > bar_len else filled
+            bar = ("#" * filled) + (" " * (bar_len - filled))
             d.text_at(2, 0, "TRX+2 D76 22C")
-            d.text_at(3, 0, "14:30 [######]")
-            d.text_at(4, 0, "12:30 remain")
-            self._render_temp_line(5 - 1)  # render on row 4 already; keep concise
+            d.text_at(3, 0, "{} [{}]".format(planned, bar)[:16])
+            d.text_at(4, 0, "{} remain".format(remain)[:16])
+            # Optional temp line (disabled currently)
+            # self._render_temp_line(5 - 1)
             if self.state == self.S_TIMER:
                 self._draw_buttons("PAU", "   ", "NEXT")
             else:
@@ -148,7 +158,10 @@ class UI:
             prev = self.state
             if self.state == self.S_MAIN:
                 if e == 1:  # START
-                    self.stage_idx = 0
+                    # Reset and start timer at stage 0
+                    self.timer.stage_index = 0
+                    self.timer._load_current_stage()
+                    self.timer.start()
                     self.state = self.S_TIMER
                 elif e == 2:  # MENU
                     self.menu_index = 0
@@ -175,15 +188,21 @@ class UI:
  
             elif self.state == self.S_TIMER:
                 if e == 1:  # PAUSE
+                    self.timer.pause()
                     self.state = self.S_PAUSED
                 elif e == 3:  # NEXT
-                    self._next_stage()
+                    advanced = self.timer.next_stage()
+                    if not advanced:
+                        self.state = self.S_DONE
  
             elif self.state == self.S_PAUSED:
                 if e == 1:  # RESUME
+                    self.timer.resume()
                     self.state = self.S_TIMER
                 elif e == 3:  # NEXT
-                    self._next_stage()
+                    advanced = self.timer.next_stage()
+                    if not advanced:
+                        self.state = self.S_DONE
  
             elif self.state == self.S_DONE:
                 if e == 2:  # MENU
