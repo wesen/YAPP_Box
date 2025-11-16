@@ -33,6 +33,7 @@ type Model struct {
 	// Features
 	PcbStands   []map[string]any
 	Connectors  []map[string]any
+	BoxMounts   []map[string]any
 	SnapJoins   []map[string]any
 	Cutouts     []Cutout
 	PushButtons []map[string]any

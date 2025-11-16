@@ -45,6 +45,13 @@ fields:
     type: number
     desc: Pin length extending through PCB
 
+  corners:
+    type: array
+    desc: Corner placement flags (multiple allowed)
+    items:
+      type: string
+      enum: [front_left, front_right, back_left, back_right, all]
+
   shell_part:
     type: string
     default: both

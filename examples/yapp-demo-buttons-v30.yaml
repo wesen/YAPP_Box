@@ -1,0 +1,138 @@
+project: yapp-demo-buttons-v30
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+vars:
+  # Global tunables
+  padding: 1.0
+  base_wall: 10.0
+  lid_wall: 10.0
+
+  # PCB stand placement
+  stand_x: 5
+  stand_y: 5
+
+  # Derived shell dimensions (match YAPP formulas used in v30 demo)
+  shell_width: pcb.width + 2*enclosure.wall.thickness + 2*enclosure.wall.clearance
+  shell_length: pcb.length + 2*enclosure.wall.thickness + 2*enclosure.wall.clearance
+  shell_height: enclosure.base.thickness + enclosure.lid.thickness + base_wall + lid_wall
+
+  # Front opening (rounded rectangle)
+  front_open_from_back: 3
+  front_open_from_left: 2
+  front_open_width: shell_width - 6        # matches shellWidth-6 in SCAD
+  front_open_length: shell_height - 4      # matches shellHeight-4 in SCAD
+  front_open_radius: 2
+
+  # Back opening (rounded rectangle)
+  back_open_from_back: 5
+  back_open_from_left: 2
+  back_open_width: shell_width - 10
+  back_open_length: shell_height - 4
+  back_open_radius: 3
+
+  # Base cutout (rounded rectangle)
+  base_cut_from_back: 17
+  base_cut_from_left: 21
+  base_cut_width: 15
+  base_cut_length: 15
+  base_cut_radius: 5
+
+  # Buttons
+  circle_btn_x: 15
+  circle_btn_y: 30
+  rect_btn_x: 15
+  rect_btn_y: 10
+  btn_circle_diam: 8
+  btn_rect_len: 8
+  btn_rect_w: 6
+
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+  z_clearance: 3.0
+  standoffs:
+    diameter: 6.0
+    screw_d: 2.4
+
+enclosure:
+  wall:
+    thickness: 1.4
+    clearance: padding
+    fillet_radius: 2.0
+  base:
+    thickness: 1.5
+  lid:
+    thickness: 1.0
+
+features:
+  pcb_stands:
+    - x: stand_x
+      y: stand_y
+      shell_part: base_only
+      corners: [front_left, back_right]
+    - x: stand_x
+      y: stand_y
+      shell_part: both
+      corners: [back_left, front_right]
+
+  cutouts:
+    - face: base
+      from_back: base_cut_from_back
+      from_left: base_cut_from_left
+      width: base_cut_width
+      length: base_cut_length
+      radius: base_cut_radius
+      shape: rounded_rect
+    - face: front
+      from_back: front_open_from_back
+      from_left: front_open_from_left
+      width: front_open_width
+      length: front_open_length
+      radius: front_open_radius
+      shape: rounded_rect
+    - face: back
+      from_back: back_open_from_back
+      from_left: back_open_from_left
+      width: back_open_width
+      length: back_open_length
+      radius: back_open_radius
+      shape: rounded_rect
+
+  push_buttons:
+    - name: circle_button
+      x: circle_btn_x
+      y: circle_btn_y
+      shape: circle
+      cap:
+        length: btn_circle_diam
+        width: btn_circle_diam
+        radius: btn_circle_diam / 2
+      lid:
+        protrusion: 0
+      switch:
+        height: 3.0
+        travel: 1.0
+        pole_diameter: 3.5
+
+    - name: rectangle_button
+      x: rect_btn_x
+      y: rect_btn_y
+      shape: rectangle
+      cap:
+        length: btn_rect_len
+        width: btn_rect_w
+        radius: 0
+      lid:
+        protrusion: 3
+      switch:
+        height: 5.5
+        travel: 1.0
+        pole_diameter: 3.5
+
+tolerances:
+  holes: 0.4
+  perimeter: 1.0
+

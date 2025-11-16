@@ -4,8 +4,8 @@ units: mm
 yapp_version: v3.3.8
 
 pcb:
-  length: 30
-  width: 40
+  length: 100
+  width: 100
   thickness: 1.6
   z_clearance: 3.0
   standoffs:
@@ -14,43 +14,94 @@ pcb:
 
 enclosure:
   wall:
-    thickness: 2.4
+    thickness: 1.4
     clearance: 1.0
     fillet_radius: 2.0
   base:
-    thickness: 1.6
+    thickness: 1.5
   lid:
-    thickness: 1.6
+    thickness: 1.0
 
 features:
   pcb_stands:
     - x: 5
       y: 5
-    - x: 25
-      y: 5
-    - x: 5
-      y: 35
-    - x: 25
-      y: 35
+      corner: all
+      shell_part: both
+      treatment: pin
+
+  box_mounts:
+    - pos: 18
+      screw_d: 3.5
+      slot_width: 4
+      height: 8
+      fillet_radius: 1
+      faces:
+        left: true
+      alignment: center
+    - pos: 18
+      screw_d: 3.5
+      slot_width: 4
+      height: 8
+      fillet_radius: 1
+      faces:
+        right: true
+      alignment: center
+      origin: alt
+    - pos: 30
+      screw_d: 3.5
+      slot_width: 4
+      height: 8
+      fillet_radius: 1
+      faces:
+        front: true
+      alignment: center
+    - pos: 30
+      screw_d: 3.5
+      slot_width: 4
+      height: 8
+      fillet_radius: 1
+      faces:
+        back: true
+      alignment: center
+      origin: alt
+
+  cutouts:
+    - face: front
+      from_back: 3
+      from_left: 2
+      width: 98.8
+      length: 18.5
+      radius: 2
+      shape: rounded_rect
+    - face: back
+      from_back: 5
+      from_left: 2
+      width: 94.8
+      length: 18.5
+      radius: 3
+      shape: rounded_rect
+
   push_buttons:
-    - name: select
-      x: 15
-      y: 14
-      shape: rectangle
+    - name: select_circle
+      x: 20
+      y: 50
+      shape: circle
       cap:
         length: 8
-        width: 6
-        radius: 0
+        width: 8
+        radius: 4
+      no_fillet: true
       lid:
-        protrusion: 3
+        protrusion: 0
       switch:
-        height: 5.5
-        travel: 1.0
-        pole_diameter: 3.5
+        height: 5.0
+        travel: 0.5
+        pole_diameter: 3.0
 
-    - name: reset
-      x: 15
-      y: 28
+    - name: select_circle_framed
+      x: 20
+      y: 30
       shape: circle
       cap:
         length: 8
@@ -58,12 +109,76 @@ features:
         radius: 4
       lid:
         protrusion: 0
-        slack: 0.25
-        snap_slack: 0.2
+        wall: 2.0
+        plate_thickness: 2.5
+        slack: 0.5
       switch:
-        height: 3.0
+        height: 5.0
+        travel: 0.5
+        pole_diameter: 3.0
+
+    - name: arrow_a
+      x: 40
+      y: 50
+      shape: polygon
+      polygon: shapeArrow
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+      switch:
+        height: 5.0
+        travel: 0.5
+        pole_diameter: 3.0
+
+    - name: arrow_b
+      x: 40
+      y: 30
+      shape: polygon
+      polygon: shapeArrow
+      angle: 90
+      cap:
+        length: 8
+        width: 8
+        radius: 4
+      lid:
+        protrusion: 0
+      switch:
+        height: 5.0
+        travel: 0.5
+        pole_diameter: 3.0
+
+    - name: rounded_pad
+      x: 60
+      y: 50
+      shape: rounded_rect
+      cap:
+        length: 8
+        width: 8
+        radius: 2
+      lid:
+        protrusion: -1
+      switch:
+        height: 6.0
         travel: 1.0
-        pole_diameter: 3.5
+        pole_diameter: 3.0
+
+    - name: rect_pad
+      x: 80
+      y: 50
+      shape: rectangle
+      cap:
+        length: 8
+        width: 8
+        radius: 0
+      lid:
+        protrusion: 1
+      switch:
+        height: 5.0
+        travel: 0.5
+        pole_diameter: 3.0
 
 tolerances:
   holes: 0.4

@@ -431,7 +431,12 @@ func isStringFieldPath(path string) bool {
 		strings.HasSuffix(path, ".polygon_preset") ||
 		strings.HasSuffix(path, ".shape_preset") ||
 		strings.HasSuffix(path, ".coordinate") ||
-		strings.HasSuffix(path, ".origin") {
+		strings.HasSuffix(path, ".origin") ||
+		strings.HasSuffix(path, ".corner") ||
+		strings.Contains(path, ".corners") ||
+		strings.HasSuffix(path, ".shell_part") ||
+		strings.HasSuffix(path, ".treatment") ||
+		strings.HasSuffix(path, ".alignment") {
 		return true
 	}
 	return false

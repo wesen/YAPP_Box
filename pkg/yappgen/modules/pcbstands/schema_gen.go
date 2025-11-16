@@ -22,6 +22,8 @@ type PcbStandsItem struct {
 	FilletRadius *float64 `yaml:"fillet_radius,omitempty"`
 	// Pin length extending through PCB
 	PinLength *float64 `yaml:"pin_length,omitempty"`
+	// Corner placement flags (multiple allowed)
+	Corners *any `yaml:"corners,omitempty"`
 	// Which shell part receives the standoff (maps to yappBoth/yappBaseOnly/yappLidOnly)
 	ShellPart *string `yaml:"shell_part,omitempty"`
 	// Whether to cut holes, pins, or top pins (maps to yappHole/yappTopPin)

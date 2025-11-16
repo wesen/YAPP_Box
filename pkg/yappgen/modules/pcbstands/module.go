@@ -82,11 +82,20 @@ func encodeFlags(item PcbStandsItem) ([]any, error) {
 		flags = append(flags, flag)
 	}
 
-	cornerFlags, err := cornerSelectors(strOrDefault(item.Corner, "single"))
-	if err != nil {
-		return nil, err
+	// Prefer plural corners (multiple allowed); fall back to single corner
+	if list := parseCorners(item.Corners); len(list) > 0 {
+		cf, err := cornersListToFlags(list)
+		if err != nil {
+			return nil, err
+		}
+		flags = append(flags, cf...)
+	} else {
+		cornerFlags, err := cornerSelectors(strOrDefault(item.Corner, "single"))
+		if err != nil {
+			return nil, err
+		}
+		flags = append(flags, cornerFlags...)
 	}
-	flags = append(flags, cornerFlags...)
 
 	if flag, err := coordinateFlag(strOrDefault(item.Coordinate, "pcb")); err != nil {
 		return nil, err
@@ -152,6 +161,52 @@ func cornerSelectors(value string) ([]any, error) {
 	default:
 		return nil, errors.Errorf("invalid corner: %s", value)
 	}
+}
+
+func parseCorners(raw any) []string {
+	if raw == nil {
+		return nil
+	}
+	// Dereference *any produced by schemagen
+	if p, ok := raw.(*any); ok && p != nil {
+		raw = *p
+	}
+	// Expect []any of strings
+	switch t := raw.(type) {
+	case []any:
+		var out []string
+		for _, v := range t {
+			if s, ok := v.(string); ok {
+				out = append(out, s)
+			}
+		}
+		return out
+	case []string:
+		return t
+	default:
+		return nil
+	}
+}
+
+func cornersListToFlags(list []string) ([]any, error) {
+	var flags []any
+	for _, v := range list {
+		switch strings.ToLower(strings.TrimSpace(v)) {
+		case "all":
+			flags = append(flags, scad.Raw("yappAllCorners"))
+		case "front_left":
+			flags = append(flags, scad.Raw("yappFrontLeft"))
+		case "front_right":
+			flags = append(flags, scad.Raw("yappFrontRight"))
+		case "back_left":
+			flags = append(flags, scad.Raw("yappBackLeft"))
+		case "back_right":
+			flags = append(flags, scad.Raw("yappBackRight"))
+		default:
+			return nil, errors.Errorf("invalid corners entry: %s", v)
+		}
+	}
+	return flags, nil
 }
 
 func coordinateFlag(value string) (scad.Raw, error) {

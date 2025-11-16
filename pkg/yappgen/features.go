@@ -7,6 +7,9 @@ import (
 
 	"github.com/pkg/errors"
 
+	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
+	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
+	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
 )
 
@@ -20,10 +23,13 @@ type FeatureModule interface {
 var featureModules = []FeatureModule{
 	newArrayFeatureModule("pcb_stands", "pcbStands",
 		func(m *Model) *[]map[string]any { return &m.PcbStands },
-		buildPcbStands, nil),
+		pcbstands.Build, nil),
 	newArrayFeatureModule("connectors", "connectors",
 		func(m *Model) *[]map[string]any { return &m.Connectors },
-		buildConnectors, nil),
+		connectors.Build, nil),
+	newArrayFeatureModule("box_mounts", "boxMounts",
+		func(m *Model) *[]map[string]any { return &m.BoxMounts },
+		boxmounts.Build, nil),
 	newArrayFeatureModule("push_buttons", "pushButtons",
 		func(m *Model) *[]map[string]any { return &m.PushButtons },
 		pushbuttons.Build,
