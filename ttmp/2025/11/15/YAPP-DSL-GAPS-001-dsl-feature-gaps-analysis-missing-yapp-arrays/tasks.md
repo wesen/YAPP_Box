@@ -26,3 +26,7 @@
 - [ ] Remove ParamSpec schemas (pcbStands/connectors/snapJoins/cutouts) if unused
 - [ ] Migrate remaining tests away from ParamSpec/buildParams helpers
 - [ ] Simplify cutouts module registry.Build or document special handling
+- [x] Create polygon cutouts comparison (DSL+SCAD) and generate STLs to /tmp/yapp_compare/cutouts_polygons
+- [x] Create lighttubes comparison (DSL+SCAD) and generate STLs to /tmp/yapp_compare/lighttubes
+- [x] Face-aware cutout mapping: clearer pos axes for side faces (front/back=posy,posz; left/right=posx,posz); update docs and examples to match legacy semantics
+- [x] Adjust lighttubes example cutouts to match legacy heights (posz); verify with STL compare

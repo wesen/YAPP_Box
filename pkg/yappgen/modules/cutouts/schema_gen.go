@@ -6,10 +6,15 @@ package cutouts
 type CutoutsItem struct {
 	// Which face of the enclosure
 	Face string `yaml:"face"`
-	// Distance from back edge (mm)
+	// Position along horizontal axis (mm). Meaning depends on face: - base/lid: distance from back edge (posx) - front/back: horizontal position along face (posy) - left/right: horizontal position along face (posx)
+
 	FromBack float64 `yaml:"from_back"`
-	// Distance from left edge (mm)
+	// Position along vertical/secondary axis (mm). Meaning depends on face: - base/lid: distance from left edge (posy) - front/back/left/right: vertical position from bottom (posz) For side faces, consider using pos_z instead for clarity.
+
 	FromLeft float64 `yaml:"from_left"`
+	// Vertical position from bottom (mm). Only used for side faces (front/back/left/right). If provided, overrides from_left for those faces. Use this for clarity when positioning cutouts on side faces.
+
+	PosZ *float64 `yaml:"pos_z,omitempty"`
 	// Cutout width (set to 0 for circles)
 	Width float64 `yaml:"width"`
 	// Cutout length (set to 0 for circles)

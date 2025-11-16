@@ -160,3 +160,34 @@ Removed legacy cutouts pipeline; migrated to module Build; updated tests
 - pkg/yappgen/model.go — Cutouts field now []map[string]any (removed Cutout struct)
 - pkg/yappgen/yappgen_test.go — Updated tests to use module builders
 
+
+## 2025-11-16
+
+Generated DSL vs legacy STL comparisons for cutouts (polygons) and lighttubes. Found side-face cutout height mapping gap (DSL from_left → posz); added follow-up tasks for face-aware mapping and aligning examples to legacy.
+
+### Related Files
+
+- examples/YAPP_Compare_cutouts_polygons_v3.scad — Legacy comparison SCAD (polygons)
+- examples/compare/cutouts_all_faces.yaml — DSL all-faces cutouts coverage
+- examples/compare/cutouts_polygons.yaml — DSL comparison YAML (polygons)
+- examples/yapp-demo-lighttubes.yaml — DSL lighttubes example used for compare
+
+
+## 2025-11-16
+
+Fixed lighttubes example cutout heights to match legacy SCAD (posz=2 for front/back faces)
+
+### Related Files
+
+- examples/yapp-demo-lighttubes.yaml — updated cutout positions
+
+
+## 2025-11-16
+
+Implemented face-aware cutout mapping: added pos_z field for side faces (front/back/left/right) to clarify vertical position from bottom, overriding from_left for those faces
+
+### Related Files
+
+- pkg/yappgen/modules/cutouts/module.go — pos_z override logic
+- pkg/yappgen/modules/cutouts/schema.yaml — added pos_z field with documentation
+

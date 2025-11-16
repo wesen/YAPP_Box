@@ -16,12 +16,27 @@ fields:
   from_back:
     type: number
     required: true
-    desc: Distance from back edge (mm)
+    desc: >
+      Position along horizontal axis (mm). Meaning depends on face:
+      - base/lid: distance from back edge (posx)
+      - front/back: horizontal position along face (posy)
+      - left/right: horizontal position along face (posx)
 
   from_left:
     type: number
     required: true
-    desc: Distance from left edge (mm)
+    desc: >
+      Position along vertical/secondary axis (mm). Meaning depends on face:
+      - base/lid: distance from left edge (posy)
+      - front/back/left/right: vertical position from bottom (posz)
+      For side faces, consider using pos_z instead for clarity.
+
+  pos_z:
+    type: number
+    desc: >
+      Vertical position from bottom (mm). Only used for side faces (front/back/left/right).
+      If provided, overrides from_left for those faces. Use this for clarity when
+      positioning cutouts on side faces.
 
   width:
     type: number

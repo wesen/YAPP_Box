@@ -372,3 +372,27 @@ The implementation demonstrates that the module system is working well for new f
 **Time estimate:** 2-3 days (as estimated in ticket) was accurate. Actual time: ~1.5 hours for implementation, but could take longer for someone unfamiliar with the dual code path issue.
 
 **Next steps:** Continue with Priority 2 features (cutout masks, labelsPlane, ridgeExt) following the same pattern, but always check which code path is actually used.
+
+---
+
+## Comparison Runs and Findings (2025-11-16)
+
+### What I did
+- Created comparison inputs and generated STL pairs for DSL vs legacy:
+  - `examples/compare/cutouts_polygons.yaml` ⇄ `examples/YAPP_Compare_cutouts_polygons_v3.scad`
+  - `examples/yapp-demo-lighttubes.yaml` ⇄ `examples/YAPP_Demo_lightTubes_v30.scad`
+- Outputs written to:
+  - `/tmp/yapp_compare/cutouts_polygons/{dsl-base.stl,dsl-lid.stl,legacy-base.stl,legacy-lid.stl}`
+  - `/tmp/yapp_compare/lighttubes/{dsl-base.stl,dsl-lid.stl,legacy-base.stl,legacy-lid.stl}`
+- Added all-faces cutouts coverage: `examples/compare/cutouts_all_faces.yaml` with outputs in `/tmp/yapp_compare/cutouts_all_faces/`
+
+### Findings
+- Polygon cutouts: DSL and legacy STL pairs match (hexagon base, 6pt star front, arrow lid).
+- Lighttubes example: Side-face cutouts appear lower than legacy — root cause is axis naming:
+  - Legacy front/back use `[posy, posz, ...]`. Our DSL maps `from_back → posy`, `from_left → posz`. In the current example, `from_left` is small (e.g., 5/2), so openings sit near the bottom. Setting `from_left` to the legacy `posz` value yields identical results.
+- This is an ergonomics gap (not a functional one). We should add face-aware mapping or clearer keys for side faces.
+
+### Follow-ups
+- Added tasks:
+  - Face-aware cutout mapping (pos axes clarity for side faces) and docs update
+  - Align lighttubes example cutout heights (posz) with legacy and re-compare

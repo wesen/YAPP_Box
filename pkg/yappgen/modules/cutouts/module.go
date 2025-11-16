@@ -64,10 +64,23 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			radius = 0
 		}
 
+		// Determine position values based on face
+		// For side faces (front/back/left/right), pos_z can be used instead of from_left
+		// for clarity (pos_z = vertical position from bottom)
+		pos0 := item.FromBack
+		pos1 := item.FromLeft
+		
+		// Check if this is a side face and pos_z is provided
+		faceLower := strings.ToLower(strings.TrimSpace(item.Face))
+		isSideFace := faceLower == "front" || faceLower == "back" || faceLower == "left" || faceLower == "right"
+		if isSideFace && item.PosZ != nil {
+			pos1 = *item.PosZ
+		}
+
 		// Build positional array with shape flag at position 5
 		params := []any{
-			item.FromBack,
-			item.FromLeft,
+			pos0,
+			pos1,
 			width,
 			length,
 			radius,

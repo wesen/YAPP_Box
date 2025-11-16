@@ -79,16 +79,18 @@ features:
       # Note: Original SCAD uses polygon with hexagon preset, but polygon not yet supported in DSL
 
     - face: front
-      from_back: 3
-      from_left: 5
+      from_back: 5  # posy (horizontal along front face)
+      from_left: 0  # required but overridden by pos_z for side faces
+      pos_z: 2      # posz (vertical from bottom) - clearer than from_left for side faces
       width: 20  # shellWidth-10
       length: 9  # shellHeight-4
       radius: 2
       shape: rounded_rect
 
     - face: back
-      from_back: 5
-      from_left: 3
+      from_back: 3  # posy (horizontal along back face)
+      from_left: 0  # required but overridden by pos_z for side faces
+      pos_z: 2      # posz (vertical from bottom) - clearer than from_left for side faces
       width: 24  # shellWidth-6
       length: 9  # shellHeight-4
       radius: 3
