@@ -1,0 +1,79 @@
+project: YAPP Polygon Cutout Test
+yapp_version: v3
+
+# PCB dimensions
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+  z_clearance: 7.0
+  standoffs:
+    diameter: 7
+    screw_d: 2.4
+
+# Box dimensions
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 1
+    fillet_radius: 2.0
+  base:
+    thickness: 1.0
+    wall_height: 8
+  lid:
+    thickness: 1.0
+    wall_height: 13
+  ridge:
+    height: 3.6
+    slack: 0.2
+
+# Tolerances
+tolerances:
+  holes: 0.4
+
+features:
+  # PCB stands - minimal setup
+  pcb_stands:
+    - x: 5
+      y: 5
+      shell_part: base_only
+      corners: [front_left, back_right]
+    - x: 5
+      y: 5
+      shell_part: both
+      corners: [back_left, front_right]
+
+  # Polygon cutouts - testing various presets
+  cutouts:
+    # Hexagon polygon (matching YAPP_Demo_buttons_v30.scad)
+    - face: base
+      from_back: 15
+      from_left: 15
+      width: 25
+      length: 25
+      radius: 5
+      shape: polygon
+      polygon: hexagon
+      depth: 0
+      angle: 30
+
+    # Arrow polygon
+    - face: lid
+      from_back: 10
+      from_left: 20
+      width: 20
+      length: 20
+      radius: 0
+      shape: polygon
+      polygon: arrow
+
+    # 6-point star
+    - face: front
+      from_back: 5
+      from_left: 15
+      width: 15
+      length: 15
+      radius: 0
+      shape: polygon
+      polygon: 6pt_star
+

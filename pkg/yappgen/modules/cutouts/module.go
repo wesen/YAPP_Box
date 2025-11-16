@@ -76,6 +76,18 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			ptrOrUndef(item.Angle),
 		}
 
+		// For polygon shapes, add the preset shape after depth/angle
+		if strings.ToLower(strings.TrimSpace(item.Shape)) == "polygon" {
+			if item.Polygon == nil || *item.Polygon == "" {
+				return nil, errors.Errorf("%s: polygon preset is required when shape=polygon", label)
+			}
+			presetFlag, err := polygonPresetFlag(*item.Polygon)
+			if err != nil {
+				return nil, errors.Wrapf(err, "%s", label)
+			}
+			params = append(params, presetFlag)
+		}
+
 		// Determine face array
 		faceArray, err := faceArrayName(item.Face)
 		if err != nil {
@@ -96,7 +108,8 @@ func ptrOrUndef(ptr *float64) any {
 }
 
 func cutoutShapeFlag(shape string) (scad.Raw, bool, bool, bool, error) {
-	switch strings.ToLower(strings.TrimSpace(shape)) {
+	normalized := strings.ToLower(strings.TrimSpace(shape))
+	switch normalized {
 	case "rectangle":
 		return scad.Raw("yappRectangle"), true, true, false, nil
 	case "circle":
@@ -107,8 +120,31 @@ func cutoutShapeFlag(shape string) (scad.Raw, bool, bool, bool, error) {
 		return scad.Raw("yappCircleWithFlats"), true, true, true, nil
 	case "circle_with_key", "circle-with-key":
 		return scad.Raw("yappCircleWithKey"), true, true, true, nil
+	case "polygon":
+		return scad.Raw("yappPolygon"), true, true, false, nil
 	default:
 		return "", false, false, false, errors.Errorf("unsupported cutout shape: %s", shape)
+	}
+}
+
+func polygonPresetFlag(preset string) (scad.Raw, error) {
+	switch strings.ToLower(strings.TrimSpace(preset)) {
+	case "hexagon":
+		return scad.Raw("shapeHexagon"), nil
+	case "arrow":
+		return scad.Raw("shapeArrow"), nil
+	case "6pt_star", "6pt-star":
+		return scad.Raw("shape6ptStar"), nil
+	case "iso_triangle", "iso-triangle":
+		return scad.Raw("shapeIsoTriangle"), nil
+	case "iso_triangle2", "iso-triangle2":
+		return scad.Raw("shapeIsoTriangle2"), nil
+	case "triangle":
+		return scad.Raw("shapeTriangle"), nil
+	case "triangle2":
+		return scad.Raw("shapeTriangle2"), nil
+	default:
+		return "", errors.Errorf("unsupported polygon preset: %s", preset)
 	}
 }
 

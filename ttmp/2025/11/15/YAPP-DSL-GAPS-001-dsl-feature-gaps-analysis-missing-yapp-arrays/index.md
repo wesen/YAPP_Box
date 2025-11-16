@@ -27,6 +27,8 @@ RelatedFiles:
       Note: test case with resolver errors (snap_joins uses 'sides' array instead of 'side' string) - useful for testing resolver error message improvements
     - Path: examples/yapp-demo-lighttubes.yaml
       Note: Fixed cutouts structure (flat list with face field) and changed polygon to rounded_rect
+    - Path: examples/yapp-demo-polygon-test.yaml
+      Note: Test YAML with polygon examples
     - Path: log/01-2025-11-16-implementation-diary-lighttubes-module.md
       Note: Complete implementation diary documenting lightTubes module implementation process
     - Path: pkg/resolver/resolver.go
@@ -36,9 +38,11 @@ RelatedFiles:
     - Path: pkg/yappgen/emit.go
       Note: emit wall heights
     - Path: pkg/yappgen/features.go
-      Note: builder wiring for flags
+      Note: Migrated cutouts to module Build
+    - Path: pkg/yappgen/map.go
+      Note: Removed distributeCutouts/buildCutoutParams and friends
     - Path: pkg/yappgen/model.go
-      Note: wall height and ridge fields
+      Note: Cutouts type change; removed Cutout struct
     - Path: pkg/yappgen/modules/boxmounts/module.go
       Note: builder
     - Path: pkg/yappgen/modules/boxmounts/module_test.go
@@ -55,10 +59,12 @@ RelatedFiles:
       Note: flag tests
     - Path: pkg/yappgen/modules/connectors/schema.yaml
       Note: schema flags
+    - Path: pkg/yappgen/modules/cutouts/module.go
+      Note: Added polygonPresetFlag function and polygon preset emission
     - Path: pkg/yappgen/modules/cutouts/registry.go
       Note: ValidateStructure and ValidateConstraints are stubbed out (TODO) - enum validation not implemented
     - Path: pkg/yappgen/modules/cutouts/schema.yaml
-      Note: Defines enum for shape field but validation not enforced
+      Note: Added polygon shape enum and polygon preset field
     - Path: pkg/yappgen/modules/lighttubes/module.go
       Note: Build function converting DSL to YAPP array format with positional params and flags
     - Path: pkg/yappgen/modules/lighttubes/registry.go
@@ -79,6 +85,10 @@ RelatedFiles:
       Note: snap flags schema
     - Path: pkg/yappgen/modules_gen.go
       Note: includes box_mounts
+    - Path: pkg/yappgen/schema.go
+      Note: Added polygon support to ShapeFlag for legacy code path
+    - Path: pkg/yappgen/yappgen_test.go
+      Note: Adjusted cutouts tests to module path
     - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/02-pcb-stand-flag-support.md
       Note: design
     - Path: ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design-doc/03-connector-flag-support.md
@@ -89,6 +99,8 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
+
 
 
 

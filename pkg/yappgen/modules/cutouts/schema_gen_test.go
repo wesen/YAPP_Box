@@ -37,3 +37,36 @@ width: 0
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func TestCutoutsItem_PolygonHexagon(t *testing.T) {
+	var item CutoutsItem
+	input := []byte(`face: base
+from_back: 15
+from_left: 15
+length: 25
+polygon: hexagon
+radius: 5
+shape: polygon
+width: 25
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestCutoutsItem_PolygonArrow(t *testing.T) {
+	var item CutoutsItem
+	input := []byte(`angle: 30
+face: lid
+from_back: 10
+from_left: 20
+length: 20
+polygon: arrow
+radius: 0
+shape: polygon
+width: 20
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}

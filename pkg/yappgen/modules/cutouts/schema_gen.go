@@ -22,6 +22,8 @@ type CutoutsItem struct {
 	Depth *float64 `yaml:"depth,omitempty"`
 	// Rotation angle in degrees
 	Angle *float64 `yaml:"angle,omitempty"`
+	// Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2
+	Polygon *string `yaml:"polygon,omitempty"`
 }
 
 func (x *CutoutsItem) ApplyDefaults() {

@@ -1,0 +1,120 @@
+project: YAPP Light Tubes Demo
+yapp_version: v3
+
+# PCB dimensions
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+  z_clearance: 7.0
+  standoffs:
+    diameter: 7
+    screw_d: 2.4
+
+# Box dimensions
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 1  # Default padding (per-side overrides below)
+    fillet_radius: 2.0
+  base:
+    thickness: 1.0
+    wall_height: 8
+  lid:
+    thickness: 1.0
+    wall_height: 13
+  ridge:
+    height: 3.6  # Must be >= wall_thickness * 1.8 for snap joins (3.6 >= 2.0 * 1.8 = 3.6 ✓)
+    slack: 0.2
+
+# Tolerances
+tolerances:
+  holes: 0.4
+
+features:
+  # PCB stands - minimal setup for light tubes demo
+  pcb_stands:
+    - x: 5
+      y: 5
+      shell_part: base_only
+      corners: [front_left, back_right]
+    - x: 5
+      y: 5
+      shell_part: both
+      corners: [back_left, front_right]
+
+  # Light tubes - matching YAPP_Demo_lightTubes_v30.scad
+  light_tubes:
+    # Circle tube at (15, 10)
+    # SCAD: [15, 10, 5, 6, 1, 0.1, yappCircle]
+    - x: 15
+      y: 10
+      tube_length: 5
+      tube_width: 6
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: circle
+
+    # Rectangle tube at (15, 30) with lens thickness
+    # SCAD: [15, 30, 1.5, 5, 1, 0.1, yappRectangle, .5]
+    - x: 15
+      y: 30
+      tube_length: 1.5
+      tube_width: 5
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: rectangle
+      lens_thickness: 0.5
+
+  # Cutouts for visibility (matching SCAD example)
+  # Note: cutouts must be a flat list with 'face' field, not nested by face name
+  cutouts:
+    - face: base
+      from_back: 15
+      from_left: 15
+      width: 15
+      length: 15
+      radius: 5
+      shape: rounded_rect
+      # Note: Original SCAD uses polygon with hexagon preset, but polygon not yet supported in DSL
+
+    - face: front
+      from_back: 3
+      from_left: 5
+      width: 20  # shellWidth-10
+      length: 9  # shellHeight-4
+      radius: 2
+      shape: rounded_rect
+
+    - face: back
+      from_back: 5
+      from_left: 3
+      width: 24  # shellWidth-6
+      length: 9  # shellHeight-4
+      radius: 3
+      shape: rounded_rect
+
+  # Snap joins (matching SCAD example)
+  snap_joins:
+    - pos: 5  # (shellLength/2)-10
+      width: 3
+      side: left
+      alignment: center
+      symmetric: true
+    - pos: 7  # (shellLength/2)-8
+      width: 3
+      side: right
+      alignment: center
+      symmetric: true
+      diamond: true
+
+  # Box mounts (matching SCAD example)
+  box_mounts:
+    - pos: 15  # shellLength/2
+      screw_d: 3
+      slot_width: 6
+      height: 2.5
+      faces:
+        left: true
+        right: true
+      alignment: center

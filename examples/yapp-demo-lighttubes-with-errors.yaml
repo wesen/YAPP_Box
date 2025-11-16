@@ -1,0 +1,121 @@
+project: YAPP Light Tubes Demo (with resolver errors)
+yapp_version: v3
+
+# PCB dimensions
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+
+# Padding between PCB and inside wall
+padding:
+  front: 1
+  back: 2
+  right: 3
+  left: 4
+
+# Box dimensions
+wall_thickness: 2.0
+base_plane_thickness: 1.0
+lid_plane_thickness: 1.0
+base_wall_height: 8
+lid_wall_height: 13
+ridge_height: 3.6
+ridge_slack: 0.2
+round_radius: 2.0
+
+# Standoffs
+standoff_height: 7.0
+standoff_pin_diameter: 2.4
+standoff_hole_slack: 0.4
+standoff_diameter: 7
+
+features:
+  # PCB stands - minimal setup for light tubes demo
+  pcb_stands:
+    - x: 5
+      y: 5
+      shell_part: base_only
+      corners: [front_left, back_right]
+    - x: 5
+      y: 5
+      shell_part: both
+      corners: [back_left, front_right]
+
+  # Light tubes - matching YAPP_Demo_lightTubes_v30.scad
+  light_tubes:
+    # Circle tube at (15, 10)
+    # SCAD: [15, 10, 5, 6, 1, 0.1, yappCircle]
+    - x: 15
+      y: 10
+      tube_length: 5
+      tube_width: 6
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: circle
+
+    # Rectangle tube at (15, 30) with lens thickness
+    # SCAD: [15, 30, 1.5, 5, 1, 0.1, yappRectangle, .5]
+    - x: 15
+      y: 30
+      tube_length: 1.5
+      tube_width: 5
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: rectangle
+      lens_thickness: 0.5
+
+  # Cutouts for visibility (matching SCAD example)
+  cutouts:
+    base:
+      - from_back: 15
+        from_left: 15
+        width: 15
+        length: 15
+        radius: 5
+        shape: polygon
+        # Note: polygon shape requires preset, but simplified for demo
+
+    front:
+      - from_left: 5
+        from_bottom: 2
+        width: 20  # shellWidth-10
+        length: 9  # shellHeight-4
+        radius: 2
+        shape: rounded_rect
+
+    back:
+      - from_left: 3
+        from_bottom: 2
+        width: 24  # shellWidth-6
+        length: 9  # shellHeight-4
+        radius: 3
+        shape: rounded_rect
+
+  # Snap joins (matching SCAD example)
+  # ERROR: This version uses 'sides' (array) instead of 'side' (string)
+  # This causes resolver error: "unresolved expressions after 16 passes"
+  snap_joins:
+    - position: 5  # (shellLength/2)-10
+      width: 3
+      sides: [left]  # ERROR: should be 'side: left'
+      alignment: center
+      symmetric: true
+    - position: 7  # (shellLength/2)-8
+      width: 3
+      sides: [right]  # ERROR: should be 'side: right'
+      alignment: center
+      symmetric: true
+      diamond: true
+
+  # Box mounts (matching SCAD example)
+  box_mounts:
+    - pos: 15  # shellLength/2
+      screw_d: 3
+      slot_width: 6
+      height: 2.5
+      faces:
+        left: true
+        right: true
+      alignment: center
+

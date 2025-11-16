@@ -65,6 +65,8 @@ func ShapeFlag(shape string) (flag scad.Raw, usesWidth bool, usesLength bool, us
 		return scad.Raw("yappCircleWithFlats"), true, true, true, true // width, length (distance between flats), radius
 	case "circle_with_key":
 		return scad.Raw("yappCircleWithKey"), true, true, true, true // width=key width, length=key depth, radius
+	case "polygon":
+		return scad.Raw("yappPolygon"), true, true, false, true // width, length used; radius not used
 	default:
 		return "", false, false, false, false
 	}

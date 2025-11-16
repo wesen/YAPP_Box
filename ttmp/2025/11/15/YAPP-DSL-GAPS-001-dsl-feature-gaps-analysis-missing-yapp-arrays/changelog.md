@@ -136,3 +136,27 @@ Identified validation gap: cutouts schema defines enum for shape field but Valid
 
 Added tasks for validation gap: ValidateConstraints/ValidateStructure implementation needed for enum checking. Fixed yapp-demo-lighttubes.yaml cutouts structure and shape value
 
+
+## 2025-11-16
+
+Implemented polygon cutout shapes with preset support (hexagon, arrow, 6pt_star, iso_triangle, triangle, etc.)
+
+### Related Files
+
+- pkg/yappgen/map.go — Added polygon preset support to buildCutoutParams function
+- pkg/yappgen/modules/cutouts/module.go — Added polygonPresetFlag function and polygon preset emission logic
+- pkg/yappgen/modules/cutouts/schema.yaml — Added polygon to shape enum and polygon preset field
+- pkg/yappgen/schema.go — Added polygon support to ShapeFlag function
+
+
+## 2025-11-16
+
+Removed legacy cutouts pipeline; migrated to module Build; updated tests
+
+### Related Files
+
+- pkg/yappgen/features.go — Use cutouts.Build instead of distributeCutouts
+- pkg/yappgen/map.go — Deleted legacy cutouts builders and helpers
+- pkg/yappgen/model.go — Cutouts field now []map[string]any (removed Cutout struct)
+- pkg/yappgen/yappgen_test.go — Updated tests to use module builders
+

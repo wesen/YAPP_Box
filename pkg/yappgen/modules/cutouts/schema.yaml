@@ -41,7 +41,7 @@ fields:
   shape:
     type: string
     required: true
-    enum: [rectangle, circle, rounded_rect, circle_with_flats, circle_with_key]
+    enum: [rectangle, circle, rounded_rect, circle_with_flats, circle_with_key, polygon]
     desc: Cutout shape (maps to YAPP shape flag)
 
   depth:
@@ -51,6 +51,11 @@ fields:
   angle:
     type: number
     desc: Rotation angle in degrees
+
+  polygon:
+    type: string
+    desc: "Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2"
+    enum: [hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2]
 
 tests:
   - name: rectangle_cutout
@@ -87,4 +92,31 @@ tests:
       radius: 0
       shape: rectangle
     expect_error: "missing required field"
+
+  - name: polygon_hexagon
+    desc: Polygon cutout with hexagon preset
+    input:
+      face: base
+      from_back: 15
+      from_left: 15
+      width: 25
+      length: 25
+      radius: 5
+      shape: polygon
+      polygon: hexagon
+    expect_valid: true
+
+  - name: polygon_arrow
+    desc: Polygon cutout with arrow preset
+    input:
+      face: lid
+      from_back: 10
+      from_left: 20
+      width: 20
+      length: 20
+      radius: 0
+      shape: polygon
+      polygon: arrow
+      angle: 30
+    expect_valid: true
 

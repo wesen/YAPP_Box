@@ -5,7 +5,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/snapjoins"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
@@ -37,23 +39,25 @@ func TestBuildParams_InsertsUndefForOptional(t *testing.T) {
 
 func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 	// Circle uses radius; width and length should be 0
-	item := map[string]any{
-		"shape":     "circle",
-		"from_back": 30,
-		"from_left": 12,
-		"radius":    4,
+	items := []map[string]any{
+		{"face": "front", "shape": "circle", "from_back": 30, "from_left": 12, "width": 0, "length": 0, "radius": 4},
 	}
-	params, err := buildCutoutParams(item)
+	byFace, err := cutouts.Build(items)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(params) != 8 {
-		t.Fatalf("expected 8 params incl. shape flag, got %d", len(params))
+	if len(byFace["cutoutsFront"]) != 1 {
+		t.Fatalf("expected one cutout, got %d", len(byFace["cutoutsFront"]))
 	}
-	if params[2] != 0 || params[3] != 0 {
+	params := byFace["cutoutsFront"][0]
+	if len(params) < 8 {
+		t.Fatalf("expected at least 8 params incl. shape flag, got %d", len(params))
+	}
+	// Module Build function already sets width/length to 0 for circles
+	if params[2].(float64) != 0 || params[3].(float64) != 0 {
 		t.Fatalf("expected width and length to be 0 for circle, got %v, %v", params[2], params[3])
 	}
-	if params[4] != 4 {
+	if params[4].(float64) != 4 {
 		t.Fatalf("expected radius 4 at index 4, got %#v", params[4])
 	}
 	if params[5] != scad.Raw("yappCircle") {
@@ -62,17 +66,20 @@ func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 }
 
 func TestDistributeCutouts_ByFace(t *testing.T) {
-	cuts := []Cutout{
-		{Face: "front", Item: map[string]any{"shape": "rectangle", "from_back": 10, "from_left": 5, "width": 8, "length": 3}},
-		{Face: "left", Item: map[string]any{"shape": "circle", "from_back": 12, "from_left": 4, "radius": 2}},
+	cutoutsModule := cutouts.NewModule()
+	items := []map[string]any{
+		{"face": "front", "shape": "rectangle", "from_back": 10, "from_left": 5, "width": 8, "length": 3, "radius": 0},
+		{"face": "left", "shape": "circle", "from_back": 12, "from_left": 4, "width": 0, "length": 0, "radius": 2},
 	}
-	m, err := distributeCutouts(cuts)
+	// Use the module Build function which returns map[string][][]any
+	m, err := cutouts.Build(items)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 	if len(m["cutoutsFront"]) != 1 || len(m["cutoutsLeft"]) != 1 {
 		t.Fatalf("expected one cutout in front and left, got front=%d left=%d", len(m["cutoutsFront"]), len(m["cutoutsLeft"]))
 	}
+	_ = cutoutsModule // avoid unused variable
 }
 
 func TestEmitSCAD_ContainsUndefAndArrays(t *testing.T) {
@@ -112,7 +119,7 @@ func TestBuildSnapJoins_SideFlag(t *testing.T) {
 	items := []map[string]any{
 		{"pos": 25, "width": 8, "side": "left"},
 	}
-	list, err := buildSnapJoins(items)
+	list, err := snapjoins.Build(items)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

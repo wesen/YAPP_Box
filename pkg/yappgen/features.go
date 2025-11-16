@@ -9,6 +9,7 @@ import (
 
 	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
 	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
+	cutouts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
 	lighttubes "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/lighttubes"
 	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
@@ -151,17 +152,8 @@ func (m *cutoutFeatureModule) Collect(resolved map[string]any, features map[stri
 	if !ok {
 		return nil
 	}
-	for _, it := range arr {
-		item, ok := it.(map[string]any)
-		if !ok {
-			return errors.Errorf("cutouts items must be objects, got %T", it)
-		}
-		face, _ := item["face"].(string)
-		if face == "" {
-			return errors.Errorf("cutout missing required 'face'")
-		}
-		model.Cutouts = append(model.Cutouts, Cutout{Face: face, Item: item})
-	}
+	items := normalizeArrayOfMaps(arr)
+	model.Cutouts = items
 	return nil
 }
 
@@ -169,9 +161,9 @@ func (m *cutoutFeatureModule) Emit(ctx context.Context, model *Model, b *strings
 	if len(model.Cutouts) == 0 {
 		return nil
 	}
-	byFace, err := distributeCutouts(model.Cutouts)
+	byFace, err := cutouts.Build(model.Cutouts)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cutouts")
 	}
 	keys := make([]string, 0, len(byFace))
 	for k := range byFace {

@@ -38,19 +38,12 @@ type Model struct {
 	Connectors  []map[string]any
 	BoxMounts   []map[string]any
 	SnapJoins   []map[string]any
-	Cutouts     []Cutout
+	Cutouts     []map[string]any
 	PushButtons []map[string]any
 	LightTubes  []map[string]any
 
 	// Derived feature toggles
 	PrintSwitchExtenders bool
-}
-
-// Cutout is a normalized representation that includes the target face.
-type Cutout struct {
-	Face string         // front|back|left|right|lid|base
-	Item map[string]any // original item fields (already resolved)
-	Raw  map[string]any // optional raw for future use
 }
 
 // BuildModel converts a resolved DSL document into a Model.
