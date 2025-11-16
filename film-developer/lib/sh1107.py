@@ -1,6 +1,7 @@
 from micropython import const
 import framebuf
 from machine import Pin, SPI
+import time
 
 
 _SET_DISP = const(0xAE)
@@ -111,10 +112,15 @@ class SH1107:
 
     # Low-level
     def _reset(self) -> None:
+        # Ensure bus is idle and in command mode during reset
+        self.cs.value(1)
+        self.dc.value(0)
+        time.sleep_ms(1)
+        # Longer reset pulse to fully reinitialize the controller
         self.rst.value(0)
-        for _ in range(1000):
-            pass
+        time.sleep_ms(50)
         self.rst.value(1)
+        time.sleep_ms(50)
 
     def _init(self) -> None:
         self._write_cmd(_SET_DISP)  # display off
@@ -141,6 +147,15 @@ class SH1107:
         self._write_cmd(0x5F)
         self._write_cmd(_SET_DISP_ON)  # display on
 
+    def reset(self) -> None:
+        """
+        Public reset: hardware reset, re-init, clear and show.
+        """
+        self._reset()
+        self._init()
+        self.fill(0)
+        self.show()
+
     def _write_cmd(self, cmd: int) -> None:
         self.cs.value(0)
         self.dc.value(0)
@@ -152,5 +167,7 @@ class SH1107:
         self.dc.value(1)
         self.spi.write(buf)
         self.cs.value(1)
+        # Drive DC low when idle to avoid floating if CS glitches
+        self.dc.value(0)
 
 

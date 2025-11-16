@@ -8,11 +8,12 @@ class Display:
     Logical buffer is 128x64; rotated 90° CW for physical 64x128 SH1107 panels.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, spi_baudrate: int = 1_000_000) -> None:
+        self.spi_baudrate = spi_baudrate
         # SPI0: SCK=GP18, MOSI=GP19 (no MISO used)
         self.spi = SPI(
             0,
-            baudrate=1_000_000,
+            baudrate=self.spi_baudrate,
             polarity=0,
             phase=0,
             sck=Pin(18),
@@ -44,5 +45,32 @@ class Display:
 
     def show(self) -> None:
         self.dev.show()
+
+    def reset(self) -> None:
+        self.dev.reset()
+
+    def reset_spi(self, spi_baudrate: int | None = None) -> None:
+        """
+        Fully reset the SPI bus and reattach it to the SH1107 device.
+        Optionally change baudrate at the same time.
+        """
+        try:
+            self.spi.deinit()
+        except Exception:
+            # Some ports may not implement deinit; ignore.
+            pass
+        if spi_baudrate is not None:
+            self.spi_baudrate = spi_baudrate
+        # Recreate SPI0
+        self.spi = SPI(
+            0,
+            baudrate=self.spi_baudrate,
+            polarity=0,
+            phase=0,
+            sck=Pin(18),
+            mosi=Pin(19),
+        )
+        # Reattach to device and keep current framebuffer contents
+        self.dev.spi = self.spi
 
 
