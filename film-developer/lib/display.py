@@ -4,7 +4,8 @@ from .sh1107 import SH1107
 
 class Display:
     """
-    Text-mode display helper targeting a ~21x8 character grid.
+    Text-mode display helper targeting a 16x8 character grid with the built-in 8x8 font.
+    Note: Using a 6x8 font would allow 21x8; current implementation uses 8x8 (16 columns).
     Logical buffer is 128x64; rotated 90° CW for physical 64x128 SH1107 panels.
     """
 

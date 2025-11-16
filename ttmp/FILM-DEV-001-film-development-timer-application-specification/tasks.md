@@ -21,11 +21,11 @@
 - [ ] Test each hardware component independently
 
 ### Phase 2: UI Controller
-- [ ] Implement display rendering for 21x8 character grid
+- [ ] Implement display rendering for 16x8 character grid (128x64, 8x8 font)
 - [ ] Create screen layout templates
 - [ ] Implement button handler with 50ms debouncing
 - [ ] Implement LED control with blink patterns
-- [ ] Build navigation state machine
+- [x] Build navigation state machine
 - [ ] Implement all 19 screen layouts from UI spec
 - [ ] Test button navigation and screen transitions
 
@@ -65,3 +65,4 @@
 - [ ] Document any issues or edge cases discovered
 - [ ] Create UI MVP analysis doc with MicroPython references (framebuf, SPI, ds18x20)
 - [ ] Draft UI MVP design and implementation plan (display/input/temp/ui/main modules)
+- [ ] Evaluate adopting 6x8 font to enable 21x8 grid; implement renderer if chosen

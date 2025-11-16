@@ -14,7 +14,7 @@ RelatedFiles:
     - Path: /home/manuel/code/others/YAPP_Box/film-developer/README.md
       Note: Top-level wiring summary including all 3 buttons
     - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/display.py
-      Note: Display wrapper for SH1107 21x8 text grid
+      Note: Display wrapper for SH1107 16×8 text grid (8×8 font on 128×64 logical buffer)
     - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/input.py
       Note: Button input with debounce (BTN1/2/3)
     - Path: /home/manuel/code/others/YAPP_Box/film-developer/lib/sh1107.py
@@ -45,6 +45,7 @@ ExternalSources: []
 Summary: Comprehensive specification for Raspberry Pi Pico W film development timer with multi-stage timing, temperature monitoring, and session logging
 LastUpdated: 2025-11-08T17:08:05.30832586-05:00
 ---
+
 
 
 

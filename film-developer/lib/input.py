@@ -11,11 +11,12 @@ class Input:
     Emits events on press (active-low -> 0).
     """
 
-    def __init__(self, debounce_ms: int = 50) -> None:
+    def __init__(self, debounce_ms: int = 50, debug: bool = False) -> None:
         self.buttons = [Pin(p, Pin.IN, Pin.PULL_UP) for p in BTN_PINS]
         self.last_value = [1, 1, 1]
         self.last_change_ms = [0, 0, 0]
         self.debounce_ms = debounce_ms
+        self.debug = debug
 
     def read(self) -> list[int]:
         """
@@ -27,11 +28,20 @@ class Input:
         for idx, btn in enumerate(self.buttons):
             value = btn.value()
             if value != self.last_value[idx]:
-                if time.ticks_diff(now, self.last_change_ms[idx]) > self.debounce_ms:
+                delta = time.ticks_diff(now, self.last_change_ms[idx])
+                if delta > self.debounce_ms:
                     self.last_change_ms[idx] = now
                     self.last_value[idx] = value
                     if value == 0:
                         events.append(idx + 1)
+                        if self.debug:
+                            print("input: press idx={} gpio={} t={}ms".format(idx + 1, BTN_PINS[idx], now))
+                    else:
+                        if self.debug:
+                            print("input: release idx={} gpio={} t={}ms".format(idx + 1, BTN_PINS[idx], now))
+                else:
+                    if self.debug:
+                        print("input: bounce ignored idx={} gpio={} delta={}ms".format(idx + 1, BTN_PINS[idx], delta))
         return events
 
 

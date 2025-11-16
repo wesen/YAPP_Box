@@ -285,9 +285,19 @@ async def amain2():
         temp_task_integ(state),
     )
 
-# Override to run integrated test by default
 def main() -> None:
-    asyncio.run(amain2())
+    # Run UI state machine by default (integrated tests remain available via amain()/amain2())
+    from lib.input import Input
+    from lib.temp import Temp
+    from lib.ui import UI
+    d = Display(spi_baudrate=1_000_000)
+    i = Input(debug=True)
+    t = Temp()
+    ui = UI(d, i, t)
+    while True:
+        ui.handle()
+        ui.render()
+        time.sleep_ms(50)
 
 
 if __name__ == "__main__":

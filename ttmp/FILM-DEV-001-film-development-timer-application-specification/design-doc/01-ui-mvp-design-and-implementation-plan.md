@@ -12,9 +12,11 @@ Intent: long-term
 Owners: []
 RelatedFiles: []
 ExternalSources: []
-Summary: Minimal UI plan for film dev timer (text UI, buttons, temp)
-LastUpdated: 2025-11-08T17:16:09.132846562-05:00
+Summary: Minimal UI plan for film dev timer (text UI 16×8 with 8×8 font; 21×8 possible with 6×8 font)
+LastUpdated: 2025-11-15T20:37:07.980942745-05:00
 ---
+
+
 
 
 # UI MVP Design and Implementation Plan

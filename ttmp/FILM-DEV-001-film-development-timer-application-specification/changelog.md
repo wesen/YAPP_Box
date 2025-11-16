@@ -79,3 +79,43 @@ Added comprehensive Raspberry Pi Pico W pinout reference (05) with all GPIO, alt
 
 Expanded reference doc 05 with comprehensive MicroPython section (installation, APIs, WiFi, patterns, debugging); renamed to hardware-and-micropython-reference
 
+
+## 2025-11-15
+
+UI grid decision: hardware is 128×64; adopting 8×8 font → 16×8 chars. Adjust UI labels to fit and truncate safely where needed.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/display.py — Display helper enforces 16×8 text grid (8×8 font)
+- /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/reference/02-user-interface-specification-and-display-system.md — UI spec source; note grid differs when using 8×8 font
+
+
+## 2025-11-15
+
+Correction: 21×8 is achievable with a 6×8 font. Current code uses framebuf’s 8×8 font → 16×8 grid. Decision: keep 8×8 for now; evaluate adding a 6×8 font renderer if wider labels are needed.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/display.py — Current helper assumes 8×8 font (16 cols); 6×8 would permit 21 cols.
+- /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/reference/02-user-interface-specification-and-display-system.md — UI layouts can map to 16×8 (8×8 font) or 21×8 (6×8 font)
+
+
+## 2025-11-15
+
+Implemented UI navigation state machine with core screens (splash, main, menu, system info, timer running/paused, stage advance, done). Switched app entry to run UI loop by default.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — State machine + renderers for 16x8 grid; stubs for extended screens
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Main now runs UI loop by default (tests retained)
+
+
+## 2025-11-15
+
+Added serial debug for button input (edge/bounce logs) and UI state transitions to diagnose non-registering clicks.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/input.py — Debug logs for press/release/bounce; toggle via constructor
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — State transition logs on events for navigation
+
