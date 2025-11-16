@@ -23,6 +23,12 @@ RelatedFiles:
       Note: Defines FieldSpec
     - Path: pkg/resolver/validation.go
       Note: Two-phase validation integration
+    - Path: pkg/schemagen/errors.go
+      Note: ValidationError aggregate
+    - Path: pkg/schemagen/validate.go
+      Note: core schema validation logic
+    - Path: pkg/schemagen/validate_test.go
+      Note: unit tests for validator
     - Path: pkg/yappgen/modules/pushbuttons/schema.yaml
       Note: Example YAML schema for pilot module
     - Path: pkg/yappgen/modules_gen.go
@@ -33,6 +39,7 @@ ExternalSources:
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
 
 
 

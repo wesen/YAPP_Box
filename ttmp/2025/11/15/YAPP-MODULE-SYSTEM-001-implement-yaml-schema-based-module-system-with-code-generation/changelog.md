@@ -45,3 +45,23 @@ Added registry unit tests covering ordering, duplicates, SetTestRegistry
 
 Ran go test ./... to confirm registry scaffolding integrates cleanly
 
+
+## 2025-11-15
+
+Created cmd/schemagen CLI skeleton with validate/discover stubs
+
+### Related Files
+
+- cmd/schemagen/main.go — Cobra root and placeholder commands
+
+
+## 2025-11-15
+
+Implemented schemagen validate with YAML parser, nested field checks, and CLI integration
+
+### Related Files
+
+- cmd/schemagen/main.go — wired validate subcommand
+- pkg/schemagen/validate.go — validation walker
+- pkg/schemagen/validate_test.go — tests for validator
+
