@@ -1,12 +1,13 @@
 from lib.display import Display
+from lib.async_buttons import GhostDebouncedButton
 import uasyncio as asyncio
-import micropython
 from machine import Pin
 import time
+import onewire
+import ds18x20
 
 
 BTN_PIN = 14  # Single button (active-low)
-micropython.alloc_emergency_exception_buf(100)
 
 # Small fixed ring buffer for IRQ-safe event enqueue
 _Q = [0] * 16
@@ -15,33 +16,10 @@ _head = 0
 _tail = 0
 _flag = asyncio.ThreadSafeFlag()
 
-_irq_total = 0
-_irq_dropped = 0
-_irq_peak_depth = 0
-_irq_suppress = 0
-_state_ref = None  # set in amain so scheduled callbacks can update state
 GHOST_MS = 25      # ignore further IRQs for this many ms after first edge
-_suppress_until_ms = 0
 
 DEBOUNCE_PRESS_MS = 3
 DEBOUNCE_RELEASE_MS = 3
-
-
-def _btn_irq(pin):
-    # Simple ghosting debounce: accept first edge, suppress further for GHOST_MS
-    # Keep ISR tiny; schedule userland update via micropython.schedule
-    global _irq_total, _suppress_until_ms
-    now = time.ticks_ms()
-    if time.ticks_diff(now, _suppress_until_ms) < 0:
-        _irq_total += 1
-        return
-    _irq_total += 1
-    # Extend suppression window
-    _suppress_until_ms = time.ticks_add(now, GHOST_MS) if hasattr(time, "ticks_add") else (now + GHOST_MS)
-    try:
-        micropython.schedule(_sched_click, 0)
-    except Exception:
-        pass
 
 
 def _pop_events():
@@ -60,25 +38,8 @@ def _pop_one():
     return False
 
 def _sched_click(_):
-    # Runs in soft-IRQ context (scheduled), safe to touch Python state
-    s = _state_ref
-    if s is None:
-        return
-    t_now = time.ticks_ms()
-    last_press = s["stats"]["last_press_ms"]
-    if last_press is not None:
-        gap = time.ticks_diff(t_now, last_press)
-        st = s["stats"]
-        st["gap_sum"] += gap
-        st["gap_cnt"] += 1
-        if st["gap_min"] is None or gap < st["gap_min"]:
-            st["gap_min"] = gap
-        if gap > st["gap_max"]:
-            st["gap_max"] = gap
-    s["stats"]["last_press_ms"] = t_now
-    s["presses"] += 1
-    s["stats"]["accepted"] += 1
-    s["dirty"] = True
+    # Deprecated: replaced by GhostDebouncedButton.on_press callback
+    pass
     s["pending_draws"] = s.get("pending_draws", 0) + 1
 
 
@@ -191,10 +152,6 @@ async def amain():
     # Keep SPI very low for stability during bring-up
     display = Display(spi_baudrate=1_000_000)
 
-    # Configure single button (active-low) with IRQ
-    btn = Pin(BTN_PIN, Pin.IN, Pin.PULL_UP)
-    btn.irq(trigger=Pin.IRQ_FALLING, handler=_btn_irq)
-
     state = {
         "presses": 0,
         "dirty": True,
@@ -214,9 +171,28 @@ async def amain():
             "hold_max": 0,
         },
     }
-    # expose to scheduled callback
-    global _state_ref
-    _state_ref = state
+
+    # Button press callback (scheduled context safe)
+    def on_press(_button_id: int) -> None:
+        t_now = time.ticks_ms()
+        last_press = state["stats"]["last_press_ms"]
+        if last_press is not None:
+            gap = time.ticks_diff(t_now, last_press)
+            st = state["stats"]
+            st["gap_sum"] += gap
+            st["gap_cnt"] += 1
+            if st["gap_min"] is None or gap < st["gap_min"]:
+                st["gap_min"] = gap
+            if gap > st["gap_max"]:
+                st["gap_max"] = gap
+        state["stats"]["last_press_ms"] = t_now
+        state["presses"] += 1
+        state["stats"]["accepted"] += 1
+        state["dirty"] = True
+        state["pending_draws"] = state.get("pending_draws", 0) + 1
+
+    # Configure single button (active-low) with ghosted debounce
+    _btn = GhostDebouncedButton(BTN_PIN, ghost_ms=GHOST_MS, on_press=on_press, button_id=1)
     await asyncio.gather(
         # button presses are handled via scheduled callback; no button task needed
         display_task(display, state),
@@ -226,6 +202,92 @@ async def amain():
 
 def main() -> None:
     asyncio.run(amain())
+
+# -------------------------------
+# Integrated test: Display + Temp + 3 Buttons (debounced) + LEDs
+# -------------------------------
+
+async def display_task_integ(display, state):
+    while True:
+        if state.get("dirty") or state.get("pending_draws", 0) > 0:
+            display.clear()
+            display.text_at(0, 0, "FILM DEV TEST")
+            temp_line = "--.-C" if state.get("temp_c") is None else "{:.1f}C".format(state.get("temp_c"))
+            display.text_at(2, 0, "Temp: {}".format(temp_line))
+            display.text_at(3, 0, "BTN1/2/3 toggle LED")
+            display.text_at(4, 0, "P1:{} P2:{} P3:{}".format(state.get("p1", 0), state.get("p2", 0), state.get("p3", 0)))
+            cnt = (state.get("draw_count", 0) + 1) % 100000
+            state["draw_count"] = cnt
+            display.text_at(5, 0, "Draws: {}".format(cnt))
+            display.show()
+            state["dirty"] = False
+            if state.get("pending_draws", 0) > 0:
+                state["pending_draws"] -= 1
+        await asyncio.sleep_ms(10)
+
+async def temp_task_integ(state):
+    ow = onewire.OneWire(Pin(22))
+    ds = ds18x20.DS18X20(ow)
+    roms = ds.scan()
+    rom = roms[0] if roms else None
+    while True:
+        if rom is not None:
+            ds.convert_temp()
+            await asyncio.sleep_ms(750)
+            c = ds.read_temp(rom)
+            state["temp_c"] = c
+            state["dirty"] = True
+            state["pending_draws"] = state.get("pending_draws", 0) + 1
+        else:
+            state["temp_c"] = None
+        await asyncio.sleep_ms(250)
+
+async def amain2():
+    display = Display(spi_baudrate=1_000_000)
+    # LEDs on GP10/11/12
+    LED_PINS = (10, 11, 12)
+    leds = [Pin(p, Pin.OUT, value=0) for p in LED_PINS]
+    led_state = [0, 0, 0]
+
+    state = {
+        "dirty": True,
+        "draw_count": 0,
+        "pending_draws": 0,
+        "temp_c": None,
+        "p1": 0,
+        "p2": 0,
+        "p3": 0,
+    }
+
+    def on_press(button_id: int) -> None:
+        # Toggle corresponding LED
+        if 1 <= button_id <= 3:
+            idx = button_id - 1
+            led_state[idx] ^= 1
+            leds[idx].value(led_state[idx])
+        # Update per-button counters
+        if button_id == 1:
+            state["p1"] = state.get("p1", 0) + 1
+        elif button_id == 2:
+            state["p2"] = state.get("p2", 0) + 1
+        elif button_id == 3:
+            state["p3"] = state.get("p3", 0) + 1
+        state["dirty"] = True
+        state["pending_draws"] = state.get("pending_draws", 0) + 1
+
+    # Three debounced buttons
+    GhostDebouncedButton(14, ghost_ms=GHOST_MS, on_press=on_press, button_id=1)
+    GhostDebouncedButton(15, ghost_ms=GHOST_MS, on_press=on_press, button_id=2)
+    GhostDebouncedButton(16, ghost_ms=GHOST_MS, on_press=on_press, button_id=3)
+
+    await asyncio.gather(
+        display_task_integ(display, state),
+        temp_task_integ(state),
+    )
+
+# Override to run integrated test by default
+def main() -> None:
+    asyncio.run(amain2())
 
 
 if __name__ == "__main__":
