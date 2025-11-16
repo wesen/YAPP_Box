@@ -300,6 +300,7 @@ Tuning tips:
 - main.py: single-button async demo with first-IRQ ghosting debounce and a display task.
 - Display SPI currently at 1 MHz (adjust in `Display(spi_baudrate=...)` if EMI returns).
 - Stats print every 2 s: use these to tune debounce and see if IRQs are being dropped.
+- Draws counter on screen (“Draws: N”) increments each frame; fast bursts queue up via `pending_draws` and the display task drains them with a short cadence (~10 ms).
 
 ## Debugging Workflow
 
@@ -335,6 +336,60 @@ async def stats_task(state):
   - If the OLED corrupts, try BTN3 reset if mapped, or call `display.reset()` from a quick test, or power-cycle the module.
 - Add minimal prints
   - When you add prints, include the variable and units (e.g., "gap_ms=...") so you can skim logs fast.
+ - Watch the on-screen “Draws:” counter
+  - If Draws advances on each tap but less than 1:1 with every press, that’s expected—`show()` is heavier than counting presses. The counter confirms frames are being scheduled and rendered.
+
+### 11. Render scheduling and redraw counter
+
+To make fast bursts feel smoother, the button handler now requests frames and the display task drains a small backlog at a short cadence. This keeps the UI responsive without trying to render on every single micro-event.
+
+- The scheduled click handler increments a small “pending draws” counter:
+
+```62:84:/home/manuel/code/others/YAPP_Box/film-developer/main.py
+def _sched_click(_):
+    # Runs in soft-IRQ context (scheduled), safe to touch Python state
+    s = _state_ref
+    if s is None:
+        return
+    t_now = time.ticks_ms()
+    last_press = s["stats"]["last_press_ms"]
+    if last_press is not None:
+        gap = time.ticks_diff(t_now, last_press)
+        st = s["stats"]
+        st["gap_sum"] += gap
+        st["gap_cnt"] += 1
+        if st["gap_min"] is None or gap < st["gap_min"]:
+            st["gap_min"] = gap
+        if gap > st["gap_max"]:
+            st["gap_max"] = gap
+    s["stats"]["last_press_ms"] = t_now
+    s["presses"] += 1
+    s["stats"]["accepted"] += 1
+    s["dirty"] = True
+    s["pending_draws"] = s.get("pending_draws", 0) + 1
+```
+
+- The display task renders while there are pending draws (and shows a clipped redraw counter):
+
+```142:156:/home/manuel/code/others/YAPP_Box/film-developer/main.py
+async def display_task(display, state):
+    while True:
+        if state.get("dirty") or state.get("pending_draws", 0) > 0:
+            display.clear()
+            display.text_at(0, 0, "ASYNC BUTTON DEMO")
+            display.text_at(2, 0, "BTN1 on GP14")
+            display.text_at(4, 0, "Presses: {}".format(state["presses"]))
+            cnt = (state.get("draw_count", 0) + 1) % 100000
+            state["draw_count"] = cnt
+            display.text_at(5, 0, "Draws: {}".format(cnt))
+            display.show()
+            state["dirty"] = False
+            if state.get("pending_draws", 0) > 0:
+                state["pending_draws"] -= 1
+        await asyncio.sleep_ms(10)
+```
+
+If you want the UI to feel “snappier,” you can slightly reduce the sleep (e.g., 8–10 ms); if you want to reduce bus load, increase it (e.g., 20–50 ms). The Draws counter gives immediate feedback about how quickly frames are being pushed.
 
 ## Exercises
 

@@ -79,6 +79,7 @@ def _sched_click(_):
     s["presses"] += 1
     s["stats"]["accepted"] += 1
     s["dirty"] = True
+    s["pending_draws"] = s.get("pending_draws", 0) + 1
 
 
 async def buttons_task(state, btn):
@@ -141,14 +142,20 @@ async def buttons_task(state, btn):
 
 async def display_task(display, state):
     while True:
-        if state.get("dirty"):
+        if state.get("dirty") or state.get("pending_draws", 0) > 0:
             display.clear()
             display.text_at(0, 0, "ASYNC BUTTON DEMO")
             display.text_at(2, 0, "BTN1 on GP14")
             display.text_at(4, 0, "Presses: {}".format(state["presses"]))
+            # Clipped redraw counter (wrap at 100000)
+            cnt = (state.get("draw_count", 0) + 1) % 100000
+            state["draw_count"] = cnt
+            display.text_at(5, 0, "Draws: {}".format(cnt))
             display.show()
             state["dirty"] = False
-        await asyncio.sleep_ms(50)
+            if state.get("pending_draws", 0) > 0:
+                state["pending_draws"] -= 1
+        await asyncio.sleep_ms(10)
 
 async def stats_task(state):
     global _irq_total, _irq_dropped, _irq_peak_depth
@@ -191,6 +198,8 @@ async def amain():
     state = {
         "presses": 0,
         "dirty": True,
+        "draw_count": 0,
+        "pending_draws": 0,
         "stats": {
             "accepted": 0,
             "debounce_ignored": 0,
@@ -211,7 +220,7 @@ async def amain():
     await asyncio.gather(
         # button presses are handled via scheduled callback; no button task needed
         display_task(display, state),
-        stats_task(state),
+        # stats_task(state),
     )
 
 
