@@ -33,5 +33,5 @@
 - [x] Week 6: Integrate LoadModuleHelp() with Glazed help system
 - [ ] Week 6: Add CI workflow to check go generate is up-to-date
 - [ ] Week 6: Create pre-commit hook template for auto-running go generate
-- [ ] Week 6: Write module authoring guide explaining how to add new modules
+- [x] Week 6: Write module authoring guide explaining how to add new modules
 - [ ] Week 6: Verify all 10 success criteria are met

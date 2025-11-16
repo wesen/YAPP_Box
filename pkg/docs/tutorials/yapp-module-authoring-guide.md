@@ -1,0 +1,754 @@
+---
+Title: YAPP Module Authoring Guide
+Slug: yapp-module-authoring-guide
+Short: Step-by-step guide for adding new YAPP DSL modules using the schema-based system
+Topics:
+  - yapp
+  - dsl
+  - modules
+  - developer
+Commands:
+  - yappctl
+  - schemagen
+IsTemplate: false
+IsTopLevel: true
+ShowPerDefault: true
+SectionType: Tutorial
+Order: 50
+---
+
+# YAPP Module Authoring Guide
+
+## Overview
+
+This guide explains how to add a new feature module to the YAPP DSL using the schema-based module system. With this system, you write one `schema.yaml` file and the code generator handles the rest—no need to edit core files or duplicate validation logic.
+
+**What you'll create:**
+- A YAML schema defining your module's fields
+- A typed Go builder that converts YAML to OpenSCAD arrays
+- Auto-generated structs, tests, and help pages
+
+**Time estimate:** 1-2 hours for a simple module, 3-4 hours for complex nested structures.
+
+## Prerequisites
+
+- Go 1.24+ installed
+- Familiarity with YAML and basic Go syntax
+- Understanding of OpenSCAD array format for your feature (check `YAPPgenerator_v3.scad`)
+
+## Step 1: Create Module Directory
+
+Choose a descriptive snake_case name for your module (e.g., `led_indicators`, `display_cutouts`).
+
+```bash
+mkdir -p pkg/yappgen/modules/yourmodule
+cd pkg/yappgen/modules/yourmodule
+```
+
+## Step 2: Write Schema YAML
+
+Create `schema.yaml` with your module definition:
+
+```yaml
+module: your_module_name      # Snake_case, used in YAML
+order: 250                    # Processing order (100-500)
+scad_array: yourModuleArray   # CamelCase OpenSCAD array name
+go_package: yourmodule        # Go package name (lowercase)
+description: >
+  Brief description of what this module does.
+  Explain the purpose and how it maps to YAPP features.
+
+fields:
+  # Required fields first
+  x:
+    type: number
+    required: true
+    desc: X coordinate description
+  
+  y:
+    type: number
+    required: true
+    desc: Y coordinate description
+  
+  # Optional fields
+  diameter:
+    type: number
+    desc: Optional diameter field
+    default: 6.0
+  
+  # String fields with enums
+  shape:
+    type: string
+    enum: [circle, rectangle, polygon]
+    default: circle
+    desc: Shape type
+  
+  # Boolean fields
+  enabled:
+    type: bool
+    default: true
+    desc: Enable this feature
+  
+  # Nested objects
+  dimensions:
+    type: object
+    required: true
+    desc: Dimensional specifications
+    fields:
+      width:
+        type: number
+        required: true
+        desc: Width in mm
+      height:
+        type: number
+        required: true
+        desc: Height in mm
+
+tests:
+  - name: minimal_valid
+    desc: Minimal valid configuration
+    input:
+      x: 10
+      y: 20
+      dimensions:
+        width: 5
+        height: 3
+    expect_valid: true
+  
+  - name: with_optional
+    desc: Configuration with optional fields
+    input:
+      x: 10
+      y: 20
+      diameter: 8.0
+      shape: rectangle
+      dimensions:
+        width: 5
+        height: 3
+    expect_valid: true
+  
+  - name: missing_required
+    desc: Should fail when required field missing
+    input:
+      x: 10
+      # missing y
+      dimensions:
+        width: 5
+        height: 3
+    expect_error: "missing required field"
+```
+
+**Field types:**
+- `number` - Numeric values (float64)
+- `string` - Text values
+- `bool` - True/false values
+- `object` - Nested structure (define `fields` inside)
+- `array` - List of items (advanced, see existing modules)
+
+**Order values:**
+- 100-199: Basic geometry (pcb_stands)
+- 200-299: Features (push_buttons, connectors)
+- 300-399: Structural (snap_joins)
+- 400-499: Cutouts and openings
+
+## Step 3: Validate Schema
+
+Run schemagen to check your schema:
+
+```bash
+go run ./cmd/schemagen validate pkg/yappgen/modules/yourmodule/schema.yaml
+```
+
+Fix any errors reported. Common issues:
+- Missing required fields (`module`, `scad_array`, `go_package`, `description`)
+- Invalid field types (must be: number, string, bool, object, array)
+- Missing `type` in field definitions
+- Object fields without nested `fields`
+
+## Step 4: Generate Code
+
+Run discovery to generate Go code:
+
+```bash
+go run ./cmd/schemagen discover
+```
+
+This creates:
+- `schema_gen.go` - Typed structs with YAML tags
+- `schema_gen_test.go` - Tests from your test cases
+- Updates `pkg/yappgen/modules_gen.go` - Registry initialization
+
+**Generated struct example:**
+```go
+type YourModuleItem struct {
+    X          float64  `yaml:"x"`
+    Y          float64  `yaml:"y"`
+    Diameter   *float64 `yaml:"diameter,omitempty"`
+    Shape      *string  `yaml:"shape,omitempty"`
+    Dimensions YourModuleItemDimensions `yaml:"dimensions"`
+}
+```
+
+## Step 5: Implement Builder
+
+Create `module.go` with your builder logic:
+
+```go
+package yourmodule
+
+import (
+    "fmt"
+    
+    "github.com/pkg/errors"
+    "gopkg.in/yaml.v3"
+    
+    "github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
+)
+
+// Build converts DSL entries into YAPP array format.
+func Build(items []map[string]any) ([][]any, error) {
+    var out [][]any
+    
+    for idx, it := range items {
+        label := fmt.Sprintf("your_module[%d]", idx)
+        
+        // Unmarshal into typed struct
+        data, err := yaml.Marshal(it)
+        if err != nil {
+            return nil, errors.Wrapf(err, "%s: marshal", label)
+        }
+        
+        var item YourModuleItem
+        if err := yaml.Unmarshal(data, &item); err != nil {
+            return nil, errors.Wrapf(err, "%s: unmarshal", label)
+        }
+        
+        // Apply defaults
+        item.ApplyDefaults()
+        
+        // Custom validation (business logic)
+        if err := item.CustomValidate(); err != nil {
+            return nil, errors.Wrapf(err, "%s", label)
+        }
+        
+        // Build positional array matching YAPP parameter order
+        params := []any{
+            item.X,
+            item.Y,
+            ptrOrUndef(item.Diameter),
+            // ... more parameters in YAPP order
+        }
+        
+        // Add flags if needed
+        if item.Shape != nil {
+            flag := shapeToFlag(*item.Shape)
+            params = append(params, flag)
+        }
+        
+        out = append(out, params)
+    }
+    
+    return out, nil
+}
+
+func ptrOrUndef(ptr *float64) any {
+    if ptr == nil {
+        return scad.Undef
+    }
+    return *ptr
+}
+
+func shapeToFlag(shape string) scad.Raw {
+    switch shape {
+    case "circle":
+        return scad.Raw("yappCircle")
+    case "rectangle":
+        return scad.Raw("yappRectangle")
+    default:
+        return scad.Raw("yappCircle")
+    }
+}
+```
+
+**Key points:**
+- Use `ptrOrUndef()` for optional fields (converts nil → `undef` in SCAD)
+- Match YAPP positional parameter order (check OpenSCAD docs)
+- Add flags after positional params (shape, coordinate, origin)
+- Use `CustomValidate()` for business logic (e.g., "if shape=polygon, require preset")
+
+## Step 6: Implement Registry
+
+Create `registry.go` for module registration:
+
+```go
+package yourmodule
+
+import (
+    _ "embed"
+    
+    "github.com/wesen/yapp-encl-resolver/pkg/registry"
+)
+
+//go:embed schema.yaml
+var schemaYAML []byte
+
+// NewModule returns a FeatureModule for your_module.
+func NewModule() registry.FeatureModule {
+    return &module{
+        schema: &moduleSchema{},
+    }
+}
+
+type module struct {
+    schema registry.ModuleSchema
+}
+
+func (m *module) Schema() registry.ModuleSchema {
+    return m.schema
+}
+
+func (m *module) Build(items []map[string]any) ([][]any, error) {
+    return Build(items)
+}
+
+var _ registry.FeatureModule = &module{}
+
+type moduleSchema struct{}
+
+func (s *moduleSchema) Name() string {
+    return "your_module"
+}
+
+func (s *moduleSchema) Path() string {
+    return "features.your_module"
+}
+
+func (s *moduleSchema) Description() string {
+    return "Brief description"
+}
+
+func (s *moduleSchema) ValidateStructure(path string, data any) error {
+    // TODO: implement schema-driven validation
+    return nil
+}
+
+func (s *moduleSchema) ValidateConstraints(path string, data any) error {
+    // TODO: implement constraint validation
+    return nil
+}
+
+func (s *moduleSchema) Fields() []registry.FieldSpec {
+    // TODO: return field specs from schema
+    return nil
+}
+
+var _ registry.ModuleSchema = &moduleSchema{}
+```
+
+This is boilerplate—copy from any existing module and change the names.
+
+## Step 7: Regenerate and Test
+
+```bash
+# Regenerate all code
+go run ./cmd/schemagen discover
+
+# Run tests
+go test ./pkg/yappgen/modules/yourmodule
+go test ./...
+
+# Check help page
+go run ./cmd/yappctl help module-your_module
+```
+
+## Step 8: Test End-to-End
+
+Create a test YAML file:
+
+```yaml
+project: Test Your Module
+yapp_version: v3
+
+vars:
+  test_x: 10
+
+features:
+  your_module:
+    - x: test_x
+      y: 20
+      dimensions:
+        width: 5
+        height: 3
+```
+
+Run the pipeline:
+
+```bash
+# Resolve
+go run ./cmd/yappctl resolve -i test.yaml -o /tmp/resolved.yaml
+
+# Generate SCAD
+go run ./cmd/yappctl generate -i /tmp/resolved.yaml -o /tmp/output.scad
+
+# Check output
+grep yourModuleArray /tmp/output.scad
+```
+
+## Common Patterns
+
+### Optional Fields with Defaults
+
+```yaml
+fields:
+  diameter:
+    type: number
+    default: 6.0
+    desc: Standoff diameter
+```
+
+Generated struct uses pointer:
+```go
+Diameter *float64 `yaml:"diameter,omitempty"`
+```
+
+ApplyDefaults() sets value if nil:
+```go
+func (x *YourModuleItem) ApplyDefaults() {
+    if x.Diameter == nil {
+        v := 6.0
+        x.Diameter = &v
+    }
+}
+```
+
+### Enum Validation
+
+```yaml
+fields:
+  side:
+    type: string
+    required: true
+    enum: [left, right, front, back]
+    desc: Which side
+```
+
+Validate in builder:
+```go
+func sideToFlag(side string) (scad.Raw, error) {
+    switch strings.ToLower(side) {
+    case "left":
+        return scad.Raw("yappLeft"), nil
+    case "right":
+        return scad.Raw("yappRight"), nil
+    default:
+        return "", errors.Errorf("invalid side: %s", side)
+    }
+}
+```
+
+### Nested Objects
+
+```yaml
+fields:
+  cap:
+    type: object
+    required: true
+    fields:
+      length:
+        type: number
+        required: true
+      width:
+        type: number
+        required: true
+```
+
+Generates nested struct:
+```go
+type YourModuleItem struct {
+    Cap YourModuleItemCap `yaml:"cap"`
+}
+
+type YourModuleItemCap struct {
+    Length float64 `yaml:"length"`
+    Width  float64 `yaml:"width"`
+}
+```
+
+Access in builder:
+```go
+params := []any{
+    item.Cap.Length,
+    item.Cap.Width,
+}
+```
+
+### Shape-Specific Logic
+
+```go
+func (item *YourModuleItem) CustomValidate() error {
+    if item.Shape != nil && *item.Shape == "polygon" {
+        if item.Preset == nil || *item.Preset == "" {
+            return errors.New("polygon shape requires preset field")
+        }
+    }
+    return nil
+}
+```
+
+## Troubleshooting
+
+### Schema validation fails
+
+**Error:** `unknown field type "banana"`
+
+**Fix:** Use valid types: `number`, `string`, `bool`, `object`, `array`
+
+### Generated code doesn't compile
+
+**Error:** `undefined: YourModuleItem`
+
+**Fix:** Run `go run ./cmd/schemagen discover` to regenerate code
+
+### Module not registered
+
+**Error:** Module doesn't show in help
+
+**Fix:** 
+1. Check `pkg/yappgen/modules_gen.go` includes your module
+2. Ensure `registry.go` has `NewModule()` function
+3. Rebuild: `go run ./cmd/yappctl help`
+
+### Wrong parameter order
+
+**Error:** OpenSCAD rendering looks wrong
+
+**Fix:** Check `YAPPgenerator_v3.scad` comments for correct positional parameter order
+
+### Help page not showing
+
+**Error:** `go run ./cmd/yappctl help module-yourmodule` fails
+
+**Fix:**
+1. Verify schema.yaml exists and validates
+2. Check module is registered in `modules_gen.go`
+3. Rebuild yappctl
+
+## Best Practices
+
+**1. Start Simple**
+- Begin with required fields only
+- Add optional fields incrementally
+- Test after each addition
+
+**2. Write Good Descriptions**
+- Field descriptions show in help pages
+- Explain units (mm, degrees, etc.)
+- Note special behaviors (e.g., "ignored for circles")
+
+**3. Add Test Cases**
+- Minimal valid case
+- Full configuration with all optionals
+- Missing required field (expect_error)
+- Invalid enum value (expect_error)
+
+**4. Follow Naming Conventions**
+- Module names: snake_case (`push_buttons`, `pcb_stands`)
+- SCAD arrays: camelCase (`pushButtons`, `pcbStands`)
+- Go packages: lowercase (`pushbuttons`, `pcbstands`)
+- Go struct fields: PascalCase (`CapLength`, `SwitchHeight`)
+
+**5. Document YAPP Parameter Order**
+Add comments in your builder showing which SCAD parameter each value maps to:
+
+```go
+params := []any{
+    item.X,           // [0] x position
+    item.Y,           // [1] y position
+    item.Diameter,    // [2] diameter
+    shapeFlag,        // [3] shape flag
+}
+```
+
+## Example: Complete LED Module
+
+Here's a complete example showing all concepts:
+
+**schema.yaml:**
+```yaml
+module: led_indicators
+order: 250
+scad_array: ledIndicators
+go_package: ledindicators
+description: >
+  Defines LED indicator light pipes through the lid.
+
+fields:
+  x:
+    type: number
+    required: true
+    desc: X coordinate on PCB (mm)
+  
+  y:
+    type: number
+    required: true
+    desc: Y coordinate on PCB (mm)
+  
+  diameter:
+    type: number
+    required: true
+    desc: LED diameter (mm)
+  
+  height:
+    type: number
+    desc: Light pipe height (defaults to lid thickness)
+  
+  shape:
+    type: string
+    enum: [circle, rectangle]
+    default: circle
+    desc: Light pipe shape
+
+tests:
+  - name: simple_led
+    input:
+      x: 10
+      y: 15
+      diameter: 3
+    expect_valid: true
+```
+
+**module.go:**
+```go
+package ledindicators
+
+import (
+    "fmt"
+    "strings"
+    
+    "github.com/pkg/errors"
+    "gopkg.in/yaml.v3"
+    
+    "github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
+)
+
+func Build(items []map[string]any) ([][]any, error) {
+    var out [][]any
+    
+    for idx, it := range items {
+        label := fmt.Sprintf("led_indicators[%d]", idx)
+        
+        data, err := yaml.Marshal(it)
+        if err != nil {
+            return nil, errors.Wrapf(err, "%s: marshal", label)
+        }
+        
+        var item LedIndicatorsItem
+        if err := yaml.Unmarshal(data, &item); err != nil {
+            return nil, errors.Wrapf(err, "%s: unmarshal", label)
+        }
+        
+        item.ApplyDefaults()
+        
+        if err := item.CustomValidate(); err != nil {
+            return nil, errors.Wrapf(err, "%s", label)
+        }
+        
+        params := []any{
+            item.X,
+            item.Y,
+            item.Diameter,
+            ptrOrUndef(item.Height),
+        }
+        
+        if item.Shape != nil {
+            params = append(params, shapeFlag(*item.Shape))
+        }
+        
+        out = append(out, params)
+    }
+    
+    return out, nil
+}
+
+func ptrOrUndef(ptr *float64) any {
+    if ptr == nil {
+        return scad.Undef
+    }
+    return *ptr
+}
+
+func shapeFlag(shape string) scad.Raw {
+    switch strings.ToLower(shape) {
+    case "rectangle":
+        return scad.Raw("yappRectangle")
+    default:
+        return scad.Raw("yappCircle")
+    }
+}
+```
+
+**registry.go:** (Copy from any existing module, change names)
+
+## Workflow Summary
+
+```
+1. Create directory: pkg/yappgen/modules/yourmodule/
+2. Write schema.yaml
+3. Validate: go run ./cmd/schemagen validate schema.yaml
+4. Generate: go run ./cmd/schemagen discover
+5. Write module.go (builder)
+6. Write registry.go (boilerplate)
+7. Test: go test ./...
+8. Verify help: go run ./cmd/yappctl help module-yourmodule
+9. Test end-to-end with example YAML
+```
+
+## What Gets Auto-Generated
+
+**You write:**
+- `schema.yaml` (field definitions, tests)
+- `module.go` (builder logic)
+- `registry.go` (boilerplate)
+
+**Schemagen generates:**
+- `schema_gen.go` (typed structs, ApplyDefaults, CustomValidate stub)
+- `schema_gen_test.go` (test functions from schema tests)
+- `pkg/yappgen/modules_gen.go` (registry init with all modules)
+
+**System provides:**
+- Schema validation (structure + constraints)
+- Help page generation (from schema metadata)
+- Auto-registration (no core file edits needed)
+
+## Getting Help
+
+**View existing modules:**
+```bash
+ls pkg/yappgen/modules/
+```
+
+**Good examples to study:**
+- `pcbstands` - Simple flat structure
+- `pushbuttons` - Complex nested objects
+- `snapjoins` - Enum validation with flags
+- `cutouts` - Face distribution logic
+
+**Check generated code:**
+```bash
+cat pkg/yappgen/modules/pushbuttons/schema_gen.go
+```
+
+**View help pages:**
+```bash
+go run ./cmd/yappctl help module-push_buttons
+```
+
+## Next Steps
+
+After your module works:
+1. Add it to `examples/` with a test YAML
+2. Update `pkg/docs/tutorials/yapp-dsl-reference.md` with user-facing docs
+3. Consider adding to the implementation guide if it introduces new patterns
+
+Happy module authoring! 🚀
+

@@ -182,3 +182,17 @@ Auto-generated help pages from schemas integrated into yappctl
 - pkg/docs/docs.go — LoadModuleHelp integration
 - pkg/docs/schema_help.go — schema to markdown renderer
 
+
+## 2025-11-15
+
+Verified complete system: tests pass, codegen works, help pages render, end-to-end YAML to SCAD pipeline functional
+
+
+## 2025-11-15
+
+Created module authoring guide with step-by-step instructions and examples
+
+### Related Files
+
+- pkg/docs/tutorials/yapp-module-authoring-guide.md — developer guide for new modules
+

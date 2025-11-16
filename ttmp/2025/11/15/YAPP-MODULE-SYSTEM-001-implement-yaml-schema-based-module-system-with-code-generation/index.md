@@ -19,6 +19,8 @@ RelatedFiles:
       Note: loads module help into CLI
     - Path: pkg/docs/schema_help.go
       Note: auto-generates help from schemas
+    - Path: pkg/docs/tutorials/yapp-module-authoring-guide.md
+      Note: step-by-step guide for adding modules
     - Path: pkg/registry/registry.go
       Note: Register/Get/All and SetTestRegistry implementations
     - Path: pkg/registry/registry_test.go
@@ -105,6 +107,7 @@ ExternalSources:
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
 
 
 
