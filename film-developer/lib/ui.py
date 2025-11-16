@@ -2,7 +2,7 @@ import time
 from .display import Display
 from .input import Input
 from .temp import Temp
-from .timer import TimerEngine, format_mmss
+from .timer import TimerEngine, format_mmss, parse_mmss
 from .presets import (
     load_presets,
     get_preset_by_id,
@@ -11,6 +11,7 @@ from .presets import (
     list_isos_for_film_dev,
     find_best_preset,
 )
+from .leds import LedSnake
 
 
 class UI:
@@ -71,6 +72,12 @@ class UI:
         self._marquee_offset = 0
         self._marquee_last_ms = time.ticks_ms()
         self._marquee_interval_ms = 200
+        # LEDs (optional)
+        try:
+            self.leds = LedSnake(debug=True)
+        except Exception:
+            self.leds = None
+        self._dbg_last_remain_sec = None
  
     # ----------------------------
     # Rendering helpers
@@ -216,7 +223,8 @@ class UI:
             self._render_header(title)
             # Status lines
             planned = format_mmss(self.timer.get_planned_sec())
-            remain = self.timer.get_remaining_str()
+            rem_sec = self.timer.get_remaining_sec()
+            remain = format_mmss(rem_sec)
             ratio = self.timer.get_progress_ratio()
             bar_len = 10
             filled = int(ratio * bar_len)
@@ -225,8 +233,23 @@ class UI:
             d.text_at(2, 0, "TRX+2 D76 22C")
             d.text_at(3, 0, "{} [{}]".format(planned, bar)[:16])
             d.text_at(4, 0, "{} remain".format(remain)[:16])
+            # Debug: log once per second when remaining changes
+            if self._dbg_last_remain_sec != rem_sec:
+                self._dbg_last_remain_sec = rem_sec
+                try:
+                    print("timer: stage={}, remain={}, planned={}, ratio={:.2f}".format(
+                        stage, remain, planned, ratio
+                    ))
+                except Exception:
+                    pass
             # Temperature (non-blocking)
             self._render_temp_line(5)
+            # LED snake pattern (rates vary with remaining seconds)
+            if self.leds is not None:
+                try:
+                    self.leds.update(self.timer.get_remaining_sec(), active=(self.state == self.S_TIMER))
+                except Exception:
+                    pass
             if self.state == self.S_TIMER:
                 self._draw_buttons("PAU", "   ", "NEXT")
             else:
@@ -336,7 +359,14 @@ class UI:
                         dev_time = chosen.get("developer_time", "10:00")
                         try:
                             self.timer.stage_index = 0
-                            self.timer.stages[0]["planned_sec"] = (int(dev_time.split(":")[0]) * 60 + int(dev_time.split(":")[1]))
+                            self.timer.stages[0]["planned_sec"] = parse_mmss(dev_time)
+                            # Apply stage overrides if provided
+                            st = chosen.get("stages") or {}
+                            def _apply(name: str, fallback: str) -> int:
+                                return parse_mmss(st.get(name, fallback))
+                            self.timer.stages[1]["planned_sec"] = _apply("stop_bath", "00:30")
+                            self.timer.stages[2]["planned_sec"] = _apply("fixer", "10:00")
+                            self.timer.stages[3]["planned_sec"] = _apply("wash", "15:00")
                             self.timer._load_current_stage()
                         except Exception:
                             pass

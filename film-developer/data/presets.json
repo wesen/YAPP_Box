@@ -128,6 +128,17 @@
       "developer_time": "18:00",
       "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
       "label": "HP5+ D-76 1+1 ISO1600"
+    },
+    {
+      "id": "test_1min_all_stages",
+      "film": "TEST",
+      "developer": "TEST",
+      "dilution": "",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "01:00",
+      "stages": { "stop_bath": "01:00", "fixer": "01:00", "wash": "01:00" },
+      "label": "TEST 1MIN EACH"
     }
   ]
 }

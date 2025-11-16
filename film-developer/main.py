@@ -303,9 +303,17 @@ def main() -> None:
     t = TempNonBlocking()
     ui = UI(d, i, t, enable_temp=True)
     while True:
-        ui.handle()
-        ui.render()
-        time.sleep_ms(20)
+        try:
+            ui.handle()
+            ui.render()
+            time.sleep_ms(20)
+        except Exception as e:
+            try:
+                import sys
+                sys.print_exception(e)
+            except Exception:
+                print("EXC:", e)
+            break
 
         
 def main3():

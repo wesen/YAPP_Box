@@ -231,3 +231,35 @@ Main screen now scrolls long preset labels (marquee). Presets lists show only av
 
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Marquee on main; list rendering capped to min(3
 
+
+## 2025-11-15
+
+Imported additional presets for XTOL and D-76 at ISO 400/800/1600 for Tri‑X 400 and HP5+. Added playbook to generate presets from filmdev CLI and convert decimal minutes to MM:SS.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/data/presets.json — Expanded with XTOL/D-76 across ISOs (1+1 @20C)
+- /home/manuel/code/others/YAPP_Box/ttmp/FILM-DEV-001-film-development-timer-application-specification/playbook/02-generate-presets-from-filmdev-cli.md — Step-by-step guide to export and convert presets
+
+
+## 2025-11-15
+
+Added LED snake indicator tied to remaining time thresholds (60/30/10s → slow/fast/faster). Added test preset 'TEST 1MIN EACH' (1:00 for all stages). Applied stage overrides from presets to timer.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/data/presets.json — Added test preset
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/leds.py — New LedSnake with variable period and 1↔3 sweep
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Integrates LedSnake; applies stage times from preset; marquee on main
+
+
+## 2025-11-15
+
+Added targeted serial logs: once-per-second timer remaining/ratio; LED snake period change logs; main loop exception logging to diagnose 8s crash.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/leds.py — Logs period changes at 60/30/10s thresholds
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Logs remaining each second in timer screens
+- /home/manuel/code/others/YAPP_Box/film-developer/main.py — Try/except prints exceptions via sys.print_exception
+
