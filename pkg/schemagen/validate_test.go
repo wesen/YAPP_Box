@@ -136,3 +136,27 @@ func TestWrapYAMLErrorAddsHint(t *testing.T) {
 		t.Fatalf("expected hint to be populated, got %+v", ve[0])
 	}
 }
+
+func TestValidateSchemaBytes_BoolField(t *testing.T) {
+	doc := `
+module: demo
+scad_array: demoArr
+go_package: demo
+description: Bool field test
+fields:
+  flag:
+    type: bool
+tests:
+  - name: ok
+    input:
+      flag: true
+    expect_valid: true
+`
+	errs, err := ValidateSchemaBytes("bool.yaml", []byte(doc))
+	if err != nil {
+		t.Fatalf("unexpected parse error: %v", err)
+	}
+	if len(errs) != 0 {
+		t.Fatalf("expected bool field to validate, got %v", errs)
+	}
+}

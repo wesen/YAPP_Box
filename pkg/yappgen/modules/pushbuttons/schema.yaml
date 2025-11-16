@@ -1,0 +1,144 @@
+module: push_buttons
+order: 200
+scad_array: pushButtons
+go_package: pushbuttons
+description: >
+  Defines tactile push button extenders that map to the legacy pushButtons array.
+  Each entry describes the cap geometry, lid clearance, and underlying switch dimensions.
+
+fields:
+  name:
+    type: string
+    desc: Optional label used only for error messages
+
+  x:
+    type: number
+    required: true
+    desc: X coordinate relative to PCB origin (mm)
+
+  y:
+    type: number
+    required: true
+    desc: Y coordinate relative to PCB origin (mm)
+
+  angle:
+    type: number
+    desc: Rotation angle in degrees
+
+  fillet_radius:
+    type: number
+    desc: Override default fillet radius for lid opening
+
+  shape:
+    type: string
+    required: false
+    default: rectangle
+    enum: [rectangle, circle, rounded_rect, circle_with_flats, circle_with_key, polygon]
+    desc: Button cap shape to map to SCAD shape flags
+
+  polygon:
+    type: string
+    desc: Preset polygon token (shapeArrow, shapeHexagon, etc.) when shape=polygon
+
+  polygon_preset:
+    type: string
+    desc: Alternate alias for polygon preset (arrow, hexagon, etc.)
+
+  coordinate:
+    type: string
+    enum: [pcb, box, box_inside]
+    desc: Coordinate system flag appended after positional params
+
+  origin:
+    type: string
+    enum: [global, left]
+    desc: Origin flag appended after positional params
+
+  no_fillet:
+    type: bool
+    desc: Set to true to disable automatic fillets
+
+  cap:
+    type: object
+    required: true
+    desc: Cap geometry projected through lid opening
+    fields:
+      length:
+        type: number
+        required: true
+        desc: Cap length or diameter (mm)
+      width:
+        type: number
+        required: true
+        desc: Cap width (ignored for circles)
+      radius:
+        type: number
+        required: true
+        desc: Corner radius or circle radius
+
+  lid:
+    type: object
+    required: true
+    desc: Lid cutout and clearance settings
+    fields:
+      protrusion:
+        type: number
+        required: true
+        desc: Distance cap extends above lid (mm)
+      wall:
+        type: number
+        desc: Lid wall around button opening
+      plate_thickness:
+        type: number
+        desc: Thickness of lid plate in cutout
+      slack:
+        type: number
+        desc: Clearance between cap and guide walls
+      snap_slack:
+        type: number
+        desc: Clearance for snap joins
+      no_fillet:
+        type: bool
+        desc: Deprecated; prefer root no_fillet flag
+
+  switch:
+    type: object
+    required: true
+    desc: Underlying physical switch dimensions
+    fields:
+      height:
+        type: number
+        required: true
+        desc: Switch body height
+      travel:
+        type: number
+        required: true
+        desc: Switch travel distance
+      pole_diameter:
+        type: number
+        required: true
+        desc: Center pole diameter
+      top_height:
+        type: number
+        desc: Height from PCB to switch top (optional)
+
+tests:
+  - name: basic_rectangle
+    desc: Minimal valid rectangle button
+    input:
+      x: 10
+      y: 12
+      cap: { length: 8, width: 6, radius: 0.5 }
+      lid: { protrusion: 2.5 }
+      switch: { height: 5.5, travel: 1.0, pole_diameter: 3.5 }
+    expect_valid: true
+
+  - name: missing_cap
+    desc: Missing required cap object
+    input:
+      x: 10
+      y: 12
+      lid: { protrusion: 2.5 }
+      switch: { height: 5.5, travel: 1.0, pole_diameter: 3.5 }
+    expect_error: "missing required object"
+

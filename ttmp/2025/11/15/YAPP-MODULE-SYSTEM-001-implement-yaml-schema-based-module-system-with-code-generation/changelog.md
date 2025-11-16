@@ -82,3 +82,13 @@ Upgraded schemagen error UX with context snippets, hints, and tests
 
 Attempted schemagen validate on pushbuttons schema; blocked because schema.yaml not present yet
 
+
+## 2025-11-15
+
+Added push_buttons schema.yaml and validator bool support
+
+### Related Files
+
+- pkg/schemagen/validate.go — bool field support
+- pkg/yappgen/modules/pushbuttons/schema.yaml — push button schema
+

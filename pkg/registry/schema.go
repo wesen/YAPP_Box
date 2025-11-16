@@ -8,6 +8,8 @@ const (
 	NumberField FieldType = "number"
 	// StringField represents scalar string values.
 	StringField FieldType = "string"
+	// BoolField represents boolean values.
+	BoolField FieldType = "bool"
 	// ObjectField represents nested objects (maps).
 	ObjectField FieldType = "object"
 	// ArrayField represents repeated entries.

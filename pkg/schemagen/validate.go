@@ -121,7 +121,7 @@ func validateField(ctx *schemaContext, fieldName string, node *yaml.Node, path s
 	}
 
 	switch typeStr {
-	case "number", "string":
+	case "number", "string", "bool":
 		// no extra validation
 	case "array":
 		// arrays can optionally specify element structure via fields/items
@@ -144,7 +144,7 @@ func validateField(ctx *schemaContext, fieldName string, node *yaml.Node, path s
 			}
 		}
 	default:
-		errs.add(newError(ctx, typeNode, path+".type", fmt.Sprintf("unknown field type %q (valid: number, string, object, array)", typeStr)))
+		errs.add(newError(ctx, typeNode, path+".type", fmt.Sprintf("unknown field type %q (valid: number, string, bool, object, array)", typeStr)))
 	}
 
 	if requiredNode := mapValue(node, "required"); requiredNode != nil {

@@ -57,6 +57,13 @@ This guide assumes you're new to this project, possibly new to Go, and definitel
 1. Validate the YAML input (check for errors)
 2. Convert YAML to OpenSCAD arrays (translate to the old format)
 
+## Status Snapshot (2025-11-16)
+
+- `pkg/registry` and `cmd/schemagen` scaffolding are live; `schemagen validate`/`discover` run against the repo.
+- The first production schema (`pkg/yappgen/modules/pushbuttons/schema.yaml`) now exists, including nested cap/lid/switch definitions and CLI-validated tests.
+- `schemagen` emits contextual error snippets with hints, so schema authors get actionable feedback before code generation.
+- `schemagen discover` currently lists/validates schemas and stops at the “code generation coming soon” placeholder—implement code emission next.
+
 ## Core Concepts You Need to Understand
 
 ### 1. Schema
