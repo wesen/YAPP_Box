@@ -11,26 +11,32 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
-    - Path: pkg/registry/schema.go
-      Note: Core interfaces - ModuleSchema, FeatureModule, FieldSpec
-    - Path: pkg/registry/registry.go
-      Note: Registration API - Register(), Get(), All()
     - Path: cmd/schemagen/main.go
       Note: Code generation tool - validate and discover commands
-    - Path: pkg/yappgen/modules_gen.go
-      Note: AUTO-GENERATED registry file
-    - Path: pkg/yappgen/modules/pushbuttons/schema.yaml
-      Note: Example YAML schema for pilot module
-    - Path: pkg/resolver/validation.go
-      Note: Two-phase validation integration
     - Path: pkg/docs/schema_help.go
       Note: Auto-generate help pages from schemas
+    - Path: pkg/registry/registry.go
+      Note: Register/Get/All and SetTestRegistry implementations
+    - Path: pkg/registry/registry_test.go
+      Note: verified via go test ./...
+    - Path: pkg/registry/schema.go
+      Note: Defines FieldSpec
+    - Path: pkg/resolver/validation.go
+      Note: Two-phase validation integration
+    - Path: pkg/yappgen/modules/pushbuttons/schema.yaml
+      Note: Example YAML schema for pilot module
+    - Path: pkg/yappgen/modules_gen.go
+      Note: AUTO-GENERATED registry file
 ExternalSources:
     - https://github.com/deepmap/oapi-codegen
     - https://gqlgen.com/
-Summary: "Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas."
-LastUpdated: 2025-11-15
+Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
+LastUpdated: 2025-11-15T00:00:00Z
 ---
+
+
+
+
 
 
 # Implement YAML Schema-Based Module System with Code Generation

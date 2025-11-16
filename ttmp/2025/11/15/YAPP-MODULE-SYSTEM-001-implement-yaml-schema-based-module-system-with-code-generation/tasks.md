@@ -3,9 +3,9 @@
 ## TODO
 
 
-- [ ] Week 1: Create pkg/registry package with ModuleSchema, FeatureModule, and FieldSpec interfaces
-- [ ] Week 1: Create Registry type with Register(), Get(), All() functions and ordering support
-- [ ] Week 1: Write unit tests for registry (registration, lookup, ordering)
+- [x] Week 1: Create pkg/registry package with ModuleSchema, FeatureModule, and FieldSpec interfaces
+- [x] Week 1: Create Registry type with Register(), Get(), All() functions and ordering support
+- [x] Week 1: Write unit tests for registry (registration, lookup, ordering)
 - [ ] Week 1: Create cmd/schemagen skeleton with CLI structure and command parsing
 - [ ] Week 2: Implement schemagen validate command with YAML parsing and line number tracking
 - [ ] Week 2: Add schema structure validation (field types, nested objects, test cases)
