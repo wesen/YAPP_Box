@@ -202,3 +202,23 @@ Added presets system: JSON-backed presets (data/presets.json) and Presets menu i
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/presets.py — Loader for JSON presets
 - /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Presets menu
 
+
+## 2025-11-15
+
+Added marquee scrolling for long labels in Presets screen (wrap-around, ~200ms step) so selected setting scrolls like a banner when too long.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Marquee helper and integration on Presets selected item
+
+
+## 2025-11-15
+
+Presets UI now hierarchical: Developer → Film → Target ISO. Seeded XTOL push+2 entries for Tri‑X 400 (11:45 @20C, 1+1) and HP5+ (18:00 @20C, 1+1). Selection applies developer time to timer.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/film-developer/data/presets.json — Added XTOL ISO1600 entries for Tri‑X 400 and HP5+
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/presets.py — Grouping + best-preset selection (prefer 1+1 @20C)
+- /home/manuel/code/others/YAPP_Box/film-developer/lib/ui.py — Added DEV/FILM/ISO states and logic
+

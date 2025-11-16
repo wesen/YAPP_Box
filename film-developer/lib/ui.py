@@ -3,7 +3,14 @@ from .display import Display
 from .input import Input
 from .temp import Temp
 from .timer import TimerEngine, format_mmss
-from .presets import load_presets, get_preset_by_id
+from .presets import (
+    load_presets,
+    get_preset_by_id,
+    list_developers,
+    list_films_for_developer,
+    list_isos_for_film_dev,
+    find_best_preset,
+)
 
 
 class UI:
@@ -18,7 +25,10 @@ class UI:
     S_SPLASH = "splash"
     S_MAIN = "main"
     S_MENU = "menu"
-    S_PRESETS = "presets"
+    S_PRESETS = "presets"  # legacy single-list (unused after tree)
+    S_PRESETS_DEV = "presets_dev"
+    S_PRESETS_FILM = "presets_film"
+    S_PRESETS_ISO = "presets_iso"
     S_SYSTEM = "system_info"
     S_TIMER = "timer"   # running
     S_PAUSED = "paused"
@@ -53,6 +63,14 @@ class UI:
         # Default to TMax 400 + Xtol if available
         self.current_preset = get_preset_by_id(self.presets, "kodak_tmax_400_xtol_1_1_20c") or (self.presets[0] if self.presets else None)
         self.presets_index = 0
+        self.presets_dev_index = 0
+        self.presets_film_index = 0
+        self.presets_iso_index = 0
+        self._preset_path = {"dev": None, "film": None, "iso": None}
+        # Marquee for long labels (settings/presets)
+        self._marquee_offset = 0
+        self._marquee_last_ms = time.ticks_ms()
+        self._marquee_interval_ms = 200
  
     # ----------------------------
     # Rendering helpers
@@ -103,7 +121,7 @@ class UI:
             self._render_header("FILM DEV TIMER")
             # Show current preset (compact label) and planned time
             label = (self.current_preset.get("label") if self.current_preset else "No preset") if self.current_preset else "No preset"
-            d.text_at(2, 0, label[:16])
+            d.text_at(2, 0, self._marquee_text(label, 16))
             planned = format_mmss(self.timer.get_planned_sec())
             d.text_at(3, 0, "Timer: {}".format(planned)[:16])
             self._render_temp_line(4)
@@ -116,6 +134,52 @@ class UI:
                 d.text_at(2 + i, 0, (prefix + name)[:16])
             self._draw_buttons("SEL", "NAV", "BACK")
  
+        elif self.state == self.S_PRESETS_DEV:
+            self._render_header("DEVELOPER")
+            devs = list_developers(self.presets)
+            if not devs:
+                d.text_at(3, 0, "No data")
+            else:
+                visible = 3 if len(devs) > 3 else len(devs)
+                for row_offset in range(visible):
+                    idx = (self.presets_dev_index + row_offset) % len(devs)
+                    name = devs[idx]
+                    prefix = "\u25BA " if row_offset == 0 else "  "
+                    shown = self._marquee_text(name, 16 - len(prefix)) if row_offset == 0 else name[:16 - len(prefix)]
+                    d.text_at(2 + row_offset, 0, (prefix + shown)[:16])
+            self._draw_buttons("SEL", "NAV", "BACK")
+
+        elif self.state == self.S_PRESETS_FILM:
+            self._render_header("FILM")
+            dev = self._preset_path.get("dev")
+            films = list_films_for_developer(self.presets, dev) if dev else []
+            if not films:
+                d.text_at(3, 0, "No films")
+            else:
+                visible = 3 if len(films) > 3 else len(films)
+                for row_offset in range(visible):
+                    idx = (self.presets_film_index + row_offset) % len(films)
+                    name = films[idx]
+                    prefix = "\u25BA " if row_offset == 0 else "  "
+                    shown = self._marquee_text(name, 16 - len(prefix)) if row_offset == 0 else name[:16 - len(prefix)]
+                    d.text_at(2 + row_offset, 0, (prefix + shown)[:16])
+            self._draw_buttons("SEL", "NAV", "BACK")
+
+        elif self.state == self.S_PRESETS_ISO:
+            self._render_header("TARGET ISO")
+            dev = self._preset_path.get("dev")
+            film = self._preset_path.get("film")
+            isos = list_isos_for_film_dev(self.presets, dev, film) if (dev and film) else []
+            if not isos:
+                d.text_at(3, 0, "No ISOs")
+            else:
+                visible = 3 if len(isos) > 3 else len(isos)
+                for row_offset in range(visible):
+                    idx = (self.presets_iso_index + row_offset) % len(isos)
+                    name = "ISO {}".format(isos[idx])
+                    prefix = "\u25BA " if row_offset == 0 else "  "
+                    d.text_at(2 + row_offset, 0, (prefix + name)[:16])
+            self._draw_buttons("SEL", "NAV", "BACK")
         elif self.state == self.S_PRESETS:
             self._render_header("TIMER PRESETS")
             n = len(self.presets)
@@ -124,12 +188,19 @@ class UI:
             else:
                 # Show up to 3 items around current index
                 start = self.presets_index
-                # Display three in a looped list for simplicity
-                for row_offset in range(3):
+                visible = 3 if n > 3 else n
+                # Display up to three without duplicating when n < 3
+                for row_offset in range(visible):
                     idx = (start + row_offset) % n
                     name = self.presets[idx].get("label", self.presets[idx].get("id", "preset"))
                     prefix = "\u25BA " if row_offset == 0 else "  "
-                    d.text_at(2 + row_offset, 0, (prefix + name)[:16])
+                    # Apply marquee only to selected/top item if it overflows
+                    if row_offset == 0:
+                        avail = 16 - len(prefix)
+                        shown = self._marquee_text(name, avail)
+                        d.text_at(2 + row_offset, 0, (prefix + shown)[:16])
+                    else:
+                        d.text_at(2 + row_offset, 0, (prefix + name)[:16])
             self._draw_buttons("SEL", "NAV", "BACK")
 
         elif self.state == self.S_SYSTEM:
@@ -208,39 +279,73 @@ class UI:
                 elif e == 1:  # SEL
                     sel = self.menu_items[self.menu_index]
                     if sel == "Timer Presets":
-                        self.state = self.S_PRESETS
+                        # Start at developer selection
+                        self.presets_dev_index = 0
+                        self._preset_path = {"dev": None, "film": None, "iso": None}
+                        self._marquee_offset = 0
+                        self._marquee_last_ms = time.ticks_ms()
+                        self.state = self.S_PRESETS_DEV
                     elif sel == "System Info":
                         self.state = self.S_SYSTEM
                     else:
                         self.state = self.S_MAIN
                 elif e == 3:  # BACK
                     self.state = self.S_MAIN
-            elif self.state == self.S_PRESETS:
-                if e == 2:  # NAV
-                    if self.presets:
-                        self.presets_index = (self.presets_index + 1) % len(self.presets)
-                elif e == 1:  # SEL
-                    if self.presets:
-                        # Pick current (top of the list)
-                        chosen = self.presets[self.presets_index]
+            elif self.state == self.S_PRESETS_DEV:
+                devs = list_developers(self.presets)
+                if e == 2 and devs:
+                    self.presets_dev_index = (self.presets_dev_index + 1) % len(devs)
+                    self._marquee_offset = 0
+                    self._marquee_last_ms = time.ticks_ms()
+                elif e == 1 and devs:
+                    self._preset_path["dev"] = devs[self.presets_dev_index]
+                    self.presets_film_index = 0
+                    self._marquee_offset = 0
+                    self._marquee_last_ms = time.ticks_ms()
+                    self.state = self.S_PRESETS_FILM
+                elif e == 3:
+                    self.state = self.S_MENU
+            elif self.state == self.S_PRESETS_FILM:
+                dev = self._preset_path.get("dev")
+                films = list_films_for_developer(self.presets, dev) if dev else []
+                if e == 2 and films:
+                    self.presets_film_index = (self.presets_film_index + 1) % len(films)
+                    self._marquee_offset = 0
+                    self._marquee_last_ms = time.ticks_ms()
+                elif e == 1 and films:
+                    self._preset_path["film"] = films[self.presets_film_index]
+                    self.presets_iso_index = 0
+                    self.state = self.S_PRESETS_ISO
+                elif e == 3:
+                    self.state = self.S_PRESETS_DEV
+            elif self.state == self.S_PRESETS_ISO:
+                dev = self._preset_path.get("dev")
+                film = self._preset_path.get("film")
+                isos = list_isos_for_film_dev(self.presets, dev, film) if (dev and film) else []
+                if e == 2 and isos:
+                    self.presets_iso_index = (self.presets_iso_index + 1) % len(isos)
+                elif e == 1 and isos:
+                    iso = isos[self.presets_iso_index]
+                    chosen = find_best_preset(self.presets, dev, film, iso)
+                    if chosen:
                         self.current_preset = chosen
-                        # Apply times to timer
+                        # Reset marquee for main label after selection
+                        self._marquee_offset = 0
+                        self._marquee_last_ms = time.ticks_ms()
+                        # Apply developer time
                         dev_time = chosen.get("developer_time", "10:00")
                         try:
-                            # Reload current stage with new dev time
                             self.timer.stage_index = 0
                             self.timer.stages[0]["planned_sec"] = (int(dev_time.split(":")[0]) * 60 + int(dev_time.split(":")[1]))
                             self.timer._load_current_stage()
                         except Exception:
                             pass
-                        self.state = self.S_MAIN
-                elif e == 3:  # BACK
-                    self.state = self.S_MENU
- 
+                    self.state = self.S_MAIN
+                elif e == 3:
+                    self.state = self.S_PRESETS_FILM
             elif self.state == self.S_SYSTEM:
                 if e == 3:  # BACK
                     self.state = self.S_MENU
- 
             elif self.state == self.S_TIMER:
                 if e == 1:  # PAUSE
                     self.timer.pause()
@@ -249,7 +354,6 @@ class UI:
                     advanced = self.timer.next_stage()
                     if not advanced:
                         self.state = self.S_DONE
- 
             elif self.state == self.S_PAUSED:
                 if e == 1:  # RESUME
                     self.timer.resume()
@@ -258,11 +362,37 @@ class UI:
                     advanced = self.timer.next_stage()
                     if not advanced:
                         self.state = self.S_DONE
- 
             elif self.state == self.S_DONE:
                 if e == 2:  # MENU
                     self.state = self.S_MENU
             # Serial debug for state transitions
             if prev != self.state:
                 print("ui: event={} {} -> {}".format(e, prev, self.state))
- 
+    # ----------------------------
+    # Marquee helper
+    # ----------------------------
+    def _marquee_text(self, text: str, width: int) -> str:
+        """
+        Scroll text horizontally (wrap-around) if it exceeds width.
+        Advances ~every _marquee_interval_ms.
+        """
+        if width <= 0:
+            return ""
+        if len(text) <= width:
+            return text[:width]
+        now = time.ticks_ms()
+        if time.ticks_diff(now, self._marquee_last_ms) >= self._marquee_interval_ms:
+            self._marquee_last_ms = now
+            self._marquee_offset = (self._marquee_offset + 1) % (len(text) + 3)
+        gap = "   "
+        loop = text + gap + text
+        start = self._marquee_offset
+        end = start + width
+        # Ensure slice within bounds
+        if end <= len(loop):
+            return loop[start:end]
+        # Wrap around manually
+        part1 = loop[start:]
+        part2 = loop[: end - len(loop)]
+        return (part1 + part2)[:width]
+
