@@ -11,8 +11,12 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/examples/compare/cutouts_all_faces.yaml
+      Note: add pos_z to raise side-face cutouts
     - Path: /home/manuel/code/others/YAPP_Box/examples/yapp-demo-lighttubes.yaml
       Note: updated with pos_z for side face cutouts
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md
+      Note: document light_tubes
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
       Note: face-aware pos_z override logic
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml
@@ -105,6 +109,7 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
 
 
 

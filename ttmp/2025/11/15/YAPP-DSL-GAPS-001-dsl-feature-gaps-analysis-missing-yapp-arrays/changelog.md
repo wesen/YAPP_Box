@@ -191,3 +191,12 @@ Implemented face-aware cutout mapping: added pos_z field for side faces (front/b
 - pkg/yappgen/modules/cutouts/module.go — pos_z override logic
 - pkg/yappgen/modules/cutouts/schema.yaml — added pos_z field with documentation
 
+
+## 2025-11-16
+
+Docs: add light_tubes module reference; document cutouts pos_z and polygon presets; clarify from_back/from_left mapping by face
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — updated reference
+

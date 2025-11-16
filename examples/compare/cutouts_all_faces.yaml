@@ -46,7 +46,8 @@ features:
     # Front: rectangle (posy≈15, posz≈6)
     - face: front
       from_back: 15
-      from_left: 6
+      from_left: 0    # overridden by pos_z on side faces
+      pos_z: 11       # center-ish (shellHeight ~ 22)
       width: 24
       length: 8
       radius: 0
@@ -55,7 +56,8 @@ features:
     # Back: rounded rectangle, rotated
     - face: back
       from_back: 20
-      from_left: 8
+      from_left: 0    # overridden by pos_z on side faces
+      pos_z: 14       # higher than center
       width: 24
       length: 10
       radius: 2
@@ -65,7 +67,8 @@ features:
     # Left: rectangle (near top)
     - face: left
       from_back: 18
-      from_left: 8
+      from_left: 0    # overridden by pos_z on side faces
+      pos_z: 18       # near top (shellHeight ~ 22)
       width: 18
       length: 8
       radius: 0
@@ -74,7 +77,8 @@ features:
     # Right: rounded rectangle (near center)
     - face: right
       from_back: 22
-      from_left: 10
+      from_left: 0    # overridden by pos_z on side faces
+      pos_z: 11       # near center
       width: 18
       length: 10
       radius: 2

@@ -375,6 +375,128 @@ features:
 
 These cutouts provide access for power and data while allowing passive cooling through the lid slot.
 
+#### Cutouts: face-wise coordinate mapping and new options
+
+- Coordinate mapping by face:
+  - front/back: `from_back` → posy (left↔right), `from_left` → posz (height from base)
+  - left/right: `from_back` → posx (front↔back), `from_left` → posz (height from base)
+  - base/lid: `from_back` → posx (from back edge), `from_left` → posy (from left edge)
+- New optional `pos_z` (side faces only): specify vertical position explicitly. If provided, it overrides `from_left` for `front/back/left/right`.
+- New `shape: polygon` support with presets:
+  - Presets: `hexagon`, `arrow`, `6pt_star`, `iso_triangle`, `iso_triangle2`, `triangle`, `triangle2`
+  - Example:
+    ```yaml
+    face: base
+    from_back: 25
+    from_left: 20
+    width: 20
+    length: 20
+    shape: polygon
+    polygon: hexagon
+    ```
+
+#### Faces and axes 101 (what are posx/posy/posz and why do they map differently?)
+
+The underlying YAPP SCAD generator works in a 3D box coordinate system with three axes:
+- posx: left ↔ right (length direction)
+- posy: back ↔ front (width direction)
+- posz: base ↔ lid (height direction)
+
+When you cut a hole on a particular face, that face has its own local “horizontal” and “vertical” directions. YAPP reuses the same two numbers for all faces, but internally remaps them onto the global axes so the cut ends up on the correct wall and orientation.
+
+To avoid making you think in YAPP’s internal axis names, the DSL uses face-aware names:
+- `from_back` → “how far along the horizontal direction of that face”
+- `from_left` → “how far along the vertical direction of that face”
+
+Because the face rotates relative to the global axes, the same two numbers land on different global axes:
+- On front/back faces, “horizontal” is posy and “vertical” is posz.
+- On left/right faces, “horizontal” is posx and “vertical” is posz.
+- On base/lid, “horizontal” is posx and “vertical” is posy.
+
+This is why the table above looks “weird”: it’s simply documenting how each face’s local directions map onto the global axes.
+
+Why `pos_z` as an override?
+- On vertical faces (front/back/left/right) the second coordinate controls height. Historically we called it `from_left` (matching base/lid usage), which can be confusing because it actually means “height from the base” on those faces.
+- We introduced optional `pos_z` so you can write the vertical height explicitly when working on side faces. If `pos_z` is set, it takes precedence over `from_left` on side faces. This keeps backward compatibility while making intent obvious.
+- Could we have `from_bottom` / `from_top`? Yes—these aliases are reasonable ergonomically. For now we keep the schema stable and offer `pos_z` as a clear, explicit option. If you want these aliases, open a ticket and we can add them as synonyms.
+
+What do “front/back/left/right” mean?
+- front: the wall you’re “looking at”
+- back: the opposite wall
+- left/right: the side walls when looking at the front
+- base: the bottom plate
+- lid (top): the top plate
+
+Quick examples:
+- Front face (center-left window 11 mm above base):
+  ```yaml
+  face: front
+  from_back: 15   # along the wall, left↔right
+  pos_z: 11       # 11 mm up from base (overrides from_left)
+  width: 24
+  length: 8
+  shape: rectangle
+  ```
+- Left face (near top):
+  ```yaml
+  face: left
+  from_back: 18   # along the wall, front↔back
+  pos_z: 18       # height from base
+  width: 18
+  length: 8
+  shape: rectangle
+  ```
+- Lid (top plane):
+  ```yaml
+  face: lid
+  from_back: 30   # X from back edge
+  from_left: 25   # Y from left edge
+  radius: 6
+  shape: circle
+  ```
+
+### `light_tubes`
+
+Light tubes guide LED light from the PCB through the lid. Define tube geometry and the generator creates the internal tunnel and lid opening (respecting `lens_thickness`).
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `x`, `y` | ✓ | Position on the PCB (mm), relative to PCB origin. |
+| `tube_length` | ✓ | Tube length (mm). |
+| `tube_width` | ✓ | Tube width/diameter (mm). |
+| `tube_wall` | ✓ | Wall thickness of the tube (mm). |
+| `gap_above_pcb` | ✓ | Gap between PCB top and tube start (mm). |
+| `shape` | ✓ | `circle` or `rectangle`. |
+| `lens_thickness` | optional | Material left in the lid above the tube (mm). `0` = open hole. |
+| `height` | optional | Height to the top of the PCB (mm). Defaults to `standoffHeight + pcbThickness`. |
+| `fillet_radius` | optional | Fillet radius at the tube base (mm). |
+| `coordinate` | optional | Coordinate system: `pcb` (default), `box`, `box_inside`. |
+| `origin` | optional | Origin mode: `global` (default) or `alt`. |
+| `no_fillet` | optional | If `true`, disables auto fillets. |
+| `pcb_name` | optional | For multi-board projects, target a named PCB. |
+
+**Example: circle + rectangle with lens**
+```yaml
+features:
+  light_tubes:
+    - x: 15
+      y: 10
+      tube_length: 5
+      tube_width: 6
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: circle
+
+    - x: 15
+      y: 30
+      tube_length: 1.5
+      tube_width: 5
+      tube_wall: 1
+      gap_above_pcb: 0.1
+      shape: rectangle
+      lens_thickness: 0.5
+```
+
 ### `connectors`
 
 Connectors are specialized standoffs designed to anchor the enclosure to an external surface (e.g., wall-mounting an IoT sensor box, bolting a controller to a machine frame). They differ from regular `pcb_stands` in that they include provisions for screw heads, optional countersinking, and configurable insert depths. Each connector creates a cylindrical boss on the enclosure exterior with a through-hole for a machine screw, plus an internal sleeve to maintain structural integrity.
