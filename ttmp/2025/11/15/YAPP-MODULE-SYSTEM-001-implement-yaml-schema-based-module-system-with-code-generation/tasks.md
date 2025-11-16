@@ -10,11 +10,11 @@
 - [x] Week 2: Implement schemagen validate command with YAML parsing and line number tracking
 - [x] Week 2: Add schema structure validation (field types, nested objects, test cases)
 - [x] Week 2: Implement helpful error messages with context and suggestions
-- [ ] Week 2: Implement schemagen discover command with filesystem scanning
-- [ ] Week 2: Add code generation templates for Go structs from YAML schemas
-- [ ] Week 2: Add test code generation from schema test cases
-- [ ] Week 2: Implement modules_gen.go generation with imports and registration
-- [ ] Week 2: Validate generated Go code compiles (go/format, go/parser)
+- [x] Week 2: Implement schemagen discover command with filesystem scanning
+- [x] Week 2: Add code generation templates for Go structs from YAML schemas
+- [x] Week 2: Add test code generation from schema test cases
+- [x] Week 2: Implement modules_gen.go generation with imports and registration
+- [x] Week 2: Validate generated Go code compiles (go/format, go/parser)
 - [ ] Week 3: Create push_buttons schema.yaml with all fields, nested objects, and test cases
 - [ ] Week 3: Run schemagen to generate schema_gen.go for push_buttons
 - [ ] Week 3: Refactor push_buttons builder.go to use generated types

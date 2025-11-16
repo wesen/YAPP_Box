@@ -35,10 +35,22 @@ RelatedFiles:
       Note: detects module path for codegen
     - Path: pkg/schemagen/schema_doc.go
       Note: ModuleSchema metadata
+    - Path: pkg/schemagen/templates/modules_gen.go.tmpl
+      Note: registry generation template
+    - Path: pkg/schemagen/templates/schema_gen.go.tmpl
+      Note: struct generation template
+    - Path: pkg/schemagen/templates/schema_gen_test.go.tmpl
+      Note: test generation template
     - Path: pkg/schemagen/validate.go
       Note: enhanced error reporting
     - Path: pkg/schemagen/validate_test.go
       Note: tests for snippet/hint + syntax errors
+    - Path: pkg/yappgen/modules/pcbstands/module.go
+      Note: typed builder implementation
+    - Path: pkg/yappgen/modules/pcbstands/registry.go
+      Note: module registration
+    - Path: pkg/yappgen/modules/pcbstands/schema.yaml
+      Note: pcb_stands schema definition
     - Path: pkg/yappgen/modules/pushbuttons/module.go
       Note: builder now uses generated structs
     - Path: pkg/yappgen/modules/pushbuttons/registry.go
@@ -55,6 +67,8 @@ ExternalSources:
 Summary: 'Build a schema-driven module system for YAPP DSL: YAML schemas define validation and structure, code generation creates typed Go structs and tests, automatic discovery registers modules without core file edits, and documentation auto-generates from schemas.'
 LastUpdated: 2025-11-15T00:00:00Z
 ---
+
+
 
 
 

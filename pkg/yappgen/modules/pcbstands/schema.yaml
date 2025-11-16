@@ -1,0 +1,75 @@
+module: pcb_stands
+order: 100
+scad_array: pcbStands
+go_package: pcbstands
+description: >
+  Defines PCB mounting standoffs that map to the legacy pcbStands array.
+  Each entry specifies position, height, and screw/pin dimensions.
+
+fields:
+  x:
+    type: number
+    required: true
+    desc: X coordinate on PCB (mm)
+
+  y:
+    type: number
+    required: true
+    desc: Y coordinate on PCB (mm)
+
+  height:
+    type: number
+    desc: Standoff height (defaults to standoffHeight)
+
+  pcb_gap:
+    type: number
+    desc: Gap between PCB and standoff top
+
+  diameter:
+    type: number
+    desc: Standoff outer diameter
+
+  pin_diameter:
+    type: number
+    desc: Center pin diameter for PCB hole
+
+  hole_slack:
+    type: number
+    desc: Additional clearance for pin hole
+
+  fillet_radius:
+    type: number
+    desc: Fillet radius at base
+
+  pin_length:
+    type: number
+    desc: Pin length extending through PCB
+
+tests:
+  - name: minimal_stand
+    desc: Minimal valid PCB stand with required fields
+    input:
+      x: 5
+      y: 5
+    expect_valid: true
+
+  - name: full_stand
+    desc: PCB stand with all optional fields
+    input:
+      x: 10
+      y: 15
+      height: 8
+      pcb_gap: 0.5
+      diameter: 6
+      pin_diameter: 2.5
+      hole_slack: 0.1
+      fillet_radius: 1.0
+      pin_length: 3.0
+    expect_valid: true
+
+  - name: missing_x
+    desc: Should fail when required x is missing
+    input:
+      y: 10
+    expect_error: "missing required field"
+

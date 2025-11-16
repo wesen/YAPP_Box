@@ -127,3 +127,26 @@ schemagen now emits ModuleSchema implementations and resolver validates via regi
 - pkg/schemagen/codegen.go — generated ModuleSchema code
 - pkg/schemagen/schema_doc.go — field metadata for ModuleSchema
 
+
+## 2025-11-15
+
+Refactored schemagen to use text/template for cleaner codegen
+
+### Related Files
+
+- pkg/schemagen/codegen.go — template execution logic
+- pkg/schemagen/templates/modules_gen.go.tmpl — registry template
+- pkg/schemagen/templates/schema_gen.go.tmpl — struct template
+- pkg/schemagen/templates/schema_gen_test.go.tmpl — test template
+
+
+## 2025-11-15
+
+Converted pcb_stands to schema-based builder
+
+### Related Files
+
+- pkg/yappgen/modules/pcbstands/module.go — typed builder
+- pkg/yappgen/modules/pcbstands/registry.go — module registration
+- pkg/yappgen/modules/pcbstands/schema.yaml — pcb_stands schema
+

@@ -26,6 +26,7 @@ type SchemaField struct {
 	Name        string
 	Type        string
 	Required    bool
+	Default     *yaml.Node
 	Description string
 	Enum        []string
 	Children    []*SchemaField
@@ -108,6 +109,12 @@ func parseFields(node *yaml.Node) []*SchemaField {
 					field.Enum = append(field.Enum, entry.Value)
 				}
 			}
+		}
+		if defNode := mapValueNode(valueNode, "default"); defNode != nil {
+			field.Default = defNode
+		}
+		if defNode := mapValueNode(valueNode, "default"); defNode != nil {
+			field.Default = defNode
 		}
 		if field.Type == "object" {
 			field.Children = parseFields(mapValueNode(valueNode, "fields"))

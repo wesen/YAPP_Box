@@ -73,3 +73,39 @@ type PushButtonsItemSwitch struct {
 	// Height from PCB to switch top (optional)
 	TopHeight *float64 `yaml:"top_height,omitempty"`
 }
+
+func (x *PushButtonsItem) ApplyDefaults() {
+	if x.Shape == nil {
+		v := "rectangle"
+		x.Shape = &v
+	}
+}
+
+func (x *PushButtonsItem) CustomValidate() error {
+	// Module author can add custom validation here
+	return nil
+}
+
+func (x *PushButtonsItemCap) ApplyDefaults() {
+}
+
+func (x *PushButtonsItemCap) CustomValidate() error {
+	// Module author can add custom validation here
+	return nil
+}
+
+func (x *PushButtonsItemLid) ApplyDefaults() {
+}
+
+func (x *PushButtonsItemLid) CustomValidate() error {
+	// Module author can add custom validation here
+	return nil
+}
+
+func (x *PushButtonsItemSwitch) ApplyDefaults() {
+}
+
+func (x *PushButtonsItemSwitch) CustomValidate() error {
+	// Module author can add custom validation here
+	return nil
+}

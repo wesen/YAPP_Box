@@ -4,9 +4,11 @@ package yappgen
 
 import (
 	"github.com/wesen/yapp-encl-resolver/pkg/registry"
+	pcbstands "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pcbstands"
 	pushbuttons "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/pushbuttons"
 )
 
 func init() {
+	registry.Register(pcbstands.NewModule())
 	registry.Register(pushbuttons.NewModule())
 }
