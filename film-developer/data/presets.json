@@ -16,6 +16,28 @@
       "label": "TRI-X 400 XTOL 1+1 ISO1600"
     },
     {
+      "id": "kodak_tri_x_400_xtol_1_1_iso_400_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "Xtol",
+      "dilution": "1+1",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "08:45",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "TRI-X 400 XTOL 1+1 ISO400"
+    },
+    {
+      "id": "kodak_tri_x_400_xtol_1_1_iso_800_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "Xtol",
+      "dilution": "1+1",
+      "iso": 800,
+      "temp_c": 20.0,
+      "developer_time": "10:00",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "TRI-X 400 XTOL 1+1 ISO800"
+    },
+    {
       "id": "ilford_hp5_plus_xtol_1_1_iso_1600_20c",
       "film": "Ilford HP5+",
       "developer": "Xtol",
@@ -29,6 +51,83 @@
         "wash": "15:00"
       },
       "label": "HP5+ XTOL 1+1 ISO1600"
+    },
+    {
+      "id": "ilford_hp5_plus_xtol_1_1_iso_400_20c",
+      "film": "Ilford HP5+",
+      "developer": "Xtol",
+      "dilution": "1+1",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "12:00",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "HP5+ XTOL 1+1 ISO400"
+    },
+    {
+      "id": "kodak_tri_x_400_d76_1_1_iso_400_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "09:45",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "TRI-X 400 D-76 1+1 ISO400"
+    },
+    {
+      "id": "kodak_tri_x_400_d76_1_1_iso_800_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 800,
+      "temp_c": 20.0,
+      "developer_time": "09:45",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "TRI-X 400 D-76 1+1 ISO800"
+    },
+    {
+      "id": "kodak_tri_x_400_d76_1_1_iso_1600_20c",
+      "film": "Kodak Tri-X 400",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 1600,
+      "temp_c": 20.0,
+      "developer_time": "13:15",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "TRI-X 400 D-76 1+1 ISO1600"
+    },
+    {
+      "id": "ilford_hp5_plus_d76_1_1_iso_400_20c",
+      "film": "Ilford HP5+",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 400,
+      "temp_c": 20.0,
+      "developer_time": "13:00",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "HP5+ D-76 1+1 ISO400"
+    },
+    {
+      "id": "ilford_hp5_plus_d76_1_1_iso_800_20c",
+      "film": "Ilford HP5+",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 800,
+      "temp_c": 20.0,
+      "developer_time": "16:30",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "HP5+ D-76 1+1 ISO800"
+    },
+    {
+      "id": "ilford_hp5_plus_d76_1_1_iso_1600_20c",
+      "film": "Ilford HP5+",
+      "developer": "D-76",
+      "dilution": "1+1",
+      "iso": 1600,
+      "temp_c": 20.0,
+      "developer_time": "18:00",
+      "stages": { "stop_bath": "00:30", "fixer": "10:00", "wash": "15:00" },
+      "label": "HP5+ D-76 1+1 ISO1600"
     }
   ]
 }
