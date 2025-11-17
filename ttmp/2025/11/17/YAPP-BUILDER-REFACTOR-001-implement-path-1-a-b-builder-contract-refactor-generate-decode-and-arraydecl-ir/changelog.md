@@ -55,3 +55,34 @@ Regenerated module schemas/tests and updated all module Build() implementations 
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/module.go — Uses typed Decode() slice
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/module.go — Removed bespoke yaml decode logic
 
+
+## 2025-11-17
+
+Updated 04-features example/resolved fixtures to satisfy new cutout/light tube schemas and regenerated SCAD baseline
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/04-features.resolved.yaml — Mirror resolved data for validation
+- /home/manuel/code/others/YAPP_Box/examples/04-features.yaml — Uses new cutout + light_tube fields
+
+
+## 2025-11-17
+
+Step A validation complete: go test ./... and regenerated 04-features + MVP SCAD outputs with zero diffs vs /tmp/refactor-baseline
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/04-features.yaml — Source for regenerated SCAD
+- /home/manuel/code/others/YAPP_Box/examples/yapp-mvp-pcbstands-cutouts.yaml — Second baseline used for diff
+
+
+## 2025-11-17
+
+Implemented Step B scaffolding: added ArrayDecl IR, updated FeatureModule interface, rewrote module builders/registries to emit typed ArrayDecls, and refreshed feature wiring + tests (go test ./... passes)
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/registry/schema.go — ArrayDecl type + interface change
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go — ArrayDecl-aware array/multi-array helpers
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules — All module build/registry updates
+

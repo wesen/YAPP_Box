@@ -8,14 +8,15 @@ import (
 )
 
 func TestBuild_MinimalMount(t *testing.T) {
-	input := []map[string]any{
+	left := true
+	input := []BoxMountsItem{
 		{
-			"pos":        12.0,
-			"screw_d":    3.0,
-			"slot_width": 0.0,
-			"height":     5.0,
-			"faces": map[string]any{
-				"left": true,
+			Pos:       12.0,
+			ScrewD:    3.0,
+			SlotWidth: 0.0,
+			Height:    5.0,
+			Faces: BoxMountsItemFaces{
+				Left: &left,
 			},
 		},
 	}
@@ -40,22 +41,30 @@ func TestBuild_MinimalMount(t *testing.T) {
 }
 
 func TestBuild_FlaggedMount(t *testing.T) {
-	input := []map[string]any{
+	back := true
+	right := true
+	offset := 5.0
+	fillet := 1.0
+	shellPart := "lid"
+	alignment := "center"
+	origin := "alt"
+	noFillet := true
+	input := []BoxMountsItem{
 		{
-			"pos":           20.0,
-			"offset":        5.0,
-			"screw_d":       3.5,
-			"slot_width":    4.0,
-			"height":        8.0,
-			"fillet_radius": 1.0,
-			"faces": map[string]any{
-				"back":  true,
-				"right": true,
+			Pos:          20.0,
+			Offset:       &offset,
+			ScrewD:       3.5,
+			SlotWidth:    4.0,
+			Height:       8.0,
+			FilletRadius: &fillet,
+			Faces: BoxMountsItemFaces{
+				Back:  &back,
+				Right: &right,
 			},
-			"shell_part": "lid",
-			"alignment":  "center",
-			"origin":     "alt",
-			"no_fillet":  true,
+			ShellPart: &shellPart,
+			Alignment: &alignment,
+			Origin:    &origin,
+			NoFillet:  &noFillet,
 		},
 	}
 

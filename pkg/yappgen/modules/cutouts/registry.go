@@ -4,6 +4,7 @@ import (
 	_ "embed"
 
 	"reflect"
+	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -28,17 +29,33 @@ func (m *module) Schema() registry.ModuleSchema {
 	return m.schema
 }
 
-func (m *module) Build(items []map[string]any) ([][]any, error) {
-	// Note: cutouts return a map by face, not a simple array
-	// This is a special case handled in features.go
-	byFace, err := Build(items)
+func (m *module) Build(items []map[string]any) ([]registry.ArrayDecl, error) {
+	typed, err := Decode(items)
 	if err != nil {
 		return nil, err
 	}
-	// For now, return empty to satisfy interface
-	// The actual cutout handling is in features.go cutoutFeatureModule
-	_ = byFace
-	return nil, nil
+
+	byFace, err := Build(typed)
+	if err != nil {
+		return nil, err
+	}
+
+	var decls []registry.ArrayDecl
+	for name, rows := range byFace {
+		if len(rows) == 0 {
+			continue
+		}
+		decls = append(decls, registry.ArrayDecl{
+			Name: name,
+			Rows: rows,
+		})
+	}
+
+	sort.Slice(decls, func(i, j int) bool {
+		return decls[i].Name < decls[j].Name
+	})
+
+	return decls, nil
 }
 
 // Ensure module implements FeatureModule
@@ -293,12 +310,12 @@ var allowedPolygonPresets = map[string]struct{}{
 }
 
 var allowedMaskPresets = map[string]struct{}{
-	"honeycomb":    {},
-	"hex_circles":  {},
-	"circles":      {},
-	"squares":      {},
-	"bars":         {},
-	"offset_bars":  {},
+	"honeycomb":   {},
+	"hex_circles": {},
+	"circles":     {},
+	"squares":     {},
+	"bars":        {},
+	"offset_bars": {},
 }
 
 var allowedCoordinate = map[string]struct{}{

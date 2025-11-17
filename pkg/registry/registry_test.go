@@ -26,7 +26,7 @@ func (m *mockModule) Schema() ModuleSchema {
 	return m.schema
 }
 
-func (m *mockModule) Build(items []map[string]any) ([][]any, error) {
+func (m *mockModule) Build(items []map[string]any) ([]ArrayDecl, error) {
 	return nil, nil
 }
 

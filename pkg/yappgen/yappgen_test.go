@@ -39,15 +39,19 @@ func TestBuildParams_InsertsUndefForOptional(t *testing.T) {
 
 func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 	// Circle uses radius; width and length should be 0
-	items := []map[string]any{
+	fromBottom := float64(6)
+	width := float64(0)
+	length := float64(0)
+	radius := float64(4)
+	items := []cutouts.CutoutsItem{
 		{
-			"face":             "front",
-			"shape":            "circle",
-			"from_face_left":   12.0,
-			"from_face_bottom": 6.0,
-			"width":            0,
-			"length":           0,
-			"radius":           4,
+			Face:           "front",
+			Shape:          "circle",
+			FromFaceLeft:   12.0,
+			FromFaceBottom: &fromBottom,
+			Width:          &width,
+			Length:         &length,
+			Radius:         &radius,
 		},
 	}
 	byFace, err := cutouts.Build(items)
@@ -74,28 +78,35 @@ func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 }
 
 func TestDistributeCutouts_ByFace(t *testing.T) {
-	cutoutsModule := cutouts.NewModule()
-	items := []map[string]any{
+	rectWidth := float64(8)
+	rectLength := float64(3)
+	rectRadius := float64(0)
+	rectBottom := float64(8)
+	circWidth := float64(0)
+	circLength := float64(0)
+	circRadius := float64(2)
+	circBottom := float64(6)
+
+	items := []cutouts.CutoutsItem{
 		{
-			"face":             "front",
-			"shape":            "rectangle",
-			"from_face_left":   5.0,
-			"from_face_bottom": 8.0,
-			"width":            8,
-			"length":           3,
-			"radius":           0,
+			Face:           "front",
+			Shape:          "rectangle",
+			FromFaceLeft:   5.0,
+			FromFaceBottom: &rectBottom,
+			Width:          &rectWidth,
+			Length:         &rectLength,
+			Radius:         &rectRadius,
 		},
 		{
-			"face":             "left",
-			"shape":            "circle",
-			"from_face_left":   4.0,
-			"from_face_bottom": 6.0,
-			"width":            0,
-			"length":           0,
-			"radius":           2,
+			Face:           "left",
+			Shape:          "circle",
+			FromFaceLeft:   4.0,
+			FromFaceBottom: &circBottom,
+			Width:          &circWidth,
+			Length:         &circLength,
+			Radius:         &circRadius,
 		},
 	}
-	// Use the module Build function which returns map[string][][]any
 	m, err := cutouts.Build(items)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -103,7 +114,7 @@ func TestDistributeCutouts_ByFace(t *testing.T) {
 	if len(m["cutoutsFront"]) != 1 || len(m["cutoutsLeft"]) != 1 {
 		t.Fatalf("expected one cutout in front and left, got front=%d left=%d", len(m["cutoutsFront"]), len(m["cutoutsLeft"]))
 	}
-	_ = cutoutsModule // avoid unused variable
+	_ = cutouts.NewModule() // ensure module compiles with interface
 }
 
 func TestEmitSCAD_ContainsUndefAndArrays(t *testing.T) {
@@ -140,8 +151,8 @@ func TestEmitSCAD_ContainsUndefAndArrays(t *testing.T) {
 }
 
 func TestBuildSnapJoins_SideFlag(t *testing.T) {
-	items := []map[string]any{
-		{"pos": 25, "width": 8, "side": "left"},
+	items := []snapjoins.SnapJoinsItem{
+		{Pos: 25, Width: 8, Side: "left"},
 	}
 	list, err := snapjoins.Build(items)
 	if err != nil {
@@ -156,35 +167,49 @@ func TestBuildSnapJoins_SideFlag(t *testing.T) {
 }
 
 func TestBuildPushButtons_PolygonPreset(t *testing.T) {
-	items := []map[string]any{
+	name := "reset"
+	shape := "polygon"
+	polygon := "arrow"
+	angle := 45.0
+	coordinate := "box"
+	origin := "left"
+	filletRadius := 0.6
+	lidWall := 2.0
+	plateThickness := 2.4
+	slack := 0.3
+	snapSlack := 0.15
+	lidNoFillet := true
+	topHeight := 4.1
+
+	items := []pushbuttons.PushButtonsItem{
 		{
-			"name":          "reset",
-			"x":             12.0,
-			"y":             8.0,
-			"shape":         "polygon",
-			"polygon":       "arrow",
-			"angle":         45.0,
-			"coordinate":    "box",
-			"origin":        "left",
-			"fillet_radius": 0.6,
-			"lid": map[string]any{
-				"protrusion":      1.5,
-				"wall":            2.0,
-				"plate_thickness": 2.4,
-				"slack":           0.3,
-				"snap_slack":      0.15,
-				"no_fillet":       true,
+			Name:         &name,
+			X:            12.0,
+			Y:            8.0,
+			Shape:        &shape,
+			Polygon:      &polygon,
+			Angle:        &angle,
+			Coordinate:   &coordinate,
+			Origin:       &origin,
+			FilletRadius: &filletRadius,
+			Lid: pushbuttons.PushButtonsItemLid{
+				Protrusion:     1.5,
+				Wall:           &lidWall,
+				PlateThickness: &plateThickness,
+				Slack:          &slack,
+				SnapSlack:      &snapSlack,
+				NoFillet:       &lidNoFillet,
 			},
-			"cap": map[string]any{
-				"length": 8.0,
-				"width":  6.0,
-				"radius": 2.0,
+			Cap: pushbuttons.PushButtonsItemCap{
+				Length: 8.0,
+				Width:  6.0,
+				Radius: 2.0,
 			},
-			"switch": map[string]any{
-				"height":        5.0,
-				"travel":        0.6,
-				"pole_diameter": 3.0,
-				"top_height":    4.1,
+			Switch: pushbuttons.PushButtonsItemSwitch{
+				Height:       5.0,
+				Travel:       0.6,
+				PoleDiameter: 3.0,
+				TopHeight:    &topHeight,
 			},
 		},
 	}

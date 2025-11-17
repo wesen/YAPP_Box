@@ -8,15 +8,15 @@ import (
 )
 
 func TestBuild_Defaults(t *testing.T) {
-	input := []map[string]any{
+	input := []ConnectorsItem{
 		{
-			"x":            15.0,
-			"y":            10.0,
-			"stand_height": 5.0,
-			"screw_d":      2.2,
-			"screw_head_d": 4.2,
-			"insert_d":     3.2,
-			"outside_d":    7.5,
+			X:           15.0,
+			Y:           10.0,
+			StandHeight: 5.0,
+			ScrewD:      2.2,
+			ScrewHeadD:  4.2,
+			InsertD:     3.2,
+			OutsideD:    7.5,
 		},
 	}
 
@@ -35,23 +35,32 @@ func TestBuild_Defaults(t *testing.T) {
 }
 
 func TestBuild_FlagEncoding(t *testing.T) {
-	input := []map[string]any{
+	corner := "all"
+	coordinate := "box_inside"
+	noFillet := true
+	countersink := true
+	pcbName := "Sensor"
+	throughLid := true
+	selfThreading := true
+	noInternalFillet := true
+
+	input := []ConnectorsItem{
 		{
-			"x":                  25.0,
-			"y":                  30.0,
-			"stand_height":       6.0,
-			"screw_d":            3.0,
-			"screw_head_d":       6.0,
-			"insert_d":           4.0,
-			"outside_d":          8.0,
-			"corner":             "all",
-			"coordinate":         "box_inside",
-			"no_fillet":          true,
-			"countersink":        true,
-			"pcb_name":           "Sensor",
-			"through_lid":        true,
-			"self_threading":     true,
-			"no_internal_fillet": true,
+			X:                25.0,
+			Y:                30.0,
+			StandHeight:      6.0,
+			ScrewD:           3.0,
+			ScrewHeadD:       6.0,
+			InsertD:          4.0,
+			OutsideD:         8.0,
+			Corner:           &corner,
+			Coordinate:       &coordinate,
+			NoFillet:         &noFillet,
+			Countersink:      &countersink,
+			PcbName:          &pcbName,
+			ThroughLid:       &throughLid,
+			SelfThreading:    &selfThreading,
+			NoInternalFillet: &noInternalFillet,
 		},
 	}
 

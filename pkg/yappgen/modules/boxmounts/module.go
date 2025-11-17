@@ -9,15 +9,10 @@ import (
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
-// Build converts DSL box_mounts entries into the YAPP array format.
-func Build(items []map[string]any) ([][]any, error) {
-	typed, err := Decode(items)
-	if err != nil {
-		return nil, err
-	}
-
+// Build converts typed box_mounts entries into the YAPP array format.
+func Build(items []BoxMountsItem) ([][]any, error) {
 	var out [][]any
-	for idx, item := range typed {
+	for idx, item := range items {
 		label := fmt.Sprintf("box_mounts[%d]", idx)
 
 		if err := validateFaces(item.Faces); err != nil {

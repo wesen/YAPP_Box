@@ -9,15 +9,10 @@ import (
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
-// Build converts DSL light_tubes entries into the YAPP array format.
-func Build(items []map[string]any) ([][]any, error) {
-	typed, err := Decode(items)
-	if err != nil {
-		return nil, err
-	}
-
+// Build converts typed light_tubes entries into the YAPP array format.
+func Build(items []LightTubesItem) ([][]any, error) {
 	var out [][]any
-	for idx, item := range typed {
+	for idx, item := range items {
 		label := fmt.Sprintf("light_tubes[%d]", idx)
 
 		// Build positional parameters matching YAPP order:

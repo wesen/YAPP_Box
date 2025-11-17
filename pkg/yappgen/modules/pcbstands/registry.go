@@ -24,8 +24,21 @@ func (m *module) Schema() registry.ModuleSchema {
 	return m.schema
 }
 
-func (m *module) Build(items []map[string]any) ([][]any, error) {
-	return Build(items)
+func (m *module) Build(items []map[string]any) ([]registry.ArrayDecl, error) {
+	typed, err := Decode(items)
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := Build(typed)
+	if err != nil {
+		return nil, err
+	}
+
+	return []registry.ArrayDecl{{
+		Name: "pcbStands",
+		Rows: rows,
+	}}, nil
 }
 
 // Ensure module implements FeatureModule

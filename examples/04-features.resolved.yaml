@@ -16,22 +16,24 @@ enclosure:
         thickness: 2
 features:
     cutouts:
-        - face: side_x+
-          fillet: 1
-          height: 4
+        - face: right
+          from_face_bottom: 10
+          from_face_left: 25
+          length: 4
+          radius: 1
+          shape: rounded_rect
           width: 8
-          x: 25
-          z: 10
     holes:
         - d: 3.2
           face: top
           x: 10
           "y": 12
     light_tubes:
-        - depth: 2.5
-          face: top
-          lens_d: 3
-          tube_d: 4
+        - gap_above_pcb: 0.5
+          shape: circle
+          tube_length: 2.5
+          tube_wall: 1
+          tube_width: 4
           x: 15
           "y": 8
 pcb:

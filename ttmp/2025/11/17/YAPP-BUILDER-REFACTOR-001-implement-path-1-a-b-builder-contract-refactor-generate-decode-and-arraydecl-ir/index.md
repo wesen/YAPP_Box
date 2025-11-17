@@ -11,10 +11,16 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/examples/04-features.resolved.yaml
+      Note: Kept resolved fixture in sync with schema changes
+    - Path: /home/manuel/code/others/YAPP_Box/examples/04-features.yaml
+      Note: Migrated cutouts/light_tubes to new schemas
     - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-module-authoring-guide.md
       Note: Module authoring guide to update
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/registry_test.go
+      Note: Updates mock module for new interface
     - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/schema.go
-      Note: FeatureModule interface and ArrayDecl definition
+      Note: Adds ArrayDecl type and new FeatureModule contract
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go
       Note: Extended schemagen data for Decode generation
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen.go.tmpl
@@ -26,21 +32,45 @@ RelatedFiles:
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/decode/helpers_test.go
       Note: Unit tests for decode helpers
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go
-      Note: arrayFeatureModule and multiArrayFeatureModule helpers
+      Note: Introduces ArrayDecl-aware feature module helpers
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/module.go
-      Note: Build now decodes typed items
+      Note: Build signature updated
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/module_test.go
+      Note: Typed tests
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/registry.go
+      Note: ArrayDecl wrapper
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/connectors/module.go
-      Note: Build rewired to use Decode()
+      Note: Build consumes []ConnectorsItem
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/connectors/module_test.go
+      Note: Typed test coverage
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/connectors/registry.go
+      Note: ArrayDecl wrapper
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
-      Note: Build translates typed cutouts into face arrays
+      Note: Build now takes []CutoutsItem
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/registry.go
+      Note: Implements multi-array ArrayDecl wrapper
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/lighttubes/module.go
-      Note: Build driven by Decode() values
+      Note: Build consumes typed items
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/lighttubes/registry.go
+      Note: ArrayDecl wrapper
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/module.go
-      Note: Build uses generated Decode() output
+      Note: Build now accepts typed items
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/module_test.go
+      Note: Tests use typed inputs
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/registry.go
+      Note: Wrapper returns ArrayDecl
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/module.go
-      Note: Dropped manual decode in favor of generated Decode()
+      Note: Build consumes typed items
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/registry.go
+      Note: ArrayDecl wrapper
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/snapjoins/module.go
-      Note: Build switched to generated decoders
+      Note: Build signature updated
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/snapjoins/module_test.go
+      Note: Typed tests
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/snapjoins/registry.go
+      Note: ArrayDecl wrapper
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/yappgen_test.go
+      Note: Adjusts integration tests for typed builders
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/04-2025-11-17-builder-contract-and-codegen-options.md
       Note: Original options analysis
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/02-debate-round-1-go-no-go-builder-contract-refactor-urgency.md
@@ -55,6 +85,8 @@ ExternalSources: []
 Summary: 'Refactor module builder contract: generate Decode() to eliminate marshal/unmarshal boilerplate, add ArrayDecl IR to unify single/multi-array handling. Single-shot refactor of 7 modules.'
 LastUpdated: 2025-11-17T11:52:41.254711306-05:00
 ---
+
+
 
 
 

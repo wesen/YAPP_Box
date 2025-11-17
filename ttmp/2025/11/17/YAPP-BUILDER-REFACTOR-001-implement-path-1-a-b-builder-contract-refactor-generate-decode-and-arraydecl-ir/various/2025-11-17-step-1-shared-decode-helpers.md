@@ -40,3 +40,8 @@ LastUpdated: 2025-11-17
 - `go test ./...` now passes (new decode helpers/tests plus module rewrites)
 - `yappctl generate` succeeds for `examples/yapp-mvp-pcbstands-cutouts.yaml`; `examples/04-features.yaml` still fails schema validation because its cutouts use pre-refactor fields (needs follow-up doc/example update)
 
+## 2025-11-17 - Migrated 04-features example & regenerated baselines
+
+- Updated `examples/04-features.yaml` (and the resolved fixture) to use the face-relative cutout fields plus the new light tube schema so validation passes
+- Regenerated `/tmp/baseline-04-features.scad` and copied it into `/tmp/refactor-baseline/` alongside the MVP baseline for future diffs
+

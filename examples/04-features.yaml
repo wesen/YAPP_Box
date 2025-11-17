@@ -30,20 +30,21 @@ features:
       y: 12
       d: 3.2
   cutouts:
-    - face: side_x+
-      x: 25
-      z: 10
+    - face: right
+      shape: rounded_rect
+      from_face_left: 25
+      from_face_bottom: 10
       width: 8
-      from_face_left: 0
-      height: 4
-      fillet: 1
+      length: 4
+      radius: 1
   light_tubes:
-    - face: top
-      x: 15
+    - x: 15
       y: 8
-      lens_d: 3
-      tube_d: 4
-      depth: 2.5
+      tube_length: 2.5
+      tube_width: 4
+      tube_wall: 1
+      gap_above_pcb: 0.5
+      shape: circle
 
 coordinates:
   origin: boxinside

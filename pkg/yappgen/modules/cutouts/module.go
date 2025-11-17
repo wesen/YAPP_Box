@@ -9,9 +9,9 @@ import (
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
-// Build converts DSL cutouts entries into the YAPP array format.
+// Build converts typed cutouts entries into the YAPP array format.
 // Note: Cutouts are distributed by face, so this returns a map.
-func Build(items []map[string]any) (map[string][][]any, error) {
+func Build(items []CutoutsItem) (map[string][][]any, error) {
 	byFace := map[string][][]any{
 		"cutoutsFront": {},
 		"cutoutsBack":  {},
@@ -21,12 +21,7 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 		"cutoutsBase":  {},
 	}
 
-	typed, err := Decode(items)
-	if err != nil {
-		return nil, err
-	}
-
-	for idx, item := range typed {
+	for idx, item := range items {
 		label := fmt.Sprintf("cutouts[%d]", idx)
 
 		// Get shape flag and dimension usage

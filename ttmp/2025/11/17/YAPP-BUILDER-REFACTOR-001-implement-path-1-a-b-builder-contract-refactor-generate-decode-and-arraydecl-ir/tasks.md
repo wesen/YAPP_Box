@@ -7,14 +7,14 @@
 - [x] Update schemagen templates to generate Decode() tests in schema_gen_test.go.tmpl (TestDecode_ValidInput, TestDecode_MissingRequired, TestDecode_WrongType)
 - [x] Regenerate all 7 modules with new Decode() functions (run schemagen discover)
 - [x] Update all module Build() functions to use generated Decode() instead of yaml.Marshal/Unmarshal (pcbstands, connectors, boxmounts, snapjoins, lighttubes, cutouts, pushbuttons)
-- [ ] Validate Step A: run tests and compare SCAD output with pre-refactor baseline
-- [ ] Define ArrayDecl type in pkg/registry/schema.go
-- [ ] Change registry.FeatureModule.Build interface to return []ArrayDecl instead of [][]any
-- [ ] Add ArrayDecl wrappers to all module registry.go files (6 single-array modules + 1 multi-array cutouts)
-- [ ] Update module Build() signatures to take typed items ([]PcbStandsItem, etc.) instead of []map[string]any
-- [ ] Create multiArrayFeatureModule helper in pkg/yappgen/features.go for cutouts/ridgeExt pattern
-- [ ] Update arrayFeatureModule to handle []ArrayDecl output
-- [ ] Update feature module registration in features.go (replace cutoutFeatureModule with multiArrayFeatureModule)
+- [x] Validate Step A: run tests and compare SCAD output with pre-refactor baseline
+- [x] Define ArrayDecl type in pkg/registry/schema.go
+- [x] Change registry.FeatureModule.Build interface to return []ArrayDecl instead of [][]any
+- [x] Add ArrayDecl wrappers to all module registry.go files (6 single-array modules + 1 multi-array cutouts)
+- [x] Update module Build() signatures to take typed items ([]PcbStandsItem, etc.) instead of []map[string]any
+- [x] Create multiArrayFeatureModule helper in pkg/yappgen/features.go for cutouts/ridgeExt pattern
+- [x] Update arrayFeatureModule to handle []ArrayDecl output
+- [x] Update feature module registration in features.go (replace cutoutFeatureModule with multiArrayFeatureModule)
 - [ ] Validate Step B: run tests and compare SCAD output
 - [ ] Add linter rules (.golangci.yml) to forbid yaml.Marshal/Unmarshal in module.go files
 - [ ] Generate Build wrapper tests (TestBuild_UsesGeneratedDecode, TestBuild_ReturnsArrayDecl)

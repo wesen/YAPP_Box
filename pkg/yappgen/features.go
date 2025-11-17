@@ -2,11 +2,12 @@ package yappgen
 
 import (
 	"context"
-	"sort"
+	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
 
+	"github.com/wesen/yapp-encl-resolver/pkg/registry"
 	boxmounts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/boxmounts"
 	connectors "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/connectors"
 	cutouts "github.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/cutouts"
@@ -26,26 +27,28 @@ type FeatureModule interface {
 var featureModules = []FeatureModule{
 	newArrayFeatureModule("pcb_stands", "pcbStands",
 		func(m *Model) *[]map[string]any { return &m.PcbStands },
-		pcbstands.Build, nil),
+		pcbstands.NewModule().Build, nil),
 	newArrayFeatureModule("connectors", "connectors",
 		func(m *Model) *[]map[string]any { return &m.Connectors },
-		connectors.Build, nil),
+		connectors.NewModule().Build, nil),
 	newArrayFeatureModule("box_mounts", "boxMounts",
 		func(m *Model) *[]map[string]any { return &m.BoxMounts },
-		boxmounts.Build, nil),
+		boxmounts.NewModule().Build, nil),
 	newArrayFeatureModule("push_buttons", "pushButtons",
 		func(m *Model) *[]map[string]any { return &m.PushButtons },
-		pushbuttons.Build,
+		pushbuttons.NewModule().Build,
 		func(m *Model, items []map[string]any) {
 			m.PrintSwitchExtenders = len(items) > 0
 		}),
 	newArrayFeatureModule("snap_joins", "snapJoins",
 		func(m *Model) *[]map[string]any { return &m.SnapJoins },
-		snapjoins.Build, nil),
+		snapjoins.NewModule().Build, nil),
 	newArrayFeatureModule("light_tubes", "lightTubes",
 		func(m *Model) *[]map[string]any { return &m.LightTubes },
-		lighttubes.Build, nil),
-	newCutoutFeatureModule(),
+		lighttubes.NewModule().Build, nil),
+	newMultiArrayFeatureModule("cutouts",
+		func(m *Model) *[]map[string]any { return &m.Cutouts },
+		cutouts.NewModule().Build),
 }
 
 func collectFeatureModules(resolved map[string]any, features map[string]any, model *Model) error {
@@ -70,7 +73,7 @@ type arrayFeatureModule struct {
 	key          string
 	scadName     string
 	field        func(*Model) *[]map[string]any
-	builder      func([]map[string]any) ([][]any, error)
+	builder      func([]map[string]any) ([]registry.ArrayDecl, error)
 	afterCollect func(*Model, []map[string]any)
 }
 
@@ -78,7 +81,7 @@ func newArrayFeatureModule(
 	key string,
 	scadName string,
 	field func(*Model) *[]map[string]any,
-	builder func([]map[string]any) ([][]any, error),
+	builder func([]map[string]any) ([]registry.ArrayDecl, error),
 	afterCollect func(*Model, []map[string]any),
 ) FeatureModule {
 	return &arrayFeatureModule{
@@ -124,57 +127,83 @@ func (m *arrayFeatureModule) Emit(ctx context.Context, model *Model, b *strings.
 	if len(*ptr) == 0 {
 		return nil
 	}
-	rows, err := m.builder(*ptr)
+
+	decls, err := m.builder(*ptr)
 	if err != nil {
 		return err
 	}
-	writeArrayDecl(b, m.scadName, rows)
+
+	if len(decls) != 1 {
+		return fmt.Errorf("arrayFeatureModule %s returned %d arrays, expected 1", m.key, len(decls))
+	}
+
+	if decls[0].Name != m.scadName {
+		return fmt.Errorf("arrayFeatureModule %s returned array %s, expected %s", m.key, decls[0].Name, m.scadName)
+	}
+
+	if len(decls[0].Rows) == 0 {
+		return nil
+	}
+
+	writeArrayDecl(b, decls[0].Name, decls[0].Rows)
 	b.WriteString("\n")
 	return nil
 }
 
-type cutoutFeatureModule struct{}
-
-func newCutoutFeatureModule() FeatureModule {
-	return &cutoutFeatureModule{}
+type multiArrayFeatureModule struct {
+	key     string
+	field   func(*Model) *[]map[string]any
+	builder func([]map[string]any) ([]registry.ArrayDecl, error)
 }
 
-func (m *cutoutFeatureModule) Name() string {
-	return "cutouts"
+func newMultiArrayFeatureModule(
+	key string,
+	field func(*Model) *[]map[string]any,
+	builder func([]map[string]any) ([]registry.ArrayDecl, error),
+) FeatureModule {
+	return &multiArrayFeatureModule{
+		key:     key,
+		field:   field,
+		builder: builder,
+	}
 }
 
-func (m *cutoutFeatureModule) Collect(resolved map[string]any, features map[string]any, model *Model) error {
-	model.Cutouts = nil
+func (m *multiArrayFeatureModule) Name() string {
+	return m.key
+}
+
+func (m *multiArrayFeatureModule) Collect(resolved map[string]any, features map[string]any, model *Model) error {
+	ptr := m.field(model)
 	if features == nil {
+		*ptr = nil
 		return nil
 	}
-	arr, ok := getArray(features, "cutouts")
+	arr, ok := getArray(features, m.key)
 	if !ok {
+		*ptr = nil
 		return nil
 	}
 	items := normalizeArrayOfMaps(arr)
-	model.Cutouts = items
+	*ptr = items
 	return nil
 }
 
-func (m *cutoutFeatureModule) Emit(ctx context.Context, model *Model, b *strings.Builder) error {
-	if len(model.Cutouts) == 0 {
+func (m *multiArrayFeatureModule) Emit(ctx context.Context, model *Model, b *strings.Builder) error {
+	ptr := m.field(model)
+	if len(*ptr) == 0 {
 		return nil
 	}
-	byFace, err := cutouts.Build(model.Cutouts)
+
+	decls, err := m.builder(*ptr)
 	if err != nil {
-		return errors.Wrap(err, "cutouts")
+		return err
 	}
-	keys := make([]string, 0, len(byFace))
-	for k := range byFace {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		if len(byFace[k]) == 0 {
+
+	for _, decl := range decls {
+		if len(decl.Rows) == 0 {
 			continue
 		}
-		writeArrayDecl(b, k, byFace[k])
+		writeArrayDecl(b, decl.Name, decl.Rows)
 		b.WriteString("\n")
 	}
 	return nil

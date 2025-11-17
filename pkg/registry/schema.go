@@ -54,5 +54,13 @@ type FeatureModule interface {
 	// Schema returns the module's schema metadata.
 	Schema() ModuleSchema
 	// Build consumes validated items and produces OpenSCAD parameter arrays.
-	Build(items []map[string]any) ([][]any, error)
+	Build(items []map[string]any) ([]ArrayDecl, error)
+}
+
+// ArrayDecl represents a single OpenSCAD array declaration.
+type ArrayDecl struct {
+	// Name is the identifier written in the SCAD output (e.g., "pcbStands").
+	Name string
+	// Rows contains the positional parameter rows that make up the array.
+	Rows [][]any
 }

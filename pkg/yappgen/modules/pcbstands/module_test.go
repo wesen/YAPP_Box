@@ -8,10 +8,10 @@ import (
 )
 
 func TestBuild_Defaults(t *testing.T) {
-	input := []map[string]any{
+	input := []PcbStandsItem{
 		{
-			"x": 5.0,
-			"y": 7.5,
+			X: 5.0,
+			Y: 7.5,
 		},
 	}
 
@@ -30,17 +30,25 @@ func TestBuild_Defaults(t *testing.T) {
 }
 
 func TestBuild_FlagEncoding(t *testing.T) {
-	input := []map[string]any{
+	shellPart := "lid_only"
+	treatment := "hole"
+	corner := "all"
+	coordinate := "box_inside"
+	noFillet := true
+	pcbName := "Sensor"
+	selfThreading := true
+
+	input := []PcbStandsItem{
 		{
-			"x":              10.0,
-			"y":              12.0,
-			"shell_part":     "lid_only",
-			"treatment":      "hole",
-			"corner":         "all",
-			"coordinate":     "box_inside",
-			"no_fillet":      true,
-			"pcb_name":       "Sensor",
-			"self_threading": true,
+			X:             10.0,
+			Y:             12.0,
+			ShellPart:     &shellPart,
+			Treatment:     &treatment,
+			Corner:        &corner,
+			Coordinate:    &coordinate,
+			NoFillet:      &noFillet,
+			PcbName:       &pcbName,
+			SelfThreading: &selfThreading,
 		},
 	}
 

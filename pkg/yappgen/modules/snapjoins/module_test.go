@@ -8,11 +8,11 @@ import (
 )
 
 func TestBuild_Basic(t *testing.T) {
-	input := []map[string]any{
+	input := []SnapJoinsItem{
 		{
-			"pos":   20.0,
-			"width": 10.0,
-			"side":  "left",
+			Pos:   20.0,
+			Width: 10.0,
+			Side:  "left",
 		},
 	}
 
@@ -28,13 +28,15 @@ func TestBuild_Basic(t *testing.T) {
 }
 
 func TestBuild_WithFlags(t *testing.T) {
-	input := []map[string]any{
+	alignment := "center"
+	symmetric := true
+	input := []SnapJoinsItem{
 		{
-			"pos":       25.0,
-			"width":     8.0,
-			"side":      "left",
-			"alignment": "center",
-			"symmetric": true,
+			Pos:       25.0,
+			Width:     8.0,
+			Side:      "left",
+			Alignment: &alignment,
+			Symmetric: &symmetric,
 		},
 	}
 
@@ -57,14 +59,17 @@ func TestBuild_WithFlags(t *testing.T) {
 }
 
 func TestBuild_DiamondSymmetric(t *testing.T) {
-	input := []map[string]any{
+	alignment := "center"
+	diamond := true
+	symmetric := true
+	input := []SnapJoinsItem{
 		{
-			"pos":       30.0,
-			"width":     4.0,
-			"side":      "right",
-			"alignment": "center",
-			"diamond":   true,
-			"symmetric": true,
+			Pos:       30.0,
+			Width:     4.0,
+			Side:      "right",
+			Alignment: &alignment,
+			Diamond:   &diamond,
+			Symmetric: &symmetric,
 		},
 	}
 
@@ -86,4 +91,3 @@ func TestBuild_DiamondSymmetric(t *testing.T) {
 		t.Fatalf("unexpected build result\nwant: %#v\n got: %#v", want, out[0])
 	}
 }
-

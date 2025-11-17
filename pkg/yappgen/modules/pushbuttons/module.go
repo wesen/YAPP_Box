@@ -9,15 +9,10 @@ import (
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
-// Build converts DSL push button entries into the YAPP array format.
-func Build(items []map[string]any) ([][]any, error) {
-	typedItems, err := Decode(items)
-	if err != nil {
-		return nil, err
-	}
-
+// Build converts typed push button entries into the YAPP array format.
+func Build(items []PushButtonsItem) ([][]any, error) {
 	var out [][]any
-	for idx, item := range typedItems {
+	for idx, item := range items {
 		label := fmt.Sprintf("push_buttons[%d]", idx)
 		if item.Name != nil && strings.TrimSpace(*item.Name) != "" {
 			label = fmt.Sprintf("%s (%s)", label, *item.Name)
