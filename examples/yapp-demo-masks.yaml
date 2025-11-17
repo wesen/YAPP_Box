@@ -1,0 +1,52 @@
+project: YAPP Demo - Cutout Masks
+yapp_version: v3
+
+pcb:
+  length: 60
+  width: 50
+  thickness: 1.6
+  z_clearance: 7.0
+
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 1
+    fillet_radius: 2.0
+  base:
+    thickness: 1.0
+    wall_height: 10
+  lid:
+    thickness: 1.0
+    wall_height: 12
+  ridge:
+    height: 4.0
+    slack: 0.2
+
+features:
+  cutouts:
+    # Lid: rectangle with honeycomb mask (no offsets)
+    - face: lid
+      from_face_back: 30
+      from_face_left: 25
+      width: 24
+      length: 20
+      radius: 0
+      shape: rectangle
+      mask:
+        preset: honeycomb
+
+    # Base: rectangle with bars mask and offsets/rotation
+    - face: base
+      from_face_back: 25
+      from_face_left: 20
+      width: 24
+      length: 16
+      radius: 2
+      shape: rectangle
+      angle: 10
+      mask:
+        preset: bars
+        offset_x: 1.5
+        offset_y: -0.5
+        rotation: 15
+

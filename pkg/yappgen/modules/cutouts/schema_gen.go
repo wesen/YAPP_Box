@@ -29,10 +29,25 @@ type CutoutsItem struct {
 	Angle *float64 `yaml:"angle,omitempty"`
 	// Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2
 	Polygon *string `yaml:"polygon,omitempty"`
+	// Ventilation mask to apply to the cutout opening. Uses predefined patterns from YAPP: honeycomb, hex_circles, circles, squares, bars, offset_bars. Optionally adjust placement within the opening using offsets and rotation.
+
+	Mask *CutoutsItemMask `yaml:"mask,omitempty"`
 	// Coordinate system: pcb (yappCoordPCB, default), box (yappCoordBox), box_inside (yappCoordBoxInside)
 	Coordinate *string `yaml:"coordinate,omitempty"`
 	// Origin placement: global (yappOrigin/yappGlobalOrigin, default), center (yappCenter), alt (yappAltOrigin/yappLeftOrigin)
 	Origin *string `yaml:"origin,omitempty"`
+}
+
+// CutoutsItemMask describes the cutouts schema.
+type CutoutsItemMask struct {
+	// Mask preset name
+	Preset *string `yaml:"preset,omitempty"`
+	// Horizontal offset of the mask within the opening
+	OffsetX *float64 `yaml:"offset_x,omitempty"`
+	// Vertical offset of the mask within the opening
+	OffsetY *float64 `yaml:"offset_y,omitempty"`
+	// Additional rotation applied to the mask within the opening (degrees)
+	Rotation *float64 `yaml:"rotation,omitempty"`
 }
 
 func (x *CutoutsItem) ApplyDefaults() {
@@ -47,6 +62,14 @@ func (x *CutoutsItem) ApplyDefaults() {
 }
 
 func (x *CutoutsItem) CustomValidate() error {
+	// Module author can add custom validation here
+	return nil
+}
+
+func (x *CutoutsItemMask) ApplyDefaults() {
+}
+
+func (x *CutoutsItemMask) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
 }

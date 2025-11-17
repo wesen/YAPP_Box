@@ -1,4 +1,4 @@
-You're taking over ticket `<TICKET-ID>` in repo `<REPO-PATH>`.
+You're taking over ticket `<TICKET-ID>` in repo `<REPO-PATH>`. It is MANDATORY with the ticket and its tasks
 
 - Read docmgr basics first
   - Run:

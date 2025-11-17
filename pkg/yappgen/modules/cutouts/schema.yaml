@@ -68,6 +68,27 @@ fields:
     desc: "Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2"
     enum: [hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2]
 
+  mask:
+    type: object
+    desc: >
+      Ventilation mask to apply to the cutout opening. Uses predefined patterns from YAPP:
+      honeycomb, hex_circles, circles, squares, bars, offset_bars. Optionally adjust placement
+      within the opening using offsets and rotation.
+    fields:
+      preset:
+        type: string
+        desc: "Mask preset name"
+        enum: [honeycomb, hex_circles, circles, squares, bars, offset_bars]
+      offset_x:
+        type: number
+        desc: "Horizontal offset of the mask within the opening"
+      offset_y:
+        type: number
+        desc: "Vertical offset of the mask within the opening"
+      rotation:
+        type: number
+        desc: "Additional rotation applied to the mask within the opening (degrees)"
+
   coordinate:
     type: string
     default: pcb

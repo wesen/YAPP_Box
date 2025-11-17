@@ -869,6 +869,58 @@ func (c *Config) ApplyDefaults() {
 }
 ```
 
+### 2b. Numeric Default Literal Type (float vs int)
+**Problem:** If a schema uses `default: 0` for a number field that generates a `*float64`, schemagen may emit an integer literal in `ApplyDefaults()`:
+
+```
+func (x *Item) ApplyDefaults() {
+    if x.LensThickness == nil {
+        v := 0        // int literal
+        x.LensThickness = &v // compile error: *int to *float64
+    }
+}
+```
+
+This causes a compile error:
+
+```
+cannot use &v (value of type *int) as *float64 value in assignment
+```
+
+**Solution:** Always write float defaults with a decimal, e.g. `0.0`, `1.0`, etc. This ensures schemagen generates a `float64` literal.
+
+Checklist:
+- In your schema, for any number field that should default to a float, write:
+
+```yaml
+lens_thickness:
+  type: number
+  default: 0.0
+```
+
+- Regenerate and verify:
+```bash
+go run ./cmd/schemagen validate pkg/yappgen/modules/<module>/schema.yaml
+go run ./cmd/schemagen discover
+```
+
+- Inspect generated code:
+```
+func (x *Item) ApplyDefaults() {
+    if x.LensThickness == nil {
+        v := 0.0      // float64 literal
+        x.LensThickness = &v
+    }
+}
+```
+
+- Build:
+```bash
+go build ./...
+```
+
+If you still see `v := 0` after setting `default: 0.0`, make sure the schema file is saved and re-run `schemagen discover`. Then re-open the generated `schema_gen.go` to confirm the literal is `0.0`.
+
 ### 3. Module Ordering
 **Problem:** Modules process in random order (map iteration)
 

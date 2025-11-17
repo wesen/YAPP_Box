@@ -99,8 +99,8 @@ Examples:
 			parameters.NewParameterDefinition(
 				"render-timeout",
 				parameters.ParameterTypeString,
-				parameters.WithDefault("30s"),
-				parameters.WithHelp("Duration for STL rendering context (e.g., 30s, 2m)"),
+				parameters.WithDefault(""),
+				parameters.WithHelp("Duration for STL rendering context (e.g., 30s, 2m). Disabled by default."),
 			),
 			parameters.NewParameterDefinition(
 				"copy-generator",
@@ -151,20 +151,17 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		return nil
 	}
 
-	timeout := settings.RenderTimeout
-	if timeout == "" {
-		timeout = "30s"
-	}
-	duration, err := time.ParseDuration(timeout)
-	if err != nil {
-		return errors.Wrap(err, "parse render-timeout")
-	}
-
 	renderCtx := ctx
 	var cancel context.CancelFunc
-	if duration > 0 {
-		renderCtx, cancel = context.WithTimeout(ctx, duration)
-		defer cancel()
+	if settings.RenderTimeout != "" {
+		duration, err := time.ParseDuration(settings.RenderTimeout)
+		if err != nil {
+			return errors.Wrap(err, "parse render-timeout")
+		}
+		if duration > 0 {
+			renderCtx, cancel = context.WithTimeout(ctx, duration)
+			defer cancel()
+		}
 	}
 
 	return generatorcli.RenderSTLs(renderCtx, scadPath, generatorcli.STLOptions{

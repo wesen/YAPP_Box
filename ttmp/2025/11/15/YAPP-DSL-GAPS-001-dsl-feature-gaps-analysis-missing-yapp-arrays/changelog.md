@@ -261,3 +261,26 @@ Docs: add limitations note for push_buttons pcb_name (no multi-PCB yet; use 'Mai
 
 - /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — limitations note under push_buttons
 
+
+## 2025-11-16
+
+Task #16 completed: push_buttons flags implemented (yappAltOrigin, yappPCBName); emitter supports nested arrays; standardized features: structure; docs updated with limitations
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — limitations note for pcb_name
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/emit.go — nested []any support
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go — remove root-level fallback
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/scripts/validate-task16-pushbuttons-flags.sh — validation script
+
+
+## 2025-11-16
+
+Task #14: Implemented cutout mask support (schema, builder, resolver) and added example; verified SCAD emission with maskHoneycomb and maskBars (with offsets).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/yapp-demo-masks.yaml — new example
+- /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go — string field rule for mask preset
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go — builder updates
+

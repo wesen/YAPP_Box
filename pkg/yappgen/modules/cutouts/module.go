@@ -113,6 +113,13 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			params = append(params, presetFlag)
 		}
 
+		// Add mask preset and optional offsets/rotation (if provided)
+		if maskElems, err := encodeMask(item); err != nil {
+			return nil, errors.Wrapf(err, "%s", label)
+		} else if len(maskElems) > 0 {
+			params = append(params, maskElems...)
+		}
+
 		// Add coordinate and origin flags
 		flags, err := encodeFlags(item)
 		if err != nil {
@@ -130,6 +137,13 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 	}
 
 	return byFace, nil
+}
+
+func floatOrZero(ptr *float64) float64 {
+	if ptr == nil {
+		return 0
+	}
+	return *ptr
 }
 
 func ptrOrUndef(ptr *float64) any {
@@ -178,6 +192,53 @@ func polygonPresetFlag(preset string) (scad.Raw, error) {
 	default:
 		return "", errors.Errorf("unsupported polygon preset: %s", preset)
 	}
+}
+
+func maskPresetSymbol(preset string) (scad.Raw, error) {
+	switch strings.ToLower(strings.TrimSpace(preset)) {
+	case "honeycomb":
+		return scad.Raw("maskHoneycomb"), nil
+	case "hex_circles", "hex-circles":
+		return scad.Raw("maskHexCircles"), nil
+	case "circles":
+		return scad.Raw("maskCircles"), nil
+	case "squares":
+		return scad.Raw("maskSquares"), nil
+	case "bars":
+		return scad.Raw("maskBars"), nil
+	case "offset_bars", "offset-bars":
+		return scad.Raw("maskOffsetBars"), nil
+	default:
+		return "", errors.Errorf("unsupported mask preset: %s", preset)
+	}
+}
+
+// encodeMask returns zero or more elements to append to the cutout parameter list
+// - First: the preset mask object (e.g., maskHoneycomb)
+// - Then: optional offsets vector [[yappMaskDef, hOffset, vOffset, rotation]] if any offsets/rotation provided
+func encodeMask(item CutoutsItem) ([]any, error) {
+	if item.Mask == nil {
+		return nil, nil
+	}
+	// Require preset when mask is specified
+	if item.Mask.Preset == nil || strings.TrimSpace(*item.Mask.Preset) == "" {
+		return nil, errors.Errorf("mask.preset is required when mask is specified")
+	}
+	var out []any
+	presetSym, err := maskPresetSymbol(*item.Mask.Preset)
+	if err != nil {
+		return nil, err
+	}
+	out = append(out, presetSym)
+
+	// Only emit offsets vector if any value is provided (defaults are 0)
+	if item.Mask.OffsetX != nil || item.Mask.OffsetY != nil || item.Mask.Rotation != nil {
+		offX := floatOrZero(item.Mask.OffsetX)
+		offY := floatOrZero(item.Mask.OffsetY)
+		rot := floatOrZero(item.Mask.Rotation)
+		out = append(out, []any{scad.Raw("yappMaskDef"), offX, offY, rot})
+	}
+	return out, nil
 }
 
 func faceArrayName(face string) (string, error) {

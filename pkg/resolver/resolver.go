@@ -423,6 +423,10 @@ func isStringFieldPath(path string) bool {
 	if strings.HasSuffix(path, ".face") {
 		return true
 	}
+	// Cutout mask preset is a literal enum-like string
+	if strings.HasSuffix(path, ".mask.preset") {
+		return true
+	}
 	// Treat common enum-like fields as strings
 	if strings.HasSuffix(path, ".shape") ||
 		strings.HasSuffix(path, ".side") ||
