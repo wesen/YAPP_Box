@@ -24,6 +24,7 @@ type GenerateSettings struct {
 	Strict         bool   `glazed.parameter:"strict"`
 	BaseSTL        string `glazed.parameter:"stl-base"`
 	LidSTL         string `glazed.parameter:"stl-lid"`
+	AllSTL         string `glazed.parameter:"stl-all"`
 	OpenSCADBin    string `glazed.parameter:"openscad-bin"`
 	RenderTimeout  string `glazed.parameter:"render-timeout"`
 	CopyGenerator  bool   `glazed.parameter:"copy-generator"`
@@ -91,6 +92,12 @@ Examples:
 				parameters.WithHelp("Optional path for the lid STL output"),
 			),
 			parameters.NewParameterDefinition(
+				"stl-all",
+				parameters.ParameterTypeString,
+				parameters.WithDefault(""),
+				parameters.WithHelp("Optional path for a single STL containing base+lid (+extenders if present)"),
+			),
+			parameters.NewParameterDefinition(
 				"openscad-bin",
 				parameters.ParameterTypeString,
 				parameters.WithDefault("openscad"),
@@ -136,7 +143,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 	}
 
 	// Auto-enable generator copying if rendering STLs (OpenSCAD needs the generator file)
-	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != ""
+	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != "" || settings.AllSTL != ""
 	
 	scadPath, model, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
 		OutputPath:    settings.SCADOut,
@@ -147,7 +154,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		return err
 	}
 
-	if settings.BaseSTL == "" && settings.LidSTL == "" {
+	if settings.BaseSTL == "" && settings.LidSTL == "" && settings.AllSTL == "" {
 		return nil
 	}
 
@@ -167,6 +174,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 	return generatorcli.RenderSTLs(renderCtx, scadPath, generatorcli.STLOptions{
 		BasePath:             settings.BaseSTL,
 		LidPath:              settings.LidSTL,
+		AllPath:              settings.AllSTL,
 		OpenSCAD:             settings.OpenSCADBin,
 		PrintSwitchExtenders: model != nil && model.PrintSwitchExtenders,
 	})

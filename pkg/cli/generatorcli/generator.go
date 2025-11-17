@@ -68,6 +68,7 @@ func WriteSCAD(ctx context.Context, resolved map[string]any, opts SCADOptions) (
 type STLOptions struct {
 	BasePath string
 	LidPath  string
+	AllPath  string
 	OpenSCAD string
 	// PrintSwitchExtenders toggles tactile button extender geometry.
 	PrintSwitchExtenders bool
@@ -75,7 +76,7 @@ type STLOptions struct {
 
 // RenderSTLs renders any requested STL files using OpenSCAD.
 func RenderSTLs(ctx context.Context, scadPath string, opts STLOptions) error {
-	if opts.BasePath == "" && opts.LidPath == "" {
+	if opts.BasePath == "" && opts.LidPath == "" && opts.AllPath == "" {
 		return nil
 	}
 	bin := opts.OpenSCAD
@@ -83,13 +84,21 @@ func RenderSTLs(ctx context.Context, scadPath string, opts STLOptions) error {
 		bin = "openscad"
 	}
 	if opts.BasePath != "" {
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false, opts.PrintSwitchExtenders); err != nil {
+		// Base: never include push button extenders
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false, false); err != nil {
 			return errors.Wrap(err, "base STL")
 		}
 	}
 	if opts.LidPath != "" {
+		// Lid: include extenders if present
 		if err := renderSingleSTL(ctx, bin, scadPath, opts.LidPath, false, true, opts.PrintSwitchExtenders); err != nil {
 			return errors.Wrap(err, "lid STL")
+		}
+	}
+	if opts.AllPath != "" {
+		// All-in-one: include both shells and extenders (if present)
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.AllPath, true, true, opts.PrintSwitchExtenders); err != nil {
+			return errors.Wrap(err, "all STL")
 		}
 	}
 	return nil
