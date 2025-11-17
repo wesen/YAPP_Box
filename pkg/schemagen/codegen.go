@@ -132,12 +132,26 @@ func generateModuleTests(doc *SchemaDoc, root string) error {
 		return fmt.Errorf("parse schema_gen_test template: %w", err)
 	}
 
+	firstRequired := findFirstRequiredField(doc.Fields)
+	firstRequiredName := ""
+	firstRequiredType := ""
+	firstRequiredInvalid := ""
+	if firstRequired != nil {
+		firstRequiredName = firstRequired.Name
+		firstRequiredType = firstRequired.Type
+		firstRequiredInvalid = invalidValueForType(firstRequiredType)
+	}
+
 	data := map[string]any{
-		"Package":            doc.GoPackage,
-		"RootStruct":         doc.RootStructName(),
-		"Tests":              positive,
-		"ValidTestYAML":      positive[0].InputYAML,
-		"FirstRequiredField": findFirstRequiredField(doc.Fields),
+		"Package":                   doc.GoPackage,
+		"Module":                    doc.Module,
+		"ScadArray":                 doc.ScadArray,
+		"RootStruct":                doc.RootStructName(),
+		"Tests":                     positive,
+		"ValidTestYAML":             positive[0].InputYAML,
+		"FirstRequiredField":        firstRequiredName,
+		"FirstRequiredFieldType":    firstRequiredType,
+		"FirstRequiredInvalidValue": firstRequiredInvalid,
 	}
 
 	var buf bytes.Buffer
@@ -290,13 +304,26 @@ func lowerFirst(s string) string {
 	return strings.ToLower(s[:1]) + s[1:]
 }
 
-func findFirstRequiredField(fields []*SchemaField) string {
+func findFirstRequiredField(fields []*SchemaField) *SchemaField {
 	for _, f := range fields {
 		if f.Required {
-			return f.Name
+			return f
 		}
 	}
-	return ""
+	return nil
+}
+
+func invalidValueForType(schemaType string) string {
+	switch schemaType {
+	case "number":
+		return `"not a number"`
+	case "bool":
+		return `"not a bool"`
+	case "string":
+		return `map[string]any{"unexpected": "type"}`
+	default:
+		return `"not a valid value"`
+	}
 }
 
 func scalarTypeForField(parentName string, field *SchemaField) string {

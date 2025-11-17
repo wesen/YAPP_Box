@@ -57,3 +57,20 @@ LastUpdated: 2025-11-17
 - Add end-to-end SCAD regeneration for *all* examples (not just the two reference ones).
 - Ensure `golangci-lint` runs in CI before merging the ArrayDecl changes.
 
+## 2025-11-17 Step B validation pass
+- Ran `go test ./pkg/yappgen/modules/... && go build ./...` to make sure the module surface still compiles cleanly before the validation run.
+- Executed `go test ./...` followed by `yappctl generate` for `examples/04-features.yaml` and `examples/yapp-mvp-pcbstands-cutouts.yaml`, diffing both outputs against `/tmp/refactor-baseline`. No diffs, which confirms the ArrayDecl plumbing preserved end-to-end behavior.
+- Re-ran the module tests + `go build` after validation to stick with the “tests then build” rhythm from the playbook.
+- Ready to move on to Task 15 (linter enforcement) since Task 14 is now green.
+
+## 2025-11-17 Generated Build wrapper tests
+- Updated `pkg/schemagen/codegen.go` + `schema_gen_test.go.tmpl` so schemagen now emits `TestBuild_UsesGeneratedDecode` (guards against regressions back to yaml.Marshal) and `TestBuild_ReturnsArrayDecl` (verifies the registry wrapper produces named decls with rows).
+- Re-ran `go run ./cmd/schemagen discover` to refresh all module test files. Every module picked up the additional assertions, including the multi-array `cutouts` case.
+- Validated the new tests locally via `go test ./pkg/yappgen/modules/...` and followed with `go build ./...` per the ticket workflow.
+- Next step: circle back to Task 15 (golangci forbidigo) once we decide how strict we want to be with existing fmt.Printf usage.
+
+## 2025-11-17 Module authoring guide refresh
+- Rewrote Step 5 of `pkg/docs/tutorials/yapp-module-authoring-guide.md` so new modules start from the typed `Build(items []YourModuleItem)` pattern and never call `yaml.Marshal`/`yaml.Unmarshal`.
+- Updated Step 6 to show the new `[]registry.ArrayDecl` wrapper that calls generated `Decode()` before invoking the typed builder, plus notes about multi-array modules.
+- Captured the why/how in this diary and ran `go test ./pkg/yappgen/modules/... && go build ./...` afterwards to stick with the ticket’s “test after each task” rule.
+

@@ -15,10 +15,10 @@
 - [x] Create multiArrayFeatureModule helper in pkg/yappgen/features.go for cutouts/ridgeExt pattern
 - [x] Update arrayFeatureModule to handle []ArrayDecl output
 - [x] Update feature module registration in features.go (replace cutoutFeatureModule with multiArrayFeatureModule)
-- [ ] Validate Step B: run tests and compare SCAD output
+- [x] Validate Step B: run tests and compare SCAD output
 - [ ] Add linter rules (.golangci.yml) to forbid yaml.Marshal/Unmarshal in module.go files
-- [ ] Generate Build wrapper tests (TestBuild_UsesGeneratedDecode, TestBuild_ReturnsArrayDecl)
-- [ ] Update module authoring guide (remove marshal/unmarshal pattern, show new Decode() pattern)
+- [x] Generate Build wrapper tests (TestBuild_UsesGeneratedDecode, TestBuild_ReturnsArrayDecl)
+- [x] Update module authoring guide (remove marshal/unmarshal pattern, show new Decode() pattern)
 - [ ] Create migration guide (pkg/docs/migrations/path-1-a-b-refactor.md) documenting the refactor
 - [ ] Run complete test suite and end-to-end validation with all example YAMLs
 - [ ] Test new module creation following updated guide

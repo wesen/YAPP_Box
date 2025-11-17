@@ -3,6 +3,7 @@
 package snapjoins
 
 import (
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -84,8 +85,49 @@ width: 10
 `), &raw); err != nil {
 		t.Fatalf("unexpected yaml error: %v", err)
 	}
-	raw["pos"] = map[string]any{"unexpected": "type"}
+	raw["pos"] = "not a number"
 	if _, err := Decode([]map[string]any{raw}); err == nil {
 		t.Fatalf("expected error for wrong type on required field")
+	}
+}
+func TestBuild_UsesGeneratedDecode(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`pos: 20
+side: left
+width: 10
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	raw["pos"] = "not a number"
+	if _, err := NewModule().Build([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error when Build receives invalid field types")
+	} else if !strings.Contains(err.Error(), "snap_joins[0].pos") {
+		t.Fatalf("expected generated Decode error, got: %v", err)
+	}
+}
+
+func TestBuild_ReturnsArrayDecl(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`pos: 20
+side: left
+width: 10
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	decls, err := NewModule().Build([]map[string]any{raw})
+	if err != nil {
+		t.Fatalf("Build returned error: %v", err)
+	}
+	if len(decls) == 0 {
+		t.Fatalf("expected Build to return at least 1 ArrayDecl")
+	}
+	if decls[0].Name == "" {
+		t.Fatalf("expected ArrayDecl name to be set")
+	}
+	if !strings.HasPrefix(decls[0].Name, "snapJoins") {
+		t.Fatalf("expected ArrayDecl name to start with snapJoins, got %s", decls[0].Name)
+	}
+	if len(decls[0].Rows) == 0 {
+		t.Fatalf("expected ArrayDecl rows to contain data")
 	}
 }

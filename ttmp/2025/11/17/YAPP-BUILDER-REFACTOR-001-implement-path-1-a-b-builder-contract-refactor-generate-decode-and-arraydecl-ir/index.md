@@ -16,23 +16,25 @@ RelatedFiles:
     - Path: /home/manuel/code/others/YAPP_Box/examples/04-features.yaml
       Note: Migrated cutouts/light_tubes to new schemas
     - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-module-authoring-guide.md
-      Note: Module authoring guide to update
+      Note: Updated Steps 5-6 for typed builders + ArrayDecl registry pattern
     - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/registry_test.go
       Note: Updates mock module for new interface
     - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/schema.go
       Note: Adds ArrayDecl type and new FeatureModule contract
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go
-      Note: Extended schemagen data for Decode generation
+      Note: Updated template data for Build wrapper tests
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen.go.tmpl
       Note: Adds Decode() function generation
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen_test.go.tmpl
-      Note: Adds decode tests generation
+      Note: Generates TestBuild_UsesGeneratedDecode and TestBuild_ReturnsArrayDecl
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/decode/helpers.go
       Note: New decode helpers for generated modules
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/decode/helpers_test.go
       Note: Unit tests for decode helpers
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go
       Note: Introduces ArrayDecl-aware feature module helpers
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules
+      Note: Regenerated schema_gen_test.go files with new enforcement tests
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/module.go
       Note: Build signature updated
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/module_test.go
@@ -81,10 +83,18 @@ RelatedFiles:
       Note: Complete architecture and implementation guide
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/playbook/01-intern-handoff-getting-started-with-path-1-a-b-refactor.md
       Note: Intern onboarding guide
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md
+      Note: Diary now covers Step B validation + module authoring guide refresh
 ExternalSources: []
 Summary: 'Refactor module builder contract: generate Decode() to eliminate marshal/unmarshal boilerplate, add ArrayDecl IR to unify single/multi-array handling. Single-shot refactor of 7 modules.'
 LastUpdated: 2025-11-17T11:52:41.254711306-05:00
 ---
+
+
+
+
+
+
 
 
 

@@ -86,3 +86,44 @@ Implemented Step B scaffolding: added ArrayDecl IR, updated FeatureModule interf
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go — ArrayDecl-aware array/multi-array helpers
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules — All module build/registry updates
 
+
+## 2025-11-17
+
+Validated Step B outputs: go test ./..., regenerated SCAD for 04-features + yapp-mvp-pcbstands-cutouts, diffs vs /tmp/refactor-baseline clean
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Recorded validation run details
+
+
+## 2025-11-17
+
+Generated Build wrapper tests via schemagen (TestBuild_UsesGeneratedDecode + TestBuild_ReturnsArrayDecl) and regenerated all module schema tests; verified with go test ./pkg/yappgen/modules/... and go build ./...
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go — Supplies template data for new Build wrapper tests
+- /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen_test.go.tmpl — Emits the new test cases
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules — Regenerated schema_gen_test.go files include the new coverage
+
+
+## 2025-11-17
+
+Generated schemagen Build wrapper tests (TestBuild_UsesGeneratedDecode + TestBuild_ReturnsArrayDecl), regenerated module schema tests, and verified with go test ./pkg/yappgen/modules/... + go build ./...
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go — Supplies template data for new wrapper tests
+- /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen_test.go.tmpl — Emits new Build wrapper test cases
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules — Regenerated schema_gen_test.go files now enforce ArrayDecl + Decode usage
+
+
+## 2025-11-17
+
+Refreshed module authoring guide Step 5/6 to show typed Build() + ArrayDecl registry wrappers (no yaml.Marshal) and logged the update in the diary; go test ./pkg/yappgen/modules/... && go build ./... still clean
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-module-authoring-guide.md — Builder/registry instructions now match Decode + ArrayDecl architecture
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Diary entry for Task 17
+

@@ -1,0 +1,28 @@
+version: 2
+
+linters:
+  disable-all: true
+  disable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+  enable:
+    - forbidigo  # Forbid specific function calls
+
+linters-settings:
+  forbidigo:
+    forbid:
+      - pattern: 'yaml\.Marshal'
+        msg: 'Do not use yaml.Marshal in module builders; use generated Decode() instead'
+        pkg: '^github\.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/.*/module\.go$'
+
+      - pattern: 'yaml\.Unmarshal'
+        msg: 'Do not use yaml.Unmarshal in module builders; use generated Decode() instead'
+        pkg: '^github\.com/wesen/yapp-encl-resolver/pkg/yappgen/modules/.*/module\.go$'
+
+run:
+  timeout: 5m
+  tests: true
+
