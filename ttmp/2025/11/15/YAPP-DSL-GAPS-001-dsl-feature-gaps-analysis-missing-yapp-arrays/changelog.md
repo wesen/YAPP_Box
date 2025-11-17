@@ -234,3 +234,12 @@ Completed task #16: Added yappAltOrigin and yappPCBName flags to pushbuttons mod
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/module.go — pushButtonOriginFlag supports alt
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/schema.yaml — added origin:alt and pcb_name field
 
+
+## 2025-11-16
+
+Updated yapp-dsl-reference.md: documented pushbuttons origin:alt and pcb_name fields
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — added origin:alt and pcb_name documentation
+

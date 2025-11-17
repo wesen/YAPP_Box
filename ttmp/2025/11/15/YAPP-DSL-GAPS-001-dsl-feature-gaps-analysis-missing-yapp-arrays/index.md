@@ -21,6 +21,8 @@ RelatedFiles:
       Note: face-aware pos_z override logic
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml
       Note: added pos_z field documentation
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/scripts/validate-task16-pushbuttons-flags.sh
+      Note: 'validation script for Task #16'
     - Path: YAPP_Template_v3.scad
       Note: canonical YAPP feature definitions
     - Path: examples/YAPP_Demo_buttons2_v31.scad
@@ -109,6 +111,7 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
 
 
 

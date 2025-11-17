@@ -119,6 +119,16 @@ func writeScadValue(b *strings.Builder, v any) {
 		fmt.Fprintf(b, "%d", t)
 	case int64:
 		fmt.Fprintf(b, "%d", t)
+	case []any:
+		// Handle nested arrays (e.g., [yappPCBName, "Sensor"])
+		b.WriteString("[")
+		for i, elem := range t {
+			writeScadValue(b, elem)
+			if i < len(t)-1 {
+				b.WriteString(", ")
+			}
+		}
+		b.WriteString("]")
 	default:
 		// Fallback to fmt (should not happen)
 		fmt.Fprintf(b, "%v", t)

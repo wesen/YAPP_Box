@@ -656,7 +656,8 @@ This distributes four snaps for maximum stability on a longer enclosure.
 | `angle` | optional number | Rotation in degrees (default `0`). |
 | `fillet_radius` | optional number | Internal fillet at the button shaft. `lid.no_fillet: true` appends `yappNoFillet`. |
 | `coordinate` | optional enum | `pcb`, `box`, or `box_inside`. Maps to `yappCoord*` flags. |
-| `origin` | optional enum | `global` (default) or `left`, mapping to `yappGlobalOrigin` / `yappLeftOrigin`. |
+| `origin` | optional enum | `global` (default), `left`, or `alt`. `alt` emits `yappAltOrigin` (alternate origin for back/right/lid faces). |
+| `pcb_name` | optional string | Target PCB name for multi-board projects. Emits `[yappPCBName, "value"]`. Defaults to "Main" if not specified. |
 
 **Nested blocks:**
 
@@ -671,6 +672,23 @@ This distributes four snaps for maximum stability on a longer enclosure.
 - Friendly names: `arrow`, `triangle`, `triangle2`, `iso_triangle`, `iso_triangle2`, `hexagon`, `star6`.
 - Raw tokens: `shapeArrow`, `shapeTriangle`, `shapeTriangle2`, `shapeIsoTriangle`, `shapeIsoTriangle2`, `shapeHexagon`, `shape6ptStar`.
 - Custom SCAD tokens that start with `shape` are passed through unchanged for advanced use.
+
+**Coordinate and origin flags:**
+
+- **`coordinate`**: Controls the coordinate system for button positioning:
+  - `pcb` (default): Positions relative to PCB origin (`yappCoordPCB`)
+  - `box`: Positions relative to box origin (`yappCoordBox`)
+  - `box_inside`: Positions relative to inside box dimensions (`yappCoordBoxInside`)
+
+- **`origin`**: Controls origin placement for specific faces:
+  - `global` (default): Standard origin (`yappGlobalOrigin`)
+  - `left`: Left origin (`yappLeftOrigin`, deprecated, use `alt` instead)
+  - `alt`: Alternate origin (`yappAltOrigin`) - affects positioning on back, right, and lid faces
+
+- **`pcb_name`**: For multi-board projects, specifies which PCB this button references:
+  - Emits `[yappPCBName, "value"]` in the SCAD array
+  - Defaults to "Main" if not specified
+  - Example: `pcb_name: Sensor` → `[yappPCBName, "Sensor"]`
 
 **Automatic behavior:**
 
