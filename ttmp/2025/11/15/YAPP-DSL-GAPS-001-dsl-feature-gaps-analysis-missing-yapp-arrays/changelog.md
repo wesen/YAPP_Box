@@ -284,3 +284,36 @@ Task #14: Implemented cutout mask support (schema, builder, resolver) and added 
 - /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go — string field rule for mask preset
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go — builder updates
 
+
+## 2025-11-16
+
+Implemented cutout masks (yappMaskDef presets) in cutouts module; added polygon support earlier; updated resolver to treat mask.preset as literal; verified with new masks demo and buttons v30.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/yapp-demo-masks.yaml — masks example
+- /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go — treat .mask.preset as string
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go — mask emission logic
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml — mask schema
+
+
+## 2025-11-16
+
+yappctl generate: auto-copy embedded YAPPgenerator_v3.scad; removed default render timeout; added --stl-all (single STL) and ensured push-button extenders only render in lid when split.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/cmd/yappctl/generate_command.go — new flags + no-timeout
+- /home/manuel/code/others/YAPP_Box/pkg/cli/generatorcli/generator.go — copy + STL modes
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/emit.go — include anchor for rewrite
+
+
+## 2025-11-16
+
+Updated yapp-demo-buttons-v30.yaml: base cutout now polygon+mask (hexagon + hex_circles), centered; regenerated DSL vs legacy STLs for comparison.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/examples/yapp-demo-buttons-v30.yaml — base mesh cutout
+- /tmp/yapp_compare/buttons_v30 — comparison artifacts
+

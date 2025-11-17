@@ -11,18 +11,24 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/cmd/yappctl/generate_command.go
+      Note: flags + timeout
     - Path: /home/manuel/code/others/YAPP_Box/examples/compare/cutouts_all_faces.yaml
       Note: add pos_z to raise side-face cutouts
+    - Path: /home/manuel/code/others/YAPP_Box/examples/yapp-demo-buttons-v30.yaml
+      Note: polygon+mask base update
     - Path: /home/manuel/code/others/YAPP_Box/examples/yapp-demo-lighttubes.yaml
       Note: updated with pos_z for side face cutouts
     - Path: /home/manuel/code/others/YAPP_Box/examples/yapp-demo-masks.yaml
       Note: example demonstrating masks in DSL
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/cli/generatorcli/generator.go
+      Note: STL modes + copy
     - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md
       Note: document light_tubes
     - Path: /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go
       Note: treat cutouts.mask.preset as string literal for resolution
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
-      Note: mask emission (preset + optional offsets)
+      Note: mask encoding
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml
       Note: add mask object and presets
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/log/03-2025-11-17-implementation-diary-pushbuttons-flags.md
@@ -117,6 +123,7 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
 
 
 

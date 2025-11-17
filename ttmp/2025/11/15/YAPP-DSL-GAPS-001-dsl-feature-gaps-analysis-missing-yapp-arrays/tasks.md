@@ -30,3 +30,8 @@
 - [x] Create lighttubes comparison (DSL+SCAD) and generate STLs to /tmp/yapp_compare/lighttubes
 - [x] Face-aware cutout mapping: clearer pos axes for side faces (front/back=posy,posz; left/right=posx,posz); update docs and examples to match legacy semantics
 - [x] Adjust lighttubes example cutouts to match legacy heights (posz); verify with STL compare
+- [x] yappctl generate: auto-copy embedded YAPPgenerator_v3.scad; remove default render timeout
+- [x] Add --stl-all (single STL) and render push-button extenders only in lid when split
+- [x] Update yapp-demo-buttons-v30.yaml: base polygon+mask (hexagon + hex_circles), centered
+- [ ] Document cutouts.mask usage and presets in DSL reference
+- [x] Compare DSL vs legacy STLs for buttons v30 and record findings
