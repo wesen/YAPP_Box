@@ -10,6 +10,8 @@ DocType: index
 Intent: long-term
 Owners: []
 RelatedFiles:
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go
+      Note: added .pcb_name to isStringFieldPath()
     - Path: examples/yapp-demo-buttons.yaml
       Note: repro sample
     - Path: examples/yapp-demo-lighttubes-with-errors.yaml
@@ -20,6 +22,7 @@ ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-15T23:16:25.576380464-05:00
 ---
+
 
 
 

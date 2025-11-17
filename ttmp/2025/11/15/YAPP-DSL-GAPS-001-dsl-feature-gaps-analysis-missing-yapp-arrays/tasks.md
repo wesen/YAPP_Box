@@ -23,7 +23,7 @@
 - [ ] Implement ValidateStructure() for all modules - currently stubbed out with TODO, should validate required fields and types
 - [x] Fix yapp-demo-lighttubes.yaml cutouts structure - use flat list with 'face' field (not nested by face name) and change polygon to rounded_rect
 - [ ] Remove ShapeFlag and SnapSideFlag in pkg/yappgen/schema.go if unused
-- [ ] Remove ParamSpec schemas (pcbStands/connectors/snapJoins/cutouts) if unused
+- [x] Remove ParamSpec schemas (pcbStands/connectors/snapJoins/cutouts) if unused
 - [ ] Migrate remaining tests away from ParamSpec/buildParams helpers
 - [ ] Simplify cutouts module registry.Build or document special handling
 - [x] Create polygon cutouts comparison (DSL+SCAD) and generate STLs to /tmp/yapp_compare/cutouts_polygons

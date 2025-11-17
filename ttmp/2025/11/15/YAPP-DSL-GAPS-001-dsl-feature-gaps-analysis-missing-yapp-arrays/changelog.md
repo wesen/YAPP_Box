@@ -218,3 +218,19 @@ Completed task #15: Added cutout coordinate/origin flags (yappCoordBox, yappCoor
 
 - /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go — encodeFlags implementation
 
+
+## 2025-11-16
+
+Progress update: lightTubes, polygon cutouts, coordinate/origin flags, and face-relative naming all complete. Remaining Priority 2: labelsPlane, ridgeExt, cutout masks
+
+
+## 2025-11-16
+
+Completed task #16: Added yappAltOrigin and yappPCBName flags to pushbuttons module. Updated schema, module.go, and resolver to handle pcb_name as literal string
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go — added .pcb_name to isStringFieldPath()
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/module.go — pushButtonOriginFlag supports alt
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/schema.yaml — added origin:alt and pcb_name field
+

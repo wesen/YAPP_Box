@@ -593,17 +593,24 @@ See [changelog.md](./changelog.md) for recent changes and decisions.
 
 **Status:** Phase 1 complete! Can replicate most common YAPP patterns.
 
+### Implemented (Priority 2) ✅
+
+✅ **lightTubes** - LED light pipes with circle/rectangle shapes, lens thickness, coordinate flags
+✅ **Cutout polygons** - yappPolygon + shape presets (hexagon, arrow, 6pt_star, iso_triangle, triangle)
+✅ **Cutout coordinate/origin flags** - yappCoordBox, yappCoordPCB, yappCoordBoxInside, yappCenter, yappAltOrigin
+✅ **Face-relative cutout naming** - from_face_left, from_face_bottom, from_face_back with strict validation
+
+**Status:** Phase 2 partially complete! Can add LED indicators, custom polygon cutouts, and precise coordinate control.
+
 ### Remaining (Priority 2)
 
-❌ **lightTubes** - LED light pipes (2-3 days)
 ❌ **labelsPlane** - Text labels (5-7 days)
 ❌ **ridgeExt*** - Ridge extensions for split openings (3-4 days)
-❌ **Cutout polygons** - yappPolygon + shape presets (2-3 days)
 ❌ **Cutout masks** - yappMaskDef + ventilation patterns (3-4 days)
 
-**Impact:** Can't add LED indicators, text labels, or ventilation patterns
+**Impact:** Can't add text labels or ventilation patterns
 
-**Effort:** 3-4 weeks
+**Effort:** 2-3 weeks
 
 ### Advanced Features (Priority 3)
 

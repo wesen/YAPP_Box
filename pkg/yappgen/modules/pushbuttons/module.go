@@ -93,6 +93,11 @@ func buildPushButtonParams(label string, item *PushButtonsItem) ([]any, error) {
 		params = append(params, flag)
 	}
 
+	// PCB name flag for multi-board projects
+	if pcbName := stringOr(item.PcbName, ""); pcbName != "" {
+		params = append(params, []any{scad.Raw("yappPCBName"), pcbName})
+	}
+
 	if noFilletSet(item) {
 		params = append(params, scad.Raw("yappNoFillet"))
 	}
@@ -303,6 +308,8 @@ func pushButtonOriginFlag(origin string) (scad.Raw, error) {
 		return scad.Raw("yappGlobalOrigin"), nil
 	case "left":
 		return scad.Raw("yappLeftOrigin"), nil
+	case "alt":
+		return scad.Raw("yappAltOrigin"), nil
 	default:
 		return "", errors.Errorf("invalid origin: %s", origin)
 	}

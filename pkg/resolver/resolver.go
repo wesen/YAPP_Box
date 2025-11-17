@@ -436,7 +436,8 @@ func isStringFieldPath(path string) bool {
 		strings.Contains(path, ".corners") ||
 		strings.HasSuffix(path, ".shell_part") ||
 		strings.HasSuffix(path, ".treatment") ||
-		strings.HasSuffix(path, ".alignment") {
+		strings.HasSuffix(path, ".alignment") ||
+		strings.HasSuffix(path, ".pcb_name") {
 		return true
 	}
 	return false

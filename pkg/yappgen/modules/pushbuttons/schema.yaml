@@ -55,8 +55,12 @@ fields:
 
   origin:
     type: string
-    enum: [global, left]
-    desc: Origin flag appended after positional params
+    enum: [global, left, alt]
+    desc: Origin flag appended after positional params. alt emits yappAltOrigin (alternate origin for back/right/lid faces)
+
+  pcb_name:
+    type: string
+    desc: Target PCB name for multi-board projects (emits [yappPCBName, value]). Defaults to "Main" if not specified.
 
   no_fillet:
     type: bool

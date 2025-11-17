@@ -24,8 +24,10 @@ type PushButtonsItem struct {
 	ShapePreset *string `yaml:"shape_preset,omitempty"`
 	// Coordinate system flag appended after positional params
 	Coordinate *string `yaml:"coordinate,omitempty"`
-	// Origin flag appended after positional params
+	// Origin flag appended after positional params. alt emits yappAltOrigin (alternate origin for back/right/lid faces)
 	Origin *string `yaml:"origin,omitempty"`
+	// Target PCB name for multi-board projects (emits [yappPCBName, value]). Defaults to "Main" if not specified.
+	PcbName *string `yaml:"pcb_name,omitempty"`
 	// Set to true to disable automatic fillets
 	NoFillet *bool `yaml:"no_fillet,omitempty"`
 	// Cap geometry projected through lid opening

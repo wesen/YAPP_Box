@@ -1,0 +1,32 @@
+# Broken YAML: pushbuttons with pcb_name field
+# Issue: Resolver tries to resolve pcb_name as expression instead of treating as literal string
+# Error: "unresolved expressions after 16 passes: [push_buttons.0.pcb_name]"
+# Fixed by adding .pcb_name to isStringFieldPath() in resolver.go
+
+project: Test Pushbuttons Flags
+yapp_version: v3
+
+pcb:
+  length: 30
+  width: 40
+  thickness: 1.6
+
+enclosure:
+  wall:
+    thickness: 2.0
+    clearance: 1
+  base:
+    thickness: 1.0
+    wall_height: 8
+  lid:
+    thickness: 1.0
+    wall_height: 13
+
+push_buttons:
+  - x: 10
+    y: 12
+    origin: alt
+    pcb_name: Sensor
+    cap: { length: 8, width: 6, radius: 0.5 }
+    lid: { protrusion: 2.5 }
+    switch: { height: 5.5, travel: 1.0, pole_diameter: 3.5 }
