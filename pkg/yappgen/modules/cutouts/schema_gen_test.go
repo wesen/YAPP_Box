@@ -85,3 +85,59 @@ width: 20
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func TestCutoutsItemDecodeValidInput(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`face: front
+from_face_bottom: 15
+from_face_left: 10
+length: 10
+radius: 0
+shape: rectangle
+width: 20
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	items, err := Decode([]map[string]any{raw})
+	if err != nil {
+		t.Fatalf("unexpected decode error: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+}
+func TestCutoutsItemDecodeMissingRequired(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`face: front
+from_face_bottom: 15
+from_face_left: 10
+length: 10
+radius: 0
+shape: rectangle
+width: 20
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	delete(raw, "face")
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for missing required field")
+	}
+}
+
+func TestCutoutsItemDecodeWrongType(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`face: front
+from_face_bottom: 15
+from_face_left: 10
+length: 10
+radius: 0
+shape: rectangle
+width: 20
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	raw["face"] = map[string]any{"unexpected": "type"}
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for wrong type on required field")
+	}
+}

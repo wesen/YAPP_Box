@@ -5,14 +5,13 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // Build converts DSL push button entries into the YAPP array format.
 func Build(items []map[string]any) ([][]any, error) {
-	typedItems, err := decodePushButtonsItems(items)
+	typedItems, err := Decode(items)
 	if err != nil {
 		return nil, err
 	}
@@ -103,99 +102,6 @@ func buildPushButtonParams(label string, item *PushButtonsItem) ([]any, error) {
 	}
 
 	return params, nil
-}
-
-func decodePushButtonsItems(items []map[string]any) ([]PushButtonsItem, error) {
-	typed := make([]PushButtonsItem, len(items))
-	for idx, raw := range items {
-		label := fmt.Sprintf("push_buttons[%d]", idx)
-		if _, err := requireNumber(raw, "x", label); err != nil {
-			return nil, err
-		}
-		if _, err := requireNumber(raw, "y", label); err != nil {
-			return nil, err
-		}
-		if err := ensureNestedObject(raw, "cap", label); err != nil {
-			return nil, err
-		}
-		if err := ensureNestedObject(raw, "lid", label); err != nil {
-			return nil, err
-		}
-		if err := ensureNestedObject(raw, "switch", label); err != nil {
-			return nil, err
-		}
-
-		data, err := yaml.Marshal(raw)
-		if err != nil {
-			return nil, errors.Wrapf(err, "%s: encode for schema decoding", label)
-		}
-		if err := yaml.Unmarshal(data, &typed[idx]); err != nil {
-			return nil, errors.Wrapf(err, "%s: decode typed schema", label)
-		}
-	}
-	return typed, nil
-}
-
-func ensureNestedObject(item map[string]any, key, label string) error {
-	obj, err := getMapField(item, key, label, true)
-	if err != nil {
-		return err
-	}
-	if obj == nil {
-		return errors.Errorf("%s missing required object '%s'", label, key)
-	}
-	return nil
-}
-
-func requireNumber(m map[string]any, key, ctx string) (float64, error) {
-	v, ok := m[key]
-	if !ok {
-		return 0, errors.Errorf("%s missing required field '%s'", ctx, key)
-	}
-	if v == nil {
-		return 0, errors.Errorf("%s field '%s' cannot be null", ctx, key)
-	}
-	f, err := toFloat64(v)
-	if err != nil {
-		return 0, errors.Wrapf(err, "%s.%s", ctx, key)
-	}
-	return f, nil
-}
-
-func getMapField(root map[string]any, key, ctx string, required bool) (map[string]any, error) {
-	v, ok := root[key]
-	if !ok || v == nil {
-		if required {
-			return nil, errors.Errorf("%s missing required object '%s'", ctx, key)
-		}
-		return nil, nil
-	}
-	m, ok := v.(map[string]any)
-	if !ok {
-		return nil, errors.Errorf("%s.%s must be an object", ctx, key)
-	}
-	return m, nil
-}
-
-func toFloat64(v any) (float64, error) {
-	switch t := v.(type) {
-	case float64:
-		return t, nil
-	case float32:
-		return float64(t), nil
-	case int:
-		return float64(t), nil
-	case int64:
-		return float64(t), nil
-	case uint:
-		return float64(t), nil
-	case uint32:
-		return float64(t), nil
-	case uint64:
-		return float64(t), nil
-	default:
-		return 0, errors.Errorf("expected number, got %T", v)
-	}
 }
 
 func valueOrUndef(val float64, ok bool) any {

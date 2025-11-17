@@ -66,9 +66,10 @@ func generateModuleCode(doc *SchemaDoc, root string) error {
 	}
 
 	data := map[string]any{
-		"Package": doc.GoPackage,
-		"Module":  doc.Module,
-		"Structs": structs,
+		"Package":    doc.GoPackage,
+		"Module":     doc.Module,
+		"Structs":    structs,
+		"RootStruct": doc.RootStructName(),
 	}
 
 	var buf bytes.Buffer
@@ -132,9 +133,11 @@ func generateModuleTests(doc *SchemaDoc, root string) error {
 	}
 
 	data := map[string]any{
-		"Package":    doc.GoPackage,
-		"RootStruct": doc.RootStructName(),
-		"Tests":      positive,
+		"Package":            doc.GoPackage,
+		"RootStruct":         doc.RootStructName(),
+		"Tests":              positive,
+		"ValidTestYAML":      positive[0].InputYAML,
+		"FirstRequiredField": findFirstRequiredField(doc.Fields),
 	}
 
 	var buf bytes.Buffer
@@ -184,10 +187,18 @@ func generateModulesRegistry(docs []*SchemaDoc, root, modulePath string) error {
 }
 
 type structFieldDef struct {
-	GoName  string
-	Type    string
-	Tag     string
-	Comment string
+	GoName     string
+	Type       string
+	Tag        string
+	Comment    string
+	YAMLName   string
+	SchemaType string
+	Required   bool
+	NestedType string
+	ItemType   string
+	IsPointer  bool
+	BaseType   string
+	LocalVar   string
 }
 
 type structDef struct {
@@ -230,11 +241,30 @@ func buildStructDefs(doc *SchemaDoc) []structDef {
 			if comment == "" {
 				comment = fmt.Sprintf("%s field", f.Name)
 			}
+			localVar := lowerFirst(goName) + "Val"
+			baseType := fieldType
+			isPointer := false
+			if strings.HasPrefix(fieldType, "*") {
+				isPointer = true
+				baseType = strings.TrimPrefix(fieldType, "*")
+			}
+			nestedType := ""
+			if f.Type == "object" {
+				nestedType = nestedStructName(current.name, f.Name)
+			}
 			def.Fields = append(def.Fields, structFieldDef{
-				GoName:  goName,
-				Type:    fieldType,
-				Tag:     tag,
-				Comment: comment,
+				GoName:     goName,
+				Type:       fieldType,
+				Tag:        tag,
+				Comment:    comment,
+				YAMLName:   f.Name,
+				SchemaType: f.Type,
+				Required:   f.Required,
+				NestedType: nestedType,
+				ItemType:   f.ItemType,
+				IsPointer:  isPointer,
+				BaseType:   baseType,
+				LocalVar:   localVar,
 			})
 			if f.Default != nil && f.Type != "object" {
 				assignments = append(assignments, buildDefaultAssignment("x."+goName, fieldType, f.Default))
@@ -251,6 +281,22 @@ func buildStructDefs(doc *SchemaDoc) []structDef {
 		defs = append(defs, def)
 	}
 	return defs
+}
+
+func lowerFirst(s string) string {
+	if s == "" {
+		return ""
+	}
+	return strings.ToLower(s[:1]) + s[1:]
+}
+
+func findFirstRequiredField(fields []*SchemaField) string {
+	for _, f := range fields {
+		if f.Required {
+			return f.Name
+		}
+	}
+	return ""
 }
 
 func scalarTypeForField(parentName string, field *SchemaField) string {

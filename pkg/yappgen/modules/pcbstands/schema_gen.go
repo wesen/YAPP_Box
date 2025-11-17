@@ -2,6 +2,12 @@
 
 package pcbstands
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // PcbStandsItem describes the pcb_stands schema.
 type PcbStandsItem struct {
 	// X coordinate on PCB (mm)
@@ -62,4 +68,138 @@ func (x *PcbStandsItem) ApplyDefaults() {
 func (x *PcbStandsItem) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []PcbStandsItem entries.
+func Decode(items []map[string]any) ([]PcbStandsItem, error) {
+	typed := make([]PcbStandsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("pcb_stands", idx)
+		item, err := decodePcbStandsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodePcbStandsItem(m map[string]any, label string) (PcbStandsItem, error) {
+
+	xVal, err := decode.GetFloat(m, "x", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	yVal, err := decode.GetFloat(m, "y", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	heightVal, err := decode.GetOptionalFloat(m, "height", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	pcbGapVal, err := decode.GetOptionalFloat(m, "pcb_gap", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	diameterVal, err := decode.GetOptionalFloat(m, "diameter", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	pinDiameterVal, err := decode.GetOptionalFloat(m, "pin_diameter", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	holeSlackVal, err := decode.GetOptionalFloat(m, "hole_slack", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	filletRadiusVal, err := decode.GetOptionalFloat(m, "fillet_radius", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	pinLengthVal, err := decode.GetOptionalFloat(m, "pin_length", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	cornersValData, err := decode.GetOptionalArray(m, "corners", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+	var cornersVal *any
+	if cornersValData != nil {
+		tmp := any(cornersValData)
+		cornersVal = &tmp
+	}
+
+	shellPartVal, err := decode.GetOptionalString(m, "shell_part", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	treatmentVal, err := decode.GetOptionalString(m, "treatment", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	cornerVal, err := decode.GetOptionalString(m, "corner", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	coordinateVal, err := decode.GetOptionalString(m, "coordinate", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	pcbNameVal, err := decode.GetOptionalString(m, "pcb_name", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	selfThreadingVal, err := decode.GetOptionalBool(m, "self_threading", label)
+	if err != nil {
+		return PcbStandsItem{}, err
+	}
+
+	item := PcbStandsItem{
+		X:             xVal,
+		Y:             yVal,
+		Height:        heightVal,
+		PcbGap:        pcbGapVal,
+		Diameter:      diameterVal,
+		PinDiameter:   pinDiameterVal,
+		HoleSlack:     holeSlackVal,
+		FilletRadius:  filletRadiusVal,
+		PinLength:     pinLengthVal,
+		Corners:       cornersVal,
+		ShellPart:     shellPartVal,
+		Treatment:     treatmentVal,
+		Corner:        cornerVal,
+		Coordinate:    coordinateVal,
+		NoFillet:      noFilletVal,
+		PcbName:       pcbNameVal,
+		SelfThreading: selfThreadingVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return PcbStandsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

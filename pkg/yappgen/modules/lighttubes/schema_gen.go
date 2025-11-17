@@ -2,6 +2,12 @@
 
 package lighttubes
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // LightTubesItem describes the light_tubes schema.
 type LightTubesItem struct {
 	// X coordinate position (mm)
@@ -52,4 +58,115 @@ func (x *LightTubesItem) ApplyDefaults() {
 func (x *LightTubesItem) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []LightTubesItem entries.
+func Decode(items []map[string]any) ([]LightTubesItem, error) {
+	typed := make([]LightTubesItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("light_tubes", idx)
+		item, err := decodeLightTubesItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodeLightTubesItem(m map[string]any, label string) (LightTubesItem, error) {
+
+	xVal, err := decode.GetFloat(m, "x", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	yVal, err := decode.GetFloat(m, "y", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	tubeLengthVal, err := decode.GetFloat(m, "tube_length", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	tubeWidthVal, err := decode.GetFloat(m, "tube_width", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	tubeWallVal, err := decode.GetFloat(m, "tube_wall", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	gapAbovePcbVal, err := decode.GetFloat(m, "gap_above_pcb", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	shapeVal, err := decode.GetString(m, "shape", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	lensThicknessVal, err := decode.GetOptionalFloat(m, "lens_thickness", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	heightVal, err := decode.GetOptionalFloat(m, "height", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	filletRadiusVal, err := decode.GetOptionalFloat(m, "fillet_radius", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	coordinateVal, err := decode.GetOptionalString(m, "coordinate", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	originVal, err := decode.GetOptionalString(m, "origin", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	pcbNameVal, err := decode.GetOptionalString(m, "pcb_name", label)
+	if err != nil {
+		return LightTubesItem{}, err
+	}
+
+	item := LightTubesItem{
+		X:             xVal,
+		Y:             yVal,
+		TubeLength:    tubeLengthVal,
+		TubeWidth:     tubeWidthVal,
+		TubeWall:      tubeWallVal,
+		GapAbovePcb:   gapAbovePcbVal,
+		Shape:         shapeVal,
+		LensThickness: lensThicknessVal,
+		Height:        heightVal,
+		FilletRadius:  filletRadiusVal,
+		Coordinate:    coordinateVal,
+		Origin:        originVal,
+		NoFillet:      noFilletVal,
+		PcbName:       pcbNameVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return LightTubesItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

@@ -2,6 +2,12 @@
 
 package connectors
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // ConnectorsItem describes the connectors schema.
 type ConnectorsItem struct {
 	// X coordinate on PCB (mm)
@@ -56,4 +62,139 @@ func (x *ConnectorsItem) ApplyDefaults() {
 func (x *ConnectorsItem) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []ConnectorsItem entries.
+func Decode(items []map[string]any) ([]ConnectorsItem, error) {
+	typed := make([]ConnectorsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("connectors", idx)
+		item, err := decodeConnectorsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodeConnectorsItem(m map[string]any, label string) (ConnectorsItem, error) {
+
+	xVal, err := decode.GetFloat(m, "x", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	yVal, err := decode.GetFloat(m, "y", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	standHeightVal, err := decode.GetFloat(m, "stand_height", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	screwDVal, err := decode.GetFloat(m, "screw_d", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	screwHeadDVal, err := decode.GetFloat(m, "screw_head_d", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	insertDVal, err := decode.GetFloat(m, "insert_d", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	outsideDVal, err := decode.GetFloat(m, "outside_d", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	insertDepthVal, err := decode.GetOptionalFloat(m, "insert_depth", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	pcbGapVal, err := decode.GetOptionalFloat(m, "pcb_gap", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	filletRadiusVal, err := decode.GetOptionalFloat(m, "fillet_radius", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	cornerVal, err := decode.GetOptionalString(m, "corner", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	coordinateVal, err := decode.GetOptionalString(m, "coordinate", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	countersinkVal, err := decode.GetOptionalBool(m, "countersink", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	pcbNameVal, err := decode.GetOptionalString(m, "pcb_name", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	throughLidVal, err := decode.GetOptionalBool(m, "through_lid", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	selfThreadingVal, err := decode.GetOptionalBool(m, "self_threading", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	noInternalFilletVal, err := decode.GetOptionalBool(m, "no_internal_fillet", label)
+	if err != nil {
+		return ConnectorsItem{}, err
+	}
+
+	item := ConnectorsItem{
+		X:                xVal,
+		Y:                yVal,
+		StandHeight:      standHeightVal,
+		ScrewD:           screwDVal,
+		ScrewHeadD:       screwHeadDVal,
+		InsertD:          insertDVal,
+		OutsideD:         outsideDVal,
+		InsertDepth:      insertDepthVal,
+		PcbGap:           pcbGapVal,
+		FilletRadius:     filletRadiusVal,
+		Corner:           cornerVal,
+		Coordinate:       coordinateVal,
+		NoFillet:         noFilletVal,
+		Countersink:      countersinkVal,
+		PcbName:          pcbNameVal,
+		ThroughLid:       throughLidVal,
+		SelfThreading:    selfThreadingVal,
+		NoInternalFillet: noInternalFilletVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return ConnectorsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

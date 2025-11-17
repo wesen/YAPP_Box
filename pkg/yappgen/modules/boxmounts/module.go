@@ -5,39 +5,27 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // Build converts DSL box_mounts entries into the YAPP array format.
 func Build(items []map[string]any) ([][]any, error) {
-	var out [][]any
-	for idx, it := range items {
-		label := fmt.Sprintf("box_mounts[%d]", idx)
-
-		data, err := yaml.Marshal(it)
-		if err != nil {
-			return nil, errors.Wrapf(err, "%s: marshal", label)
-		}
-
-		var item BoxMountsItem
-		if err := yaml.Unmarshal(data, &item); err != nil {
-			return nil, errors.Wrapf(err, "%s: unmarshal", label)
-		}
-
-		item.ApplyDefaults()
-		if err := item.CustomValidate(); err != nil {
-			return nil, errors.Wrapf(err, "%s", label)
-		}
-
-	if err := validateFaces(item.Faces); err != nil {
-		return nil, errors.Wrapf(err, "%s: %v", label, err)
+	typed, err := Decode(items)
+	if err != nil {
+		return nil, err
 	}
 
-	// Note: negative slot_width is valid in YAPP (indicates vertical orientation)
+	var out [][]any
+	for idx, item := range typed {
+		label := fmt.Sprintf("box_mounts[%d]", idx)
 
-	posVal := positionValue(item.Pos, item.Offset)
+		if err := validateFaces(item.Faces); err != nil {
+			return nil, errors.Wrapf(err, "%s: %v", label, err)
+		}
+
+		// Note: negative slot_width is valid in YAPP (indicates vertical orientation)
+		posVal := positionValue(item.Pos, item.Offset)
 
 		params := []any{
 			posVal,

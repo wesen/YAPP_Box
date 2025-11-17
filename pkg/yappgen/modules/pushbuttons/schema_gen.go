@@ -2,6 +2,12 @@
 
 package pushbuttons
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // PushButtonsItem describes the push_buttons schema.
 type PushButtonsItem struct {
 	// Optional label used only for error messages
@@ -110,4 +116,256 @@ func (x *PushButtonsItemSwitch) ApplyDefaults() {
 func (x *PushButtonsItemSwitch) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []PushButtonsItem entries.
+func Decode(items []map[string]any) ([]PushButtonsItem, error) {
+	typed := make([]PushButtonsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("push_buttons", idx)
+		item, err := decodePushButtonsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodePushButtonsItem(m map[string]any, label string) (PushButtonsItem, error) {
+
+	nameVal, err := decode.GetOptionalString(m, "name", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	xVal, err := decode.GetFloat(m, "x", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	yVal, err := decode.GetFloat(m, "y", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	angleVal, err := decode.GetOptionalFloat(m, "angle", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	filletRadiusVal, err := decode.GetOptionalFloat(m, "fillet_radius", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	shapeVal, err := decode.GetOptionalString(m, "shape", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	polygonVal, err := decode.GetOptionalString(m, "polygon", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	polygonPresetVal, err := decode.GetOptionalString(m, "polygon_preset", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	shapePresetVal, err := decode.GetOptionalString(m, "shape_preset", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	coordinateVal, err := decode.GetOptionalString(m, "coordinate", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	originVal, err := decode.GetOptionalString(m, "origin", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	pcbNameVal, err := decode.GetOptionalString(m, "pcb_name", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	capValRaw, err := decode.GetObject(m, "cap", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+	capVal, err := decodePushButtonsItemCap(capValRaw, label+".cap")
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	lidValRaw, err := decode.GetObject(m, "lid", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+	lidVal, err := decodePushButtonsItemLid(lidValRaw, label+".lid")
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	switchValRaw, err := decode.GetObject(m, "switch", label)
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+	switchVal, err := decodePushButtonsItemSwitch(switchValRaw, label+".switch")
+	if err != nil {
+		return PushButtonsItem{}, err
+	}
+
+	item := PushButtonsItem{
+		Name:          nameVal,
+		X:             xVal,
+		Y:             yVal,
+		Angle:         angleVal,
+		FilletRadius:  filletRadiusVal,
+		Shape:         shapeVal,
+		Polygon:       polygonVal,
+		PolygonPreset: polygonPresetVal,
+		ShapePreset:   shapePresetVal,
+		Coordinate:    coordinateVal,
+		Origin:        originVal,
+		PcbName:       pcbNameVal,
+		NoFillet:      noFilletVal,
+		Cap:           capVal,
+		Lid:           lidVal,
+		Switch:        switchVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return PushButtonsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+func decodePushButtonsItemCap(m map[string]any, label string) (PushButtonsItemCap, error) {
+
+	lengthVal, err := decode.GetFloat(m, "length", label)
+	if err != nil {
+		return PushButtonsItemCap{}, err
+	}
+
+	widthVal, err := decode.GetFloat(m, "width", label)
+	if err != nil {
+		return PushButtonsItemCap{}, err
+	}
+
+	radiusVal, err := decode.GetFloat(m, "radius", label)
+	if err != nil {
+		return PushButtonsItemCap{}, err
+	}
+
+	item := PushButtonsItemCap{
+		Length: lengthVal,
+		Width:  widthVal,
+		Radius: radiusVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return PushButtonsItemCap{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+func decodePushButtonsItemLid(m map[string]any, label string) (PushButtonsItemLid, error) {
+
+	protrusionVal, err := decode.GetFloat(m, "protrusion", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	wallVal, err := decode.GetOptionalFloat(m, "wall", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	plateThicknessVal, err := decode.GetOptionalFloat(m, "plate_thickness", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	slackVal, err := decode.GetOptionalFloat(m, "slack", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	snapSlackVal, err := decode.GetOptionalFloat(m, "snap_slack", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return PushButtonsItemLid{}, err
+	}
+
+	item := PushButtonsItemLid{
+		Protrusion:     protrusionVal,
+		Wall:           wallVal,
+		PlateThickness: plateThicknessVal,
+		Slack:          slackVal,
+		SnapSlack:      snapSlackVal,
+		NoFillet:       noFilletVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return PushButtonsItemLid{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+func decodePushButtonsItemSwitch(m map[string]any, label string) (PushButtonsItemSwitch, error) {
+
+	heightVal, err := decode.GetFloat(m, "height", label)
+	if err != nil {
+		return PushButtonsItemSwitch{}, err
+	}
+
+	travelVal, err := decode.GetFloat(m, "travel", label)
+	if err != nil {
+		return PushButtonsItemSwitch{}, err
+	}
+
+	poleDiameterVal, err := decode.GetFloat(m, "pole_diameter", label)
+	if err != nil {
+		return PushButtonsItemSwitch{}, err
+	}
+
+	topHeightVal, err := decode.GetOptionalFloat(m, "top_height", label)
+	if err != nil {
+		return PushButtonsItemSwitch{}, err
+	}
+
+	item := PushButtonsItemSwitch{
+		Height:       heightVal,
+		Travel:       travelVal,
+		PoleDiameter: poleDiameterVal,
+		TopHeight:    topHeightVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return PushButtonsItemSwitch{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

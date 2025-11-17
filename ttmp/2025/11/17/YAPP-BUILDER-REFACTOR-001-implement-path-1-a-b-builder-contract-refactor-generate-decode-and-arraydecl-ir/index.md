@@ -15,14 +15,32 @@ RelatedFiles:
       Note: Module authoring guide to update
     - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/schema.go
       Note: FeatureModule interface and ArrayDecl definition
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go
+      Note: Extended schemagen data for Decode generation
     - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen.go.tmpl
-      Note: Template for Decode() generation
+      Note: Adds Decode() function generation
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_gen_test.go.tmpl
+      Note: Adds decode tests generation
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/decode/helpers.go
+      Note: New decode helpers for generated modules
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/decode/helpers_test.go
+      Note: Unit tests for decode helpers
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go
       Note: arrayFeatureModule and multiArrayFeatureModule helpers
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/module.go
+      Note: Build now decodes typed items
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/connectors/module.go
+      Note: Build rewired to use Decode()
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
-      Note: Example multi-array module to refactor
+      Note: Build translates typed cutouts into face arrays
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/lighttubes/module.go
+      Note: Build driven by Decode() values
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/module.go
-      Note: Example single-array module to refactor
+      Note: Build uses generated Decode() output
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/module.go
+      Note: Dropped manual decode in favor of generated Decode()
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/snapjoins/module.go
+      Note: Build switched to generated decoders
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/04-2025-11-17-builder-contract-and-codegen-options.md
       Note: Original options analysis
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/02-debate-round-1-go-no-go-builder-contract-refactor-urgency.md
@@ -37,6 +55,9 @@ ExternalSources: []
 Summary: 'Refactor module builder contract: generate Decode() to eliminate marshal/unmarshal boilerplate, add ArrayDecl IR to unify single/multi-array handling. Single-shot refactor of 7 modules.'
 LastUpdated: 2025-11-17T11:52:41.254711306-05:00
 ---
+
+
+
 
 
 

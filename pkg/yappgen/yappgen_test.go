@@ -40,7 +40,15 @@ func TestBuildParams_InsertsUndefForOptional(t *testing.T) {
 func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 	// Circle uses radius; width and length should be 0
 	items := []map[string]any{
-		{"face": "front", "shape": "circle", "from_back": 30, "from_left": 12, "width": 0, "length": 0, "radius": 4},
+		{
+			"face":             "front",
+			"shape":            "circle",
+			"from_face_left":   12.0,
+			"from_face_bottom": 6.0,
+			"width":            0,
+			"length":           0,
+			"radius":           4,
+		},
 	}
 	byFace, err := cutouts.Build(items)
 	if err != nil {
@@ -68,8 +76,24 @@ func TestBuildCutoutParams_ShapeSpecificZeros(t *testing.T) {
 func TestDistributeCutouts_ByFace(t *testing.T) {
 	cutoutsModule := cutouts.NewModule()
 	items := []map[string]any{
-		{"face": "front", "shape": "rectangle", "from_back": 10, "from_left": 5, "width": 8, "length": 3, "radius": 0},
-		{"face": "left", "shape": "circle", "from_back": 12, "from_left": 4, "width": 0, "length": 0, "radius": 2},
+		{
+			"face":             "front",
+			"shape":            "rectangle",
+			"from_face_left":   5.0,
+			"from_face_bottom": 8.0,
+			"width":            8,
+			"length":           3,
+			"radius":           0,
+		},
+		{
+			"face":             "left",
+			"shape":            "circle",
+			"from_face_left":   4.0,
+			"from_face_bottom": 6.0,
+			"width":            0,
+			"length":           0,
+			"radius":           2,
+		},
 	}
 	// Use the module Build function which returns map[string][][]any
 	m, err := cutouts.Build(items)

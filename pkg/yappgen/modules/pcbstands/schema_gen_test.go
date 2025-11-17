@@ -51,3 +51,44 @@ x: 10
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func TestPcbStandsItemDecodeValidInput(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`x: 5
+"y": 5
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	items, err := Decode([]map[string]any{raw})
+	if err != nil {
+		t.Fatalf("unexpected decode error: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+}
+func TestPcbStandsItemDecodeMissingRequired(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`x: 5
+"y": 5
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	delete(raw, "x")
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for missing required field")
+	}
+}
+
+func TestPcbStandsItemDecodeWrongType(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`x: 5
+"y": 5
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	raw["x"] = map[string]any{"unexpected": "type"}
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for wrong type on required field")
+	}
+}

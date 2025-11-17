@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
@@ -22,27 +21,13 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 		"cutoutsBase":  {},
 	}
 
-	for idx, it := range items {
+	typed, err := Decode(items)
+	if err != nil {
+		return nil, err
+	}
+
+	for idx, item := range typed {
 		label := fmt.Sprintf("cutouts[%d]", idx)
-
-		// Unmarshal into typed struct
-		data, err := yaml.Marshal(it)
-		if err != nil {
-			return nil, errors.Wrapf(err, "%s: marshal", label)
-		}
-
-		var item CutoutsItem
-		if err := yaml.Unmarshal(data, &item); err != nil {
-			return nil, errors.Wrapf(err, "%s: unmarshal", label)
-		}
-
-		// Apply defaults
-		item.ApplyDefaults()
-
-		// Custom validation
-		if err := item.CustomValidate(); err != nil {
-			return nil, errors.Wrapf(err, "%s", label)
-		}
 
 		// Get shape flag and dimension usage
 		shapeFlag, usesWidth, usesLength, usesRadius, err := cutoutShapeFlag(item.Shape)
@@ -71,9 +56,9 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 		faceLower := strings.ToLower(strings.TrimSpace(item.Face))
 		isSideFace := faceLower == "front" || faceLower == "back" || faceLower == "left" || faceLower == "right"
 		isHorizFace := faceLower == "base" || faceLower == "lid" || faceLower == "top" || faceLower == "bottom"
-		
+
 		var pos0, pos1 float64
-		
+
 		if isSideFace {
 			// Side faces: from_face_left → horizontal (pos0), from_face_bottom → vertical (pos1)
 			pos0 = item.FromFaceLeft
@@ -84,9 +69,9 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			// Horizontal faces: from_face_left → Y, from_face_back → X
 			// But YAPP arrays expect [X, Y] order, so we swap
 			if item.FromFaceBack != nil {
-				pos0 = *item.FromFaceBack  // from_face_back becomes pos0 (X/back-to-front)
+				pos0 = *item.FromFaceBack // from_face_back becomes pos0 (X/back-to-front)
 			}
-			pos1 = item.FromFaceLeft      // from_face_left becomes pos1 (Y/left-to-right)
+			pos1 = item.FromFaceLeft // from_face_left becomes pos1 (Y/left-to-right)
 		}
 
 		// Build positional array with shape flag at position 5

@@ -2,6 +2,12 @@
 
 package cutouts
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // CutoutsItem describes the cutouts schema.
 type CutoutsItem struct {
 	// Which face of the enclosure
@@ -72,4 +78,160 @@ func (x *CutoutsItemMask) ApplyDefaults() {
 func (x *CutoutsItemMask) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []CutoutsItem entries.
+func Decode(items []map[string]any) ([]CutoutsItem, error) {
+	typed := make([]CutoutsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("cutouts", idx)
+		item, err := decodeCutoutsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodeCutoutsItem(m map[string]any, label string) (CutoutsItem, error) {
+
+	faceVal, err := decode.GetString(m, "face", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	fromFaceLeftVal, err := decode.GetFloat(m, "from_face_left", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	fromFaceBottomVal, err := decode.GetOptionalFloat(m, "from_face_bottom", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	fromFaceBackVal, err := decode.GetOptionalFloat(m, "from_face_back", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	widthVal, err := decode.GetOptionalFloat(m, "width", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	lengthVal, err := decode.GetOptionalFloat(m, "length", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	radiusVal, err := decode.GetOptionalFloat(m, "radius", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	shapeVal, err := decode.GetString(m, "shape", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	depthVal, err := decode.GetOptionalFloat(m, "depth", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	angleVal, err := decode.GetOptionalFloat(m, "angle", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	polygonVal, err := decode.GetOptionalString(m, "polygon", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	maskValRaw, err := decode.GetOptionalObject(m, "mask", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+	var maskVal *CutoutsItemMask
+	if maskValRaw != nil {
+		decoded, err := decodeCutoutsItemMask(maskValRaw, label+".mask")
+		if err != nil {
+			return CutoutsItem{}, err
+		}
+		maskVal = &decoded
+	}
+
+	coordinateVal, err := decode.GetOptionalString(m, "coordinate", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	originVal, err := decode.GetOptionalString(m, "origin", label)
+	if err != nil {
+		return CutoutsItem{}, err
+	}
+
+	item := CutoutsItem{
+		Face:           faceVal,
+		FromFaceLeft:   fromFaceLeftVal,
+		FromFaceBottom: fromFaceBottomVal,
+		FromFaceBack:   fromFaceBackVal,
+		Width:          widthVal,
+		Length:         lengthVal,
+		Radius:         radiusVal,
+		Shape:          shapeVal,
+		Depth:          depthVal,
+		Angle:          angleVal,
+		Polygon:        polygonVal,
+		Mask:           maskVal,
+		Coordinate:     coordinateVal,
+		Origin:         originVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return CutoutsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+func decodeCutoutsItemMask(m map[string]any, label string) (CutoutsItemMask, error) {
+
+	presetVal, err := decode.GetOptionalString(m, "preset", label)
+	if err != nil {
+		return CutoutsItemMask{}, err
+	}
+
+	offsetXVal, err := decode.GetOptionalFloat(m, "offset_x", label)
+	if err != nil {
+		return CutoutsItemMask{}, err
+	}
+
+	offsetYVal, err := decode.GetOptionalFloat(m, "offset_y", label)
+	if err != nil {
+		return CutoutsItemMask{}, err
+	}
+
+	rotationVal, err := decode.GetOptionalFloat(m, "rotation", label)
+	if err != nil {
+		return CutoutsItemMask{}, err
+	}
+
+	item := CutoutsItemMask{
+		Preset:   presetVal,
+		OffsetX:  offsetXVal,
+		OffsetY:  offsetYVal,
+		Rotation: rotationVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return CutoutsItemMask{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

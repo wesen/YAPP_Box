@@ -17,3 +17,41 @@ func Test{{$.RootStruct}}_{{.FuncName}}(t *testing.T) {
 }
 {{end}}
 
+func Test{{.RootStruct}}DecodeValidInput(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`{{.ValidTestYAML}}`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	items, err := Decode([]map[string]any{raw})
+	if err != nil {
+		t.Fatalf("unexpected decode error: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+}
+
+{{- if .FirstRequiredField}}
+func Test{{.RootStruct}}DecodeMissingRequired(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`{{.ValidTestYAML}}`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	delete(raw, "{{.FirstRequiredField}}")
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for missing required field")
+	}
+}
+
+func Test{{.RootStruct}}DecodeWrongType(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`{{.ValidTestYAML}}`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	raw["{{.FirstRequiredField}}"] = map[string]any{"unexpected": "type"}
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for wrong type on required field")
+	}
+}
+{{- end}}
+

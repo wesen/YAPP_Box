@@ -2,6 +2,12 @@
 
 package {{.Package}}
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 {{range .Structs}}
 // {{.Name}} describes the {{$.Module}} schema.
 type {{.Name}} struct {
@@ -22,3 +28,119 @@ func (x *{{.Name}}) CustomValidate() error {
 
 {{end}}
 
+// Decode converts []map[string]any into typed []{{.RootStruct}} entries.
+func Decode(items []map[string]any) ([]{{.RootStruct}}, error) {
+	typed := make([]{{.RootStruct}}, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("{{.Module}}", idx)
+		item, err := decode{{.RootStruct}}(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+{{range .Structs}}
+{{$struct := .}}
+func decode{{$struct.Name}}(m map[string]any, label string) ({{$struct.Name}}, error) {
+{{range $struct.Fields}}
+{{- if eq .SchemaType "number"}}
+{{- if .IsPointer}}
+	{{.LocalVar}}, err := decode.GetOptionalFloat(m, "{{.YAMLName}}", label)
+{{- else}}
+	{{.LocalVar}}, err := decode.GetFloat(m, "{{.YAMLName}}", label)
+{{- end}}
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+{{- else if eq .SchemaType "string"}}
+{{- if .IsPointer}}
+	{{.LocalVar}}, err := decode.GetOptionalString(m, "{{.YAMLName}}", label)
+{{- else}}
+	{{.LocalVar}}, err := decode.GetString(m, "{{.YAMLName}}", label)
+{{- end}}
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+{{- else if eq .SchemaType "bool"}}
+{{- if .IsPointer}}
+	{{.LocalVar}}, err := decode.GetOptionalBool(m, "{{.YAMLName}}", label)
+{{- else}}
+	{{.LocalVar}}, err := decode.GetBool(m, "{{.YAMLName}}", label)
+{{- end}}
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+{{- else if eq .SchemaType "object"}}
+{{- if .Required}}
+	{{.LocalVar}}Raw, err := decode.GetObject(m, "{{.YAMLName}}", label)
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+	{{.LocalVar}}, err := decode{{.NestedType}}({{.LocalVar}}Raw, label+".{{.YAMLName}}")
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+{{- else}}
+	{{.LocalVar}}Raw, err := decode.GetOptionalObject(m, "{{.YAMLName}}", label)
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+	var {{.LocalVar}} {{.Type}}
+	if {{.LocalVar}}Raw != nil {
+		decoded, err := decode{{.BaseType}}({{.LocalVar}}Raw, label+".{{.YAMLName}}")
+		if err != nil {
+			return {{$struct.Name}}{}, err
+		}
+{{- if .IsPointer}}
+		{{.LocalVar}} = &decoded
+{{- else}}
+		{{.LocalVar}} = decoded
+{{- end}}
+	}
+{{- end}}
+{{- else if eq .SchemaType "array"}}
+{{- if .IsPointer}}
+	{{.LocalVar}}Data, err := decode.GetOptionalArray(m, "{{.YAMLName}}", label)
+{{- else}}
+	{{.LocalVar}}Data, err := decode.GetArray(m, "{{.YAMLName}}", label)
+{{- end}}
+	if err != nil {
+		return {{$struct.Name}}{}, err
+	}
+{{- if .IsPointer}}
+	var {{.LocalVar}} {{.Type}}
+	if {{.LocalVar}}Data != nil {
+		tmp := any({{.LocalVar}}Data)
+		{{.LocalVar}} = &tmp
+	}
+{{- else}}
+	var {{.LocalVar}} any = any({{.LocalVar}}Data)
+{{- end}}
+{{- else}}
+	var {{.LocalVar}} {{.Type}}
+	if value, ok := m["{{.YAMLName}}"]; ok {
+		cast, ok := value.({{.Type}})
+		if !ok {
+			return {{$struct.Name}}{}, errors.Errorf("%s.{{.YAMLName}}: expected {{.Type}}, got %T", label, value)
+		}
+		{{.LocalVar}} = cast
+	}
+{{- end}}
+{{end}}
+
+	item := {{$struct.Name}}{
+{{range $struct.Fields}}		{{.GoName}}: {{.LocalVar}},
+{{end}}	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return {{$struct.Name}}{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+{{end}}

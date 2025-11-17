@@ -60,3 +60,59 @@ x: 20
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
+
+func TestLightTubesItemDecodeValidInput(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`gap_above_pcb: 0.1
+shape: circle
+tube_length: 5
+tube_wall: 1
+tube_width: 6
+x: 15
+"y": 10
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	items, err := Decode([]map[string]any{raw})
+	if err != nil {
+		t.Fatalf("unexpected decode error: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected 1 item, got %d", len(items))
+	}
+}
+func TestLightTubesItemDecodeMissingRequired(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`gap_above_pcb: 0.1
+shape: circle
+tube_length: 5
+tube_wall: 1
+tube_width: 6
+x: 15
+"y": 10
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	delete(raw, "x")
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for missing required field")
+	}
+}
+
+func TestLightTubesItemDecodeWrongType(t *testing.T) {
+	raw := make(map[string]any)
+	if err := yaml.Unmarshal([]byte(`gap_above_pcb: 0.1
+shape: circle
+tube_length: 5
+tube_wall: 1
+tube_width: 6
+x: 15
+"y": 10
+`), &raw); err != nil {
+		t.Fatalf("unexpected yaml error: %v", err)
+	}
+	raw["x"] = map[string]any{"unexpected": "type"}
+	if _, err := Decode([]map[string]any{raw}); err == nil {
+		t.Fatalf("expected error for wrong type on required field")
+	}
+}

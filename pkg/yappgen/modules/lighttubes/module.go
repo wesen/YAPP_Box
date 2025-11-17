@@ -5,31 +5,20 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // Build converts DSL light_tubes entries into the YAPP array format.
 func Build(items []map[string]any) ([][]any, error) {
+	typed, err := Decode(items)
+	if err != nil {
+		return nil, err
+	}
+
 	var out [][]any
-	for idx, it := range items {
+	for idx, item := range typed {
 		label := fmt.Sprintf("light_tubes[%d]", idx)
-
-		data, err := yaml.Marshal(it)
-		if err != nil {
-			return nil, errors.Wrapf(err, "%s: marshal", label)
-		}
-
-		var item LightTubesItem
-		if err := yaml.Unmarshal(data, &item); err != nil {
-			return nil, errors.Wrapf(err, "%s: unmarshal", label)
-		}
-
-		item.ApplyDefaults()
-		if err := item.CustomValidate(); err != nil {
-			return nil, errors.Wrapf(err, "%s", label)
-		}
 
 		// Build positional parameters matching YAPP order:
 		// p(0) = posx
@@ -43,12 +32,12 @@ func Build(items []map[string]any) ([][]any, error) {
 		// p(8) = height (optional, default standoffHeight+pcbThickness)
 		// p(9) = filletRadius (optional, default 0)
 		params := []any{
-			item.X,              // [0] posx
-			item.Y,              // [1] posy
-			item.TubeLength,     // [2] tubeLength
-			item.TubeWidth,      // [3] tubeWidth
-			item.TubeWall,       // [4] tubeWall
-			item.GapAbovePcb,    // [5] gapAbovePcb
+			item.X,                // [0] posx
+			item.Y,                // [1] posy
+			item.TubeLength,       // [2] tubeLength
+			item.TubeWidth,        // [3] tubeWidth
+			item.TubeWall,         // [4] tubeWall
+			item.GapAbovePcb,      // [5] gapAbovePcb
 			shapeFlag(item.Shape), // [6] tubeType
 		}
 
@@ -150,4 +139,3 @@ func strOrDefault(v *string, def string) string {
 func boolVal(v *bool) bool {
 	return v != nil && *v
 }
-

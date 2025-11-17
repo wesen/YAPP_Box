@@ -2,6 +2,12 @@
 
 package boxmounts
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // BoxMountsItem describes the box_mounts schema.
 type BoxMountsItem struct {
 	// Position along the selected wall (mm)
@@ -66,4 +72,138 @@ func (x *BoxMountsItemFaces) ApplyDefaults() {
 func (x *BoxMountsItemFaces) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []BoxMountsItem entries.
+func Decode(items []map[string]any) ([]BoxMountsItem, error) {
+	typed := make([]BoxMountsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("box_mounts", idx)
+		item, err := decodeBoxMountsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodeBoxMountsItem(m map[string]any, label string) (BoxMountsItem, error) {
+
+	posVal, err := decode.GetFloat(m, "pos", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	offsetVal, err := decode.GetOptionalFloat(m, "offset", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	screwDVal, err := decode.GetFloat(m, "screw_d", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	slotWidthVal, err := decode.GetFloat(m, "slot_width", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	heightVal, err := decode.GetFloat(m, "height", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	filletRadiusVal, err := decode.GetOptionalFloat(m, "fillet_radius", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	shellPartVal, err := decode.GetOptionalString(m, "shell_part", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	alignmentVal, err := decode.GetOptionalString(m, "alignment", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	originVal, err := decode.GetOptionalString(m, "origin", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	noFilletVal, err := decode.GetOptionalBool(m, "no_fillet", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	facesValRaw, err := decode.GetObject(m, "faces", label)
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+	facesVal, err := decodeBoxMountsItemFaces(facesValRaw, label+".faces")
+	if err != nil {
+		return BoxMountsItem{}, err
+	}
+
+	item := BoxMountsItem{
+		Pos:          posVal,
+		Offset:       offsetVal,
+		ScrewD:       screwDVal,
+		SlotWidth:    slotWidthVal,
+		Height:       heightVal,
+		FilletRadius: filletRadiusVal,
+		ShellPart:    shellPartVal,
+		Alignment:    alignmentVal,
+		Origin:       originVal,
+		NoFillet:     noFilletVal,
+		Faces:        facesVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return BoxMountsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
+}
+
+func decodeBoxMountsItemFaces(m map[string]any, label string) (BoxMountsItemFaces, error) {
+
+	leftVal, err := decode.GetOptionalBool(m, "left", label)
+	if err != nil {
+		return BoxMountsItemFaces{}, err
+	}
+
+	rightVal, err := decode.GetOptionalBool(m, "right", label)
+	if err != nil {
+		return BoxMountsItemFaces{}, err
+	}
+
+	frontVal, err := decode.GetOptionalBool(m, "front", label)
+	if err != nil {
+		return BoxMountsItemFaces{}, err
+	}
+
+	backVal, err := decode.GetOptionalBool(m, "back", label)
+	if err != nil {
+		return BoxMountsItemFaces{}, err
+	}
+
+	item := BoxMountsItemFaces{
+		Left:  leftVal,
+		Right: rightVal,
+		Front: frontVal,
+		Back:  backVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return BoxMountsItemFaces{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

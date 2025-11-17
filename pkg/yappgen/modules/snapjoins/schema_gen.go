@@ -2,6 +2,12 @@
 
 package snapjoins
 
+import (
+	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/decode"
+)
+
 // SnapJoinsItem describes the snap_joins schema.
 type SnapJoinsItem struct {
 	// Position along the edge (mm)
@@ -28,4 +34,67 @@ func (x *SnapJoinsItem) ApplyDefaults() {
 func (x *SnapJoinsItem) CustomValidate() error {
 	// Module author can add custom validation here
 	return nil
+}
+
+// Decode converts []map[string]any into typed []SnapJoinsItem entries.
+func Decode(items []map[string]any) ([]SnapJoinsItem, error) {
+	typed := make([]SnapJoinsItem, len(items))
+	for idx, raw := range items {
+		label := decode.FormatLabel("snap_joins", idx)
+		item, err := decodeSnapJoinsItem(raw, label)
+		if err != nil {
+			return nil, err
+		}
+		typed[idx] = item
+	}
+	return typed, nil
+}
+
+func decodeSnapJoinsItem(m map[string]any, label string) (SnapJoinsItem, error) {
+
+	posVal, err := decode.GetFloat(m, "pos", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	widthVal, err := decode.GetFloat(m, "width", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	sideVal, err := decode.GetString(m, "side", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	alignmentVal, err := decode.GetOptionalString(m, "alignment", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	symmetricVal, err := decode.GetOptionalBool(m, "symmetric", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	diamondVal, err := decode.GetOptionalBool(m, "diamond", label)
+	if err != nil {
+		return SnapJoinsItem{}, err
+	}
+
+	item := SnapJoinsItem{
+		Pos:       posVal,
+		Width:     widthVal,
+		Side:      sideVal,
+		Alignment: alignmentVal,
+		Symmetric: symmetricVal,
+		Diamond:   diamondVal,
+	}
+
+	item.ApplyDefaults()
+	if err := item.CustomValidate(); err != nil {
+		return SnapJoinsItem{}, errors.Wrapf(err, "%s", label)
+	}
+
+	return item, nil
 }

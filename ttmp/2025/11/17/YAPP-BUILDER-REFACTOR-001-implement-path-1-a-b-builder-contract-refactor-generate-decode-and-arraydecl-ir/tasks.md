@@ -2,11 +2,11 @@
 
 ## TODO
 
-- [ ] Create shared decode helpers package (pkg/yappgen/decode/helpers.go) with GetFloat, GetString, GetBool, GetObject, GetArray and tests
-- [ ] Update schemagen templates to generate Decode() function in schema_gen.go.tmpl (~80 lines, handles nested objects and arrays)
-- [ ] Update schemagen templates to generate Decode() tests in schema_gen_test.go.tmpl (TestDecode_ValidInput, TestDecode_MissingRequired, TestDecode_WrongType)
-- [ ] Regenerate all 7 modules with new Decode() functions (run schemagen discover)
-- [ ] Update all module Build() functions to use generated Decode() instead of yaml.Marshal/Unmarshal (pcbstands, connectors, boxmounts, snapjoins, lighttubes, cutouts, pushbuttons)
+- [x] Create shared decode helpers package (pkg/yappgen/decode/helpers.go) with GetFloat, GetString, GetBool, GetObject, GetArray and tests
+- [x] Update schemagen templates to generate Decode() function in schema_gen.go.tmpl (~80 lines, handles nested objects and arrays)
+- [x] Update schemagen templates to generate Decode() tests in schema_gen_test.go.tmpl (TestDecode_ValidInput, TestDecode_MissingRequired, TestDecode_WrongType)
+- [x] Regenerate all 7 modules with new Decode() functions (run schemagen discover)
+- [x] Update all module Build() functions to use generated Decode() instead of yaml.Marshal/Unmarshal (pcbstands, connectors, boxmounts, snapjoins, lighttubes, cutouts, pushbuttons)
 - [ ] Validate Step A: run tests and compare SCAD output with pre-refactor baseline
 - [ ] Define ArrayDecl type in pkg/registry/schema.go
 - [ ] Change registry.FeatureModule.Build interface to return []ArrayDecl instead of [][]any
