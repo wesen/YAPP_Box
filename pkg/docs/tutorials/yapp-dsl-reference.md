@@ -311,20 +311,20 @@ Cutouts are openings in the enclosure walls, base, or lid for cables, connectors
 | `face` | ✓ | Which surface to cut: `front`, `back`, `left`, `right`, `base`, or `lid`. |
 | `from_back` | ✓ | Distance along the face's horizontal axis (mm), measured from the back edge. For vertical faces, this runs left-right; for base/lid, it's the Y coordinate. |
 | `from_left` | ✓ | Distance along the face's vertical or depth axis (mm), measured from the left edge. For vertical faces, this is the Z height; for base/lid, it's the X coordinate. |
-| `width`, `height` | ✓ | Cutout dimensions (mm). Depending on `shape`, one or both may be used. Always specify both; the emitter will zero unused dimensions. |
-| `radius` | ✓ | For circular or rounded shapes (mm). Ignored by pure rectangles. |
+| `width`, `length` | optional | Cutout dimensions (mm). Shape-dependent: rectangle/rounded_rect/polygon require `width` and `length`; circles ignore these. |
+| `radius` | optional | For circular or rounded shapes (mm). Shape-dependent: `circle` requires `radius`; `rounded_rect` also requires `radius`. |
 | `shape` | ✓ | Cutout profile: `rectangle`, `circle`, `rounded_rect`, `circle_with_flats`, `circle_with_key`. See shape guide below. |
 | `depth` | optional | How far the cutout penetrates (mm). Defaults to the thickness of the target face. Reduce if you want a partial recess instead of a through-hole. |
 | `angle` | optional | Rotation in degrees. Useful for angled USB ports or displays. |
 | `mask` | optional | Reserved for future preset patterns (hex grids for ventilation, arrow shapes, etc.). |
 | `polygon` | optional | Custom polygon definition for advanced shapes. Planned feature. |
 
-**Shape reference:**
-- `rectangle` – Simple rectangular hole. Dimensions controlled by `width` and `height`.
-- `circle` – Round hole. Size controlled by `radius`; `width`/`height` ignored.
-- `rounded_rect` – Rectangle with rounded corners. `radius` sets corner curvature; `width` and `height` set overall bounds.
-- `circle_with_flats` – Circle with flattened top/bottom edges (like a D-sub connector profile). 
-- `circle_with_key` – Circle with a keyway notch for anti-rotation (e.g., locking barrel jacks).
+**Shape reference (dimension rules):**
+- `rectangle` – Requires `width` and `length`.
+- `circle` – Requires `radius`; `width`/`length` ignored.
+- `rounded_rect` – Requires `width`, `length`, and `radius`.
+- `circle_with_flats` – Requires `width`, `length`, and `radius`.
+- `circle_with_key` – Requires `width`, `length`, and `radius`.
 
 **Positioning tips:**
 - `from_back` and `from_left` reference the **center** of the cutout, not an edge.

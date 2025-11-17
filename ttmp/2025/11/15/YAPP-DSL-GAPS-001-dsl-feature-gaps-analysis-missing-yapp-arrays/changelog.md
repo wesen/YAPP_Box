@@ -359,3 +359,39 @@ schemagen now generates ValidateStructure (hint-free) for all modules. Added tem
 
 - /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_validate.go.tmpl — new template; /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go: generator updated; /home/manuel/code/others/YAPP_Box/pkg/schemagen/schema_doc.go: parse items.type; module registries: ValidateStructure call generated impl
 
+
+## 2025-11-16
+
+Docs: Updated DSL reference for cutouts – width/length/radius now optional (shape-dependent). Phase-2 enforces dimension requirements per shape.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — cutouts section updated
+
+
+## 2025-11-17
+
+Decision: Path 1 (A→B) chosen - Generate Decode() then add ArrayDecl IR. Path 2 (typed Model) rejected.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/03-debate-round-2-path-choice-a-b-vs-a-c.md — Path choice debate
+
+
+## 2025-11-17
+
+Created architecture & implementation guide for Path 1 (A→B) refactor with detailed pseudocode, checklists, and debate references
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design/01-architecture-implementation-guide-path-1-a-b-builder-contract-refactor.md — Implementation guide
+
+
+## 2025-11-17
+
+Created YAPP-BUILDER-REFACTOR-001 ticket for Path 1 (A→B) implementation with architecture guide, debate rounds, tasks, and intern handoff
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/tasks.md — 21 high-level tasks
+

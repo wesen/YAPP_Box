@@ -59,10 +59,30 @@ RelatedFiles:
       Note: Schema source for snap_joins
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/02-2025-11-17-validatestructure-requirements-analysis.md
       Note: ValidateStructure analysis document
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/01-debate-builder-contract-migration-format-and-candidates.md
+      Note: Debate format and candidate profiles
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/02-debate-round-1-go-no-go-builder-contract-refactor-urgency.md
+      Note: Round 1 - Should we refactor now or defer?
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/03-debate-round-2-path-choice-a-b-vs-a-c.md
+      Note: Round 2 - Path 1 (A→B) vs Path 2 (A→C)
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/06-debate-round-5-codegen-scope-what-to-generate-for-path-1-a-b.md
+      Note: Round 5 - Codegen scope for Decode() and helpers
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/07-debate-round-6-enforceability-keeping-modules-honest-post-refactor.md
+      Note: Round 6 - Four-layer enforcement (compile + test + lint + review)
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/08-debate-round-7-future-extensibility-accommodating-new-output-shapes.md
+      Note: Round 7 - ArrayDecl handles all known future modules
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/09-debate-round-8-type-safety-end-to-end-arraydecl-vs-typed-model.md
+      Note: Round 8 - Untyped Model is sufficient for Path 1
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/design/01-architecture-implementation-guide-path-1-a-b-builder-contract-refactor.md
+      Note: Complete implementation guide with pseudocode and checklists
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/log/03-2025-11-17-implementation-diary-pushbuttons-flags.md
       Note: push_buttons flags
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/reference/02-reference-debate-questions-builder-contract-migration.md
+      Note: 8 debate questions mapped to candidates
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/scripts/validate-task16-pushbuttons-flags.sh
       Note: 'validation script for Task #16'
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/index.md
+      Note: New ticket for Path 1 (A→B) refactor implementation
     - Path: YAPP_Template_v3.scad
       Note: canonical YAPP feature definitions
     - Path: examples/YAPP_Demo_buttons2_v31.scad
@@ -151,6 +171,10 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
+
+
+
 
 
 
