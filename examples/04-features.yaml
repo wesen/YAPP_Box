@@ -34,6 +34,7 @@ features:
       x: 25
       z: 10
       width: 8
+      from_face_left: 0
       height: 4
       fillet: 1
   light_tubes:

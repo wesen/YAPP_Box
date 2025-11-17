@@ -50,16 +50,16 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			return nil, errors.Wrapf(err, "%s", label)
 		}
 
-		// Set unused dimensions to 0
-		width := item.Width
+		// Set unused dimensions to 0; allow missing dims to default to 0
+		width := floatOrZero(item.Width)
 		if !usesWidth {
 			width = 0
 		}
-		length := item.Length
+		length := floatOrZero(item.Length)
 		if !usesLength {
 			length = 0
 		}
-		radius := item.Radius
+		radius := floatOrZero(item.Radius)
 		if !usesRadius {
 			radius = 0
 		}

@@ -112,6 +112,51 @@ func (s *moduleSchema) ValidateConstraints(path string, data any) error {
 			}
 		}
 
+		// Dimension requirements based on shape
+		// We validate after resolution, so values are numeric
+		if hasShape {
+			switch strings.ToLower(strings.TrimSpace(shapeVal)) {
+			case "rectangle":
+				if v, ok := getNumber(item, "width"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=rectangle and must be > 0", fieldPath("width"))
+				}
+				if v, ok := getNumber(item, "length"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=rectangle and must be > 0", fieldPath("length"))
+				}
+			case "rounded_rect", "rounded-rect":
+				if v, ok := getNumber(item, "width"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=rounded_rect and must be > 0", fieldPath("width"))
+				}
+				if v, ok := getNumber(item, "length"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=rounded_rect and must be > 0", fieldPath("length"))
+				}
+				if v, ok := getNumber(item, "radius"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=rounded_rect and must be > 0", fieldPath("radius"))
+				}
+			case "circle":
+				if v, ok := getNumber(item, "radius"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=circle and must be > 0", fieldPath("radius"))
+				}
+			case "circle_with_flats", "circle-with-flats", "circle_with_key", "circle-with-key":
+				if v, ok := getNumber(item, "width"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=%s and must be > 0", fieldPath("width"), shapeVal)
+				}
+				if v, ok := getNumber(item, "length"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=%s and must be > 0", fieldPath("length"), shapeVal)
+				}
+				if v, ok := getNumber(item, "radius"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=%s and must be > 0", fieldPath("radius"), shapeVal)
+				}
+			case "polygon":
+				if v, ok := getNumber(item, "width"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=polygon and must be > 0", fieldPath("width"))
+				}
+				if v, ok := getNumber(item, "length"); !ok || v <= 0 {
+					return errors.Errorf("%s: required when shape=polygon and must be > 0", fieldPath("length"))
+				}
+			}
+		}
+
 		// Validate mask.preset enum (if mask provided)
 		if maskRaw, ok := item["mask"]; ok && maskRaw != nil {
 			if maskMap, ok := maskRaw.(map[string]any); ok {
@@ -178,6 +223,25 @@ func getString(m map[string]any, key string) (string, bool) {
 func inSet(v string, set map[string]struct{}) bool {
 	_, ok := set[v]
 	return ok
+}
+
+func getNumber(m map[string]any, key string) (float64, bool) {
+	raw, ok := m[key]
+	if !ok || raw == nil {
+		return 0, false
+	}
+	switch n := raw.(type) {
+	case int:
+		return float64(n), true
+	case int64:
+		return float64(n), true
+	case float32:
+		return float64(n), true
+	case float64:
+		return n, true
+	default:
+		return 0, false
+	}
 }
 
 // toIndex converts an int index to string without pulling in fmt just for Sprintf

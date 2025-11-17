@@ -36,17 +36,14 @@ fields:
 
   width:
     type: number
-    required: true
     desc: Cutout width (set to 0 for circles)
 
   length:
     type: number
-    required: true
     desc: Cutout length (set to 0 for circles)
 
   radius:
     type: number
-    required: true
     desc: Corner/circle radius (set to 0 for rectangles)
 
   shape:

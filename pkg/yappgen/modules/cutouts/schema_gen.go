@@ -16,11 +16,11 @@ type CutoutsItem struct {
 
 	FromFaceBack *float64 `yaml:"from_face_back,omitempty"`
 	// Cutout width (set to 0 for circles)
-	Width float64 `yaml:"width"`
+	Width *float64 `yaml:"width,omitempty"`
 	// Cutout length (set to 0 for circles)
-	Length float64 `yaml:"length"`
+	Length *float64 `yaml:"length,omitempty"`
 	// Corner/circle radius (set to 0 for rectangles)
-	Radius float64 `yaml:"radius"`
+	Radius *float64 `yaml:"radius,omitempty"`
 	// Cutout shape (maps to YAPP shape flag)
 	Shape string `yaml:"shape"`
 	// Cutout depth (defaults to shell thickness)
