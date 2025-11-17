@@ -13,30 +13,26 @@ fields:
     enum: [front, back, left, right, top, lid, bottom, base]
     desc: Which face of the enclosure
 
-  from_back:
+  from_face_left:
     type: number
     required: true
     desc: >
-      Position along horizontal axis (mm). Meaning depends on face:
-      - base/lid: distance from back edge (posx)
-      - front/back: horizontal position along face (posy)
-      - left/right: horizontal position along face (posx)
+      Horizontal position along the face from the left edge (mm).
+      Used by all faces: base, lid, front, back, left, right.
 
-  from_left:
-    type: number
-    required: true
-    desc: >
-      Position along vertical/secondary axis (mm). Meaning depends on face:
-      - base/lid: distance from left edge (posy)
-      - front/back/left/right: vertical position from bottom (posz)
-      For side faces, consider using pos_z instead for clarity.
-
-  pos_z:
+  from_face_bottom:
     type: number
     desc: >
-      Vertical position from bottom (mm). Only used for side faces (front/back/left/right).
-      If provided, overrides from_left for those faces. Use this for clarity when
-      positioning cutouts on side faces.
+      Vertical position from the bottom edge of the face (mm).
+      Required for side faces (front, back, left, right).
+      Not valid for horizontal faces (base, lid).
+
+  from_face_back:
+    type: number
+    desc: >
+      Depth position from the back edge of the face (mm).
+      Required for horizontal faces (base, lid).
+      Not valid for side faces (front, back, left, right).
 
   width:
     type: number
@@ -72,48 +68,72 @@ fields:
     desc: "Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2"
     enum: [hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2]
 
+  coordinate:
+    type: string
+    default: pcb
+    enum: [pcb, box, box_inside]
+    desc: "Coordinate system: pcb (yappCoordPCB, default), box (yappCoordBox), box_inside (yappCoordBoxInside)"
+
+  origin:
+    type: string
+    default: global
+    enum: [global, center, alt]
+    desc: "Origin placement: global (yappOrigin/yappGlobalOrigin, default), center (yappCenter), alt (yappAltOrigin/yappLeftOrigin)"
+
 tests:
-  - name: rectangle_cutout
-    desc: Simple rectangular cutout
+  - name: rectangle_cutout_side_face
+    desc: Rectangular cutout on side face (front)
     input:
       face: front
-      from_back: 10
-      from_left: 15
+      from_face_left: 10
+      from_face_bottom: 15
       width: 20
       length: 10
       radius: 0
       shape: rectangle
     expect_valid: true
 
-  - name: circle_cutout
-    desc: Circular cutout
+  - name: circle_cutout_side_face
+    desc: Circular cutout on side face (back)
     input:
       face: back
-      from_back: 25
-      from_left: 20
+      from_face_left: 25
+      from_face_bottom: 20
       width: 0
       length: 0
       radius: 5
       shape: circle
     expect_valid: true
 
+  - name: cutout_on_base
+    desc: Cutout on horizontal face (base)
+    input:
+      face: base
+      from_face_left: 15
+      from_face_back: 20
+      width: 25
+      length: 25
+      radius: 5
+      shape: rounded_rect
+    expect_valid: true
+
   - name: missing_face
     desc: Should fail when face is missing
     input:
-      from_back: 10
-      from_left: 15
+      from_face_left: 10
+      from_face_bottom: 15
       width: 20
       length: 10
       radius: 0
       shape: rectangle
     expect_error: "missing required field"
 
-  - name: polygon_hexagon
-    desc: Polygon cutout with hexagon preset
+  - name: polygon_hexagon_base
+    desc: Polygon cutout with hexagon preset on base
     input:
       face: base
-      from_back: 15
-      from_left: 15
+      from_face_left: 15
+      from_face_back: 15
       width: 25
       length: 25
       radius: 5
@@ -121,12 +141,12 @@ tests:
       polygon: hexagon
     expect_valid: true
 
-  - name: polygon_arrow
-    desc: Polygon cutout with arrow preset
+  - name: polygon_arrow_lid
+    desc: Polygon cutout with arrow preset on lid
     input:
       face: lid
-      from_back: 10
-      from_left: 20
+      from_face_left: 10
+      from_face_back: 20
       width: 20
       length: 20
       radius: 0

@@ -64,17 +64,29 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			radius = 0
 		}
 
-		// Determine position values based on face
-		// For side faces (front/back/left/right), pos_z can be used instead of from_left
-		// for clarity (pos_z = vertical position from bottom)
-		pos0 := item.FromBack
-		pos1 := item.FromLeft
-		
-		// Check if this is a side face and pos_z is provided
+		// Determine position values based on face and new field names
+		// All faces use from_face_left for horizontal position
+		// Side faces use from_face_bottom for vertical position
+		// Base/lid use from_face_back for depth position
 		faceLower := strings.ToLower(strings.TrimSpace(item.Face))
 		isSideFace := faceLower == "front" || faceLower == "back" || faceLower == "left" || faceLower == "right"
-		if isSideFace && item.PosZ != nil {
-			pos1 = *item.PosZ
+		isHorizFace := faceLower == "base" || faceLower == "lid" || faceLower == "top" || faceLower == "bottom"
+		
+		var pos0, pos1 float64
+		
+		if isSideFace {
+			// Side faces: from_face_left → horizontal (pos0), from_face_bottom → vertical (pos1)
+			pos0 = item.FromFaceLeft
+			if item.FromFaceBottom != nil {
+				pos1 = *item.FromFaceBottom
+			}
+		} else if isHorizFace {
+			// Horizontal faces: from_face_left → Y, from_face_back → X
+			// But YAPP arrays expect [X, Y] order, so we swap
+			if item.FromFaceBack != nil {
+				pos0 = *item.FromFaceBack  // from_face_back becomes pos0 (X/back-to-front)
+			}
+			pos1 = item.FromFaceLeft      // from_face_left becomes pos1 (Y/left-to-right)
 		}
 
 		// Build positional array with shape flag at position 5
@@ -100,6 +112,13 @@ func Build(items []map[string]any) (map[string][][]any, error) {
 			}
 			params = append(params, presetFlag)
 		}
+
+		// Add coordinate and origin flags
+		flags, err := encodeFlags(item)
+		if err != nil {
+			return nil, errors.Wrapf(err, "%s", label)
+		}
+		params = append(params, flags...)
 
 		// Determine face array
 		faceArray, err := faceArrayName(item.Face)
@@ -178,4 +197,57 @@ func faceArrayName(face string) (string, error) {
 	default:
 		return "", errors.Errorf("invalid cutout face: %s", face)
 	}
+}
+
+func encodeFlags(item CutoutsItem) ([]any, error) {
+	var flags []any
+
+	// Coordinate flag (default is pcb, only emit if not default)
+	if flag, err := coordinateFlag(strOrDefault(item.Coordinate, "pcb")); err != nil {
+		return nil, err
+	} else if flag != "" {
+		flags = append(flags, flag)
+	}
+
+	// Origin flag (default is global, only emit if not default)
+	if flag, err := originFlag(strOrDefault(item.Origin, "global")); err != nil {
+		return nil, err
+	} else if flag != "" {
+		flags = append(flags, flag)
+	}
+
+	return flags, nil
+}
+
+func coordinateFlag(value string) (scad.Raw, error) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "", "pcb":
+		return "", nil // Default, don't emit
+	case "box":
+		return scad.Raw("yappCoordBox"), nil
+	case "box_inside":
+		return scad.Raw("yappCoordBoxInside"), nil
+	default:
+		return "", errors.Errorf("invalid coordinate: %s", value)
+	}
+}
+
+func originFlag(value string) (scad.Raw, error) {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "", "global":
+		return "", nil // Default, don't emit
+	case "center":
+		return scad.Raw("yappCenter"), nil
+	case "alt":
+		return scad.Raw("yappAltOrigin"), nil
+	default:
+		return "", errors.Errorf("invalid origin: %s", value)
+	}
+}
+
+func strOrDefault(v *string, def string) string {
+	if v == nil {
+		return def
+	}
+	return *v
 }

@@ -26,8 +26,8 @@ features:
   cutouts:
     # Base: rounded rectangle (center-ish)
     - face: base
-      from_back: 25
-      from_left: 20
+      from_face_back: 25    # depth from back edge
+      from_face_left: 20    # horizontal from left edge
       width: 20
       length: 16
       radius: 3
@@ -36,18 +36,17 @@ features:
 
     # Lid: circle
     - face: lid
-      from_back: 30
-      from_left: 25
+      from_face_back: 30    # depth from back edge
+      from_face_left: 25    # horizontal from left edge
       width: 0
       length: 0
       radius: 6
       shape: circle
 
-    # Front: rectangle (posy≈15, posz≈6)
+    # Front: rectangle (center-ish)
     - face: front
-      from_back: 15
-      from_left: 0    # overridden by pos_z on side faces
-      pos_z: 11       # center-ish (shellHeight ~ 22)
+      from_face_left: 15    # horizontal position
+      from_face_bottom: 11  # vertical from bottom (center-ish, shellHeight ~ 22)
       width: 24
       length: 8
       radius: 0
@@ -55,9 +54,8 @@ features:
 
     # Back: rounded rectangle, rotated
     - face: back
-      from_back: 20
-      from_left: 0    # overridden by pos_z on side faces
-      pos_z: 14       # higher than center
+      from_face_left: 20    # horizontal position
+      from_face_bottom: 14  # vertical from bottom (higher than center)
       width: 24
       length: 10
       radius: 2
@@ -66,9 +64,8 @@ features:
 
     # Left: rectangle (near top)
     - face: left
-      from_back: 18
-      from_left: 0    # overridden by pos_z on side faces
-      pos_z: 18       # near top (shellHeight ~ 22)
+      from_face_left: 18    # horizontal position
+      from_face_bottom: 18  # vertical from bottom (near top, shellHeight ~ 22)
       width: 18
       length: 8
       radius: 0
@@ -76,9 +73,8 @@ features:
 
     # Right: rounded rectangle (near center)
     - face: right
-      from_back: 22
-      from_left: 0    # overridden by pos_z on side faces
-      pos_z: 11       # near center
+      from_face_left: 22    # horizontal position
+      from_face_bottom: 11  # vertical from bottom (near center)
       width: 18
       length: 10
       radius: 2

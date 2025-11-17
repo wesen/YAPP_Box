@@ -36,8 +36,8 @@ features:
   cutouts:
     # Hexagon polygon on base
     - face: base
-      from_back: 15
-      from_left: 15
+      from_face_back: 15    # depth from back edge
+      from_face_left: 15    # horizontal from left edge
       width: 25
       length: 25
       radius: 0
@@ -48,8 +48,8 @@ features:
 
     # 6-point star on front
     - face: front
-      from_back: 5
-      from_left: 15
+      from_face_left: 5     # horizontal along front face
+      from_face_bottom: 15  # vertical from bottom edge
       width: 15
       length: 15
       radius: 0
@@ -58,8 +58,8 @@ features:
 
     # Arrow on lid
     - face: lid
-      from_back: 10
-      from_left: 20
+      from_face_back: 10    # depth from back edge
+      from_face_left: 20    # horizontal from left edge
       width: 20
       length: 20
       radius: 0

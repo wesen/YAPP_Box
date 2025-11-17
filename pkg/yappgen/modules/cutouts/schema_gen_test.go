@@ -8,11 +8,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func TestCutoutsItem_RectangleCutout(t *testing.T) {
+func TestCutoutsItem_RectangleCutoutSideFace(t *testing.T) {
 	var item CutoutsItem
 	input := []byte(`face: front
-from_back: 10
-from_left: 15
+from_face_bottom: 15
+from_face_left: 10
 length: 10
 radius: 0
 shape: rectangle
@@ -23,11 +23,11 @@ width: 20
 	}
 }
 
-func TestCutoutsItem_CircleCutout(t *testing.T) {
+func TestCutoutsItem_CircleCutoutSideFace(t *testing.T) {
 	var item CutoutsItem
 	input := []byte(`face: back
-from_back: 25
-from_left: 20
+from_face_bottom: 20
+from_face_left: 25
 length: 0
 radius: 5
 shape: circle
@@ -38,11 +38,26 @@ width: 0
 	}
 }
 
-func TestCutoutsItem_PolygonHexagon(t *testing.T) {
+func TestCutoutsItem_CutoutOnBase(t *testing.T) {
 	var item CutoutsItem
 	input := []byte(`face: base
-from_back: 15
-from_left: 15
+from_face_back: 20
+from_face_left: 15
+length: 25
+radius: 5
+shape: rounded_rect
+width: 25
+`)
+	if err := yaml.Unmarshal(input, &item); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestCutoutsItem_PolygonHexagonBase(t *testing.T) {
+	var item CutoutsItem
+	input := []byte(`face: base
+from_face_back: 15
+from_face_left: 15
 length: 25
 polygon: hexagon
 radius: 5
@@ -54,12 +69,12 @@ width: 25
 	}
 }
 
-func TestCutoutsItem_PolygonArrow(t *testing.T) {
+func TestCutoutsItem_PolygonArrowLid(t *testing.T) {
 	var item CutoutsItem
 	input := []byte(`angle: 30
 face: lid
-from_back: 10
-from_left: 20
+from_face_back: 20
+from_face_left: 10
 length: 20
 polygon: arrow
 radius: 0

@@ -31,6 +31,15 @@ enclosure:
 tolerances:
   holes: 0.4
 
+# Computed dimensions (matching legacy SCAD)
+vars:
+  # shellWidth = pcbWidth + paddingRight + paddingLeft + 2*wallThickness
+  shell_width: pcb.width + 2*enclosure.wall.clearance + 2*enclosure.wall.thickness  # 46
+  # shellHeight = baseWallHeight + lidWallHeight  
+  shell_height: enclosure.base.wall_height + enclosure.lid.wall_height              # 21
+  # shellLength = pcbLength + paddingFront + paddingBack + 2*wallThickness
+  shell_length: pcb.length + 2*enclosure.wall.clearance + 2*enclosure.wall.thickness  # 36
+
 features:
   # PCB stands - minimal setup for light tubes demo
   pcb_stands:
@@ -70,40 +79,40 @@ features:
   # Note: cutouts must be a flat list with 'face' field, not nested by face name
   cutouts:
     - face: base
-      from_back: 15
-      from_left: 15
+      from_face_back: 15    # depth from back edge
+      from_face_left: 15    # horizontal from left edge
       width: 15
       length: 15
       radius: 5
       shape: rounded_rect
-      # Note: Original SCAD uses polygon with hexagon preset, but polygon not yet supported in DSL
+      # Note: Original SCAD uses polygon with hexagon preset
 
     - face: front
-      from_back: 5  # posy (horizontal along front face)
-      from_left: 0  # required but overridden by pos_z for side faces
-      pos_z: 2      # posz (vertical from bottom) - clearer than from_left for side faces
-      width: 20  # shellWidth-10
-      length: 9  # shellHeight-4
+      from_face_left: 5     # horizontal along front face (posy)
+      from_face_bottom: 2   # vertical from bottom edge (posz)
+      width: shell_width - 10   # matches legacy shellWidth-10
+      length: shell_height - 4  # matches legacy shellHeight-4
       radius: 2
       shape: rounded_rect
+      coordinate: box       # yappCoordBox - positions relative to box, not PCB
 
     - face: back
-      from_back: 3  # posy (horizontal along back face)
-      from_left: 0  # required but overridden by pos_z for side faces
-      pos_z: 2      # posz (vertical from bottom) - clearer than from_left for side faces
-      width: 24  # shellWidth-6
-      length: 9  # shellHeight-4
+      from_face_left: 3     # horizontal along back face (posy)
+      from_face_bottom: 2   # vertical from bottom edge (posz)
+      width: shell_width - 6    # matches legacy shellWidth-6
+      length: shell_height - 4  # matches legacy shellHeight-4
       radius: 3
       shape: rounded_rect
+      coordinate: box       # yappCoordBox - positions relative to box, not PCB
 
   # Snap joins (matching SCAD example)
   snap_joins:
-    - pos: 5  # (shellLength/2)-10
+    - pos: (shell_length/2) - 10  # matches legacy (shellLength/2)-10
       width: 3
       side: left
       alignment: center
       symmetric: true
-    - pos: 7  # (shellLength/2)-8
+    - pos: (shell_length/2) - 8   # matches legacy (shellLength/2)-8
       width: 3
       side: right
       alignment: center
@@ -112,7 +121,7 @@ features:
 
   # Box mounts (matching SCAD example)
   box_mounts:
-    - pos: 15  # shellLength/2
+    - pos: shell_length / 2       # matches legacy shellLength/2
       screw_d: 3
       slot_width: 6
       height: 2.5

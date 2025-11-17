@@ -19,22 +19,22 @@ vars:
   shell_height: enclosure.base.thickness + enclosure.lid.thickness + base_wall + lid_wall
 
   # Front opening (rounded rectangle)
-  front_open_from_back: 3
-  front_open_from_left: 2
+  front_open_from_face_left: 3
+  front_open_from_face_bottom: 2
   front_open_width: shell_width - 6        # matches shellWidth-6 in SCAD
   front_open_length: shell_height - 4      # matches shellHeight-4 in SCAD
   front_open_radius: 2
 
   # Back opening (rounded rectangle)
-  back_open_from_back: 5
-  back_open_from_left: 2
+  back_open_from_face_left: 5
+  back_open_from_face_bottom: 2
   back_open_width: shell_width - 10
   back_open_length: shell_height - 4
   back_open_radius: 3
 
   # Base cutout (rounded rectangle)
-  base_cut_from_back: 17
-  base_cut_from_left: 21
+  base_cut_from_face_back: 17
+  base_cut_from_face_left: 21
   base_cut_width: 15
   base_cut_length: 15
   base_cut_radius: 5
@@ -84,22 +84,22 @@ features:
 
   cutouts:
     - face: base
-      from_back: base_cut_from_back
-      from_left: base_cut_from_left
+      from_face_back: base_cut_from_face_back
+      from_face_left: base_cut_from_face_left
       width: base_cut_width
       length: base_cut_length
       radius: base_cut_radius
       shape: rounded_rect
     - face: front
-      from_back: front_open_from_back
-      from_left: front_open_from_left
+      from_face_left: front_open_from_face_left
+      from_face_bottom: front_open_from_face_bottom
       width: front_open_width
       length: front_open_length
       radius: front_open_radius
       shape: rounded_rect
     - face: back
-      from_back: back_open_from_back
-      from_left: back_open_from_left
+      from_face_left: back_open_from_face_left
+      from_face_bottom: back_open_from_face_bottom
       width: back_open_width
       length: back_open_length
       radius: back_open_radius

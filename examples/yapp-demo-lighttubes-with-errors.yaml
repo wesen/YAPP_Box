@@ -66,10 +66,12 @@ features:
       lens_thickness: 0.5
 
   # Cutouts for visibility (matching SCAD example)
+  # NOTE: This file intentionally has errors for testing resolver error messages
+  # The nested structure (cutouts grouped by face) is WRONG - should be flat list
   cutouts:
     base:
-      - from_back: 15
-        from_left: 15
+      - from_face_back: 15
+        from_face_left: 15
         width: 15
         length: 15
         radius: 5
@@ -77,16 +79,16 @@ features:
         # Note: polygon shape requires preset, but simplified for demo
 
     front:
-      - from_left: 5
-        from_bottom: 2
+      - from_face_left: 5
+        from_face_bottom: 2
         width: 20  # shellWidth-10
         length: 9  # shellHeight-4
         radius: 2
         shape: rounded_rect
 
     back:
-      - from_left: 3
-        from_bottom: 2
+      - from_face_left: 3
+        from_face_bottom: 2
         width: 24  # shellWidth-6
         length: 9  # shellHeight-4
         radius: 3

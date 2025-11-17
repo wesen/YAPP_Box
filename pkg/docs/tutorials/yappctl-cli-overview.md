@@ -57,8 +57,25 @@ go run ./cmd/yappctl generate \
   --render-timeout 45s
 ```
 
-- Omitting `--stl-*` writes SCAD only.
-- `--openscad-bin` selects an alternate binary (e.g., Flatpak path).
+**Key features:**
+
+- **Embedded generator:** `yappctl` embeds `YAPPgenerator_v3.scad` in the binary. When rendering STLs or using `--copy-generator`, it automatically extracts the generator to the output directory, creating a standalone SCAD file.
+- **Automatic generator copying:** When `--stl-base` or `--stl-lid` is specified, the generator is automatically copied (no manual `sed` commands needed). The include path is rewritten to `include <YAPPgenerator_v3.scad>` (same directory).
+- **Manual copy mode:** Use `--copy-generator` to extract the generator even when not rendering STLs (useful for sharing standalone SCAD files).
+- **Custom generator:** Use `--generator-path /path/to/custom/YAPPgenerator_v3.scad` to use a modified generator version.
+
+**Flags:**
+
+- `--input/-i`: Path to input YAML file (required)
+- `--scad-out/-o`: Path to write generated SCAD file (required)
+- `--stl-base`: Path for base STL output (auto-copies generator)
+- `--stl-lid`: Path for lid STL output (auto-copies generator)
+- `--copy-generator`: Extract generator to output directory
+- `--generator-path`: Use custom generator instead of embedded version
+- `--openscad-bin`: OpenSCAD executable path (default: `openscad`)
+- `--render-timeout`: Rendering timeout duration (default: `30s`)
+- `--max-iterations`: Resolver passes (default: 16)
+- `--strict`: Enable strict validation
 
 ## Manual Smoke Test (Temporary)
 

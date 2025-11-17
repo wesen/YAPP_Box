@@ -200,3 +200,21 @@ Docs: add light_tubes module reference; document cutouts pos_z and polygon prese
 
 - /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — updated reference
 
+
+## 2025-11-16
+
+Debate: cutout position field naming (from_back/from_left vs from_face_left/from_face_bottom). Recommendation: keep current names, improve docs, add optional aliases
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/debate/cutout-position-naming-debate.md — 2-round debate with 4 participants
+
+
+## 2025-11-16
+
+Completed task #15: Added cutout coordinate/origin flags (yappCoordBox, yappCoordPCB, yappCoordBoxInside, yappCenter, yappAltOrigin)
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go — encodeFlags implementation
+

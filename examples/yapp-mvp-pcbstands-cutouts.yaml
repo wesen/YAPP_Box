@@ -28,14 +28,14 @@ features:
   cutouts:
     - face: front
       shape: rectangle
-      from_back: 20
-      from_left: 10
+      from_face_left: 20
+      from_face_bottom: 10
       width: 15
       length: 10
     - face: right
       shape: circle
-      from_back: 30
-      from_left: 12
+      from_face_left: 30
+      from_face_bottom: 12
       radius: 4
 
 

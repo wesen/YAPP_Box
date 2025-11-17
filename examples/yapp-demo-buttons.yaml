@@ -68,15 +68,15 @@ features:
 
   cutouts:
     - face: front
-      from_back: 3
-      from_left: 2
+      from_face_left: 3
+      from_face_bottom: 2
       width: 98.8
       length: 18.5
       radius: 2
       shape: rounded_rect
     - face: back
-      from_back: 5
-      from_left: 2
+      from_face_left: 5
+      from_face_bottom: 2
       width: 94.8
       length: 18.5
       radius: 3

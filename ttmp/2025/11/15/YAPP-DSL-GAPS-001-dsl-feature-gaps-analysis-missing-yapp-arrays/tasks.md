@@ -17,7 +17,7 @@
 - [x] Add vertical dimension support (baseWallHeight, lidWallHeight, ridgeHeight)
 - [x] Implement cutout polygon shapes (yappPolygon + shape presets)
 - [ ] Implement cutout mask support (yappMaskDef + mask presets)
-- [ ] Add cutout coordinate/origin flags (yappCoordBox, yappCenter, yappAltOrigin)
+- [x] Add cutout coordinate/origin flags (yappCoordBox, yappCenter, yappAltOrigin)
 - [ ] Add push_buttons missing flags (yappAltOrigin, yappPCBName)
 - [ ] Implement ValidateConstraints() for cutouts module to check enum values (shape field) - currently stubbed out, invalid values like 'polygon' only caught during Build phase
 - [ ] Implement ValidateStructure() for all modules - currently stubbed out with TODO, should validate required fields and types

@@ -6,15 +6,15 @@ package cutouts
 type CutoutsItem struct {
 	// Which face of the enclosure
 	Face string `yaml:"face"`
-	// Position along horizontal axis (mm). Meaning depends on face: - base/lid: distance from back edge (posx) - front/back: horizontal position along face (posy) - left/right: horizontal position along face (posx)
+	// Horizontal position along the face from the left edge (mm). Used by all faces: base, lid, front, back, left, right.
 
-	FromBack float64 `yaml:"from_back"`
-	// Position along vertical/secondary axis (mm). Meaning depends on face: - base/lid: distance from left edge (posy) - front/back/left/right: vertical position from bottom (posz) For side faces, consider using pos_z instead for clarity.
+	FromFaceLeft float64 `yaml:"from_face_left"`
+	// Vertical position from the bottom edge of the face (mm). Required for side faces (front, back, left, right). Not valid for horizontal faces (base, lid).
 
-	FromLeft float64 `yaml:"from_left"`
-	// Vertical position from bottom (mm). Only used for side faces (front/back/left/right). If provided, overrides from_left for those faces. Use this for clarity when positioning cutouts on side faces.
+	FromFaceBottom *float64 `yaml:"from_face_bottom,omitempty"`
+	// Depth position from the back edge of the face (mm). Required for horizontal faces (base, lid). Not valid for side faces (front, back, left, right).
 
-	PosZ *float64 `yaml:"pos_z,omitempty"`
+	FromFaceBack *float64 `yaml:"from_face_back,omitempty"`
 	// Cutout width (set to 0 for circles)
 	Width float64 `yaml:"width"`
 	// Cutout length (set to 0 for circles)
@@ -29,9 +29,21 @@ type CutoutsItem struct {
 	Angle *float64 `yaml:"angle,omitempty"`
 	// Polygon preset shape name (required when shape=polygon). Options: hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2
 	Polygon *string `yaml:"polygon,omitempty"`
+	// Coordinate system: pcb (yappCoordPCB, default), box (yappCoordBox), box_inside (yappCoordBoxInside)
+	Coordinate *string `yaml:"coordinate,omitempty"`
+	// Origin placement: global (yappOrigin/yappGlobalOrigin, default), center (yappCenter), alt (yappAltOrigin/yappLeftOrigin)
+	Origin *string `yaml:"origin,omitempty"`
 }
 
 func (x *CutoutsItem) ApplyDefaults() {
+	if x.Coordinate == nil {
+		v := "pcb"
+		x.Coordinate = &v
+	}
+	if x.Origin == nil {
+		v := "global"
+		x.Origin = &v
+	}
 }
 
 func (x *CutoutsItem) CustomValidate() error {

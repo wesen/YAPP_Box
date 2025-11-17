@@ -18,14 +18,16 @@ import (
 var _ cmds.BareCommand = &GenerateCommand{}
 
 type GenerateSettings struct {
-	Input         string `glazed.parameter:"input"`
-	SCADOut       string `glazed.parameter:"scad-out"`
-	MaxIterations int    `glazed.parameter:"max-iterations"`
-	Strict        bool   `glazed.parameter:"strict"`
-	BaseSTL       string `glazed.parameter:"stl-base"`
-	LidSTL        string `glazed.parameter:"stl-lid"`
-	OpenSCADBin   string `glazed.parameter:"openscad-bin"`
-	RenderTimeout string `glazed.parameter:"render-timeout"`
+	Input          string `glazed.parameter:"input"`
+	SCADOut        string `glazed.parameter:"scad-out"`
+	MaxIterations  int    `glazed.parameter:"max-iterations"`
+	Strict         bool   `glazed.parameter:"strict"`
+	BaseSTL        string `glazed.parameter:"stl-base"`
+	LidSTL         string `glazed.parameter:"stl-lid"`
+	OpenSCADBin    string `glazed.parameter:"openscad-bin"`
+	RenderTimeout  string `glazed.parameter:"render-timeout"`
+	CopyGenerator  bool   `glazed.parameter:"copy-generator"`
+	GeneratorPath  string `glazed.parameter:"generator-path"`
 }
 
 type GenerateCommand struct {
@@ -100,6 +102,18 @@ Examples:
 				parameters.WithDefault("30s"),
 				parameters.WithHelp("Duration for STL rendering context (e.g., 30s, 2m)"),
 			),
+			parameters.NewParameterDefinition(
+				"copy-generator",
+				parameters.ParameterTypeBool,
+				parameters.WithDefault(false),
+				parameters.WithHelp("Copy YAPPgenerator_v3.scad to output directory for standalone SCAD files"),
+			),
+			parameters.NewParameterDefinition(
+				"generator-path",
+				parameters.ParameterTypeString,
+				parameters.WithDefault(""),
+				parameters.WithHelp("Optional path to YAPPgenerator_v3.scad (uses embedded version if not specified)"),
+			),
 		),
 		cmds.WithLayersList(commandSettingsLayer),
 	)
@@ -121,8 +135,13 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		return err
 	}
 
+	// Auto-enable generator copying if rendering STLs (OpenSCAD needs the generator file)
+	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != ""
+	
 	scadPath, model, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
-		OutputPath: settings.SCADOut,
+		OutputPath:    settings.SCADOut,
+		CopyGenerator: copyGenerator,
+		GeneratorPath: settings.GeneratorPath,
 	})
 	if err != nil {
 		return err
