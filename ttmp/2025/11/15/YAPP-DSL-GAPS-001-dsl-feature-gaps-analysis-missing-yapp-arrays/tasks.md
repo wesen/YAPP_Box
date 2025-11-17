@@ -19,7 +19,7 @@
 - [x] Implement cutout mask support (yappMaskDef + mask presets)
 - [x] Add cutout coordinate/origin flags (yappCoordBox, yappCenter, yappAltOrigin)
 - [x] Add push_buttons missing flags (yappAltOrigin, yappPCBName)
-- [ ] Implement ValidateConstraints() for cutouts module to check enum values (shape field) - currently stubbed out, invalid values like 'polygon' only caught during Build phase
+- [x] Implement ValidateConstraints() for cutouts module to check enum values (shape field) - currently stubbed out, invalid values like 'polygon' only caught during Build phase (2025-11-17)
 - [ ] Implement ValidateStructure() for all modules - currently stubbed out with TODO, should validate required fields and types
 - [x] Fix yapp-demo-lighttubes.yaml cutouts structure - use flat list with 'face' field (not nested by face name) and change polygon to rounded_rect
 - [ ] Remove ShapeFlag and SnapSideFlag in pkg/yappgen/schema.go if unused

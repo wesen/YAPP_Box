@@ -312,6 +312,21 @@ yappctl generate: auto-copy embedded YAPPgenerator_v3.scad; removed default rend
 
 Updated yapp-demo-buttons-v30.yaml: base cutout now polygon+mask (hexagon + hex_circles), centered; regenerated DSL vs legacy STLs for comparison.
 
+## 2025-11-17
+
+Implemented ValidateConstraints for cutouts module to enforce enum values earlier (resolve phase). Now validates:
+- shape: rectangle, circle, rounded_rect, circle_with_flats, circle_with_key, polygon
+- face: front, back, left, right, top, lid, bottom, base
+- polygon preset (when shape=polygon): hexagon, arrow, 6pt_star, iso_triangle, iso_triangle2, triangle, triangle2
+- mask.preset: honeycomb, hex_circles, circles, squares, bars, offset_bars
+- coordinate: pcb, box, box_inside
+- origin: global, center, alt
+
+Accepts common hyphenated synonyms (e.g., 6pt-star, hex-circles) by normalizing to underscores.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/registry.go — added ValidateConstraints implementation
 ### Related Files
 
 - /home/manuel/code/others/YAPP_Box/examples/yapp-demo-buttons-v30.yaml — base mesh cutout

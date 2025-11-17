@@ -29,6 +29,8 @@ RelatedFiles:
       Note: treat cutouts.mask.preset as string literal for resolution
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
       Note: mask encoding
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/registry.go
+      Note: ValidateConstraints implemented
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml
       Note: add mask object and presets
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/log/03-2025-11-17-implementation-diary-pushbuttons-flags.md
@@ -123,6 +125,7 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
 
 
 
