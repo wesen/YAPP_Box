@@ -85,12 +85,19 @@ RelatedFiles:
       Note: Complete architecture and implementation guide
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/playbook/01-intern-handoff-getting-started-with-path-1-a-b-refactor.md
       Note: Intern onboarding guide
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/scripts/generate_all_examples.sh
+      Note: Generates SCAD for all examples
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/scripts/run_full_test_suite.sh
+      Note: Script to run module tests+build+full suite
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md
       Note: Diary now covers Step B validation
 ExternalSources: []
 Summary: 'Refactor module builder contract: generate Decode() to eliminate marshal/unmarshal boilerplate, add ArrayDecl IR to unify single/multi-array handling. Single-shot refactor of 7 modules.'
 LastUpdated: 2025-11-17T11:52:41.254711306-05:00
 ---
+
+
+
 
 
 

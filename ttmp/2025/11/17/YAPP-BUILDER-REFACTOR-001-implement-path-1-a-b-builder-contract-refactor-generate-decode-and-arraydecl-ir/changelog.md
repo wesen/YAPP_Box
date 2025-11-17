@@ -137,3 +137,14 @@ Added pkg/docs/migrations/path-1-a-b-refactor.md with the official Decode()+Arra
 - /home/manuel/code/others/YAPP_Box/pkg/docs/migrations/path-1-a-b-refactor.md — New migration guide
 - /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Logged migration guide work
 
+
+## 2025-11-17
+
+Added testing convenience scripts under ticket scripts/: run_full_test_suite.sh and generate_all_examples.sh (documented in the diary).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/scripts/generate_all_examples.sh — Automates SCAD regeneration for examples
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/scripts/run_full_test_suite.sh — Automates module tests/build/go test
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Diary log for new scripts
+

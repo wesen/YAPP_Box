@@ -79,3 +79,14 @@ LastUpdated: 2025-11-17
 - The guide summarizes the Step A/B changes, spells out a migration checklist, calls out lint/test failures to expect, and links back to the architecture + authoring docs.
 - Had to add a new `pkg/docs/migrations/` directory, then re-ran `go test ./pkg/yappgen/modules/... && go build ./...` afterwards per the ticket workflow.
 
+## 2025-11-17 Testing scripts
+- Added two helper scripts under `ttmp/.../scripts/`:
+  - `run_full_test_suite.sh` mirrors the playbook cadence (module tests → build → go test ./...) so interns can run the whole suite with one command.
+  - `generate_all_examples.sh` builds `yappctl` (unless provided) and runs every example YAML into `/tmp` output, skipping fixtures that intentionally contain schema errors.
+- Made both scripts executable so they can be invoked directly from the repo root. These will back Task 19’s “all examples” validation and serve as smoke tests for future handoffs.
+
+## 2025-11-17 Task 19 validation run
+- Executed `scripts/run_full_test_suite.sh` to re-validate module tests + build + `go test ./...` in one shot—clean pass.
+- Ran `scripts/generate_all_examples.sh /tmp/task19-examples` which renders every example YAML. Updated the skip regex to ignore the known failing fixtures (`90-unresolved.yaml`, `yapp-demo-lighttubes-with-errors.yaml`) so the rest of the samples complete successfully.
+- Outputs for the remaining examples live under `/tmp/task19-examples` for diffing if needed.
+
