@@ -243,3 +243,21 @@ Updated yapp-dsl-reference.md: documented pushbuttons origin:alt and pcb_name fi
 
 - /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — added origin:alt and pcb_name documentation
 
+
+## 2025-11-16
+
+Removed inconsistent root-level feature collection fallback. All features must be under features: key (matches 100% of examples and documentation)
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/yappgen/features.go — removed root-level fallback
+
+
+## 2025-11-16
+
+Docs: add limitations note for push_buttons pcb_name (no multi-PCB yet; use 'Main' or omit)
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md — limitations note under push_buttons
+

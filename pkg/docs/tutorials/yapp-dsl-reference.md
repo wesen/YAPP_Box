@@ -690,6 +690,13 @@ This distributes four snaps for maximum stability on a longer enclosure.
   - Defaults to "Main" if not specified
   - Example: `pcb_name: Sensor` → `[yappPCBName, "Sensor"]`
 
+> Limitations
+>
+> - The current DSL does not define multiple PCBs; only a single implicit PCB ("Main") exists in the generated SCAD environment. Referencing a different `pcb_name` (e.g., `Sensor`) will cause OpenSCAD/YAPP geometry errors during STL generation. Workarounds:
+>   - Omit `pcb_name` or set `pcb_name: "Main"`.
+>   - Provide `switch.top_height` and/or increase `enclosure.base.wall_height` / `enclosure.lid.wall_height` to satisfy clearance checks.
+>   - Full multi‑PCB support will require a future DSL feature (e.g., defining named PCBs) before arbitrary `pcb_name` values become meaningful.
+
 **Automatic behavior:**
 
 - The generator converts missing optional fields to `undef`, preserving YAPP defaults.
