@@ -74,3 +74,8 @@ LastUpdated: 2025-11-17
 - Updated Step 6 to show the new `[]registry.ArrayDecl` wrapper that calls generated `Decode()` before invoking the typed builder, plus notes about multi-array modules.
 - Captured the why/how in this diary and ran `go test ./pkg/yappgen/modules/... && go build ./...` afterwards to stick with the ticket’s “test after each task” rule.
 
+## 2025-11-17 Migration guide (Task 18)
+- Created `pkg/docs/migrations/path-1-a-b-refactor.md` with frontmatter so it shows up in the docs CLI under the Migration section.
+- The guide summarizes the Step A/B changes, spells out a migration checklist, calls out lint/test failures to expect, and links back to the architecture + authoring docs.
+- Had to add a new `pkg/docs/migrations/` directory, then re-ran `go test ./pkg/yappgen/modules/... && go build ./...` afterwards per the ticket workflow.
+

@@ -19,7 +19,7 @@
 - [ ] Add linter rules (.golangci.yml) to forbid yaml.Marshal/Unmarshal in module.go files
 - [x] Generate Build wrapper tests (TestBuild_UsesGeneratedDecode, TestBuild_ReturnsArrayDecl)
 - [x] Update module authoring guide (remove marshal/unmarshal pattern, show new Decode() pattern)
-- [ ] Create migration guide (pkg/docs/migrations/path-1-a-b-refactor.md) documenting the refactor
+- [x] Create migration guide (pkg/docs/migrations/path-1-a-b-refactor.md) documenting the refactor
 - [ ] Run complete test suite and end-to-end validation with all example YAMLs
 - [ ] Test new module creation following updated guide
 - [ ] Verify enforcement (linter catches violations, tests catch missing Decode())

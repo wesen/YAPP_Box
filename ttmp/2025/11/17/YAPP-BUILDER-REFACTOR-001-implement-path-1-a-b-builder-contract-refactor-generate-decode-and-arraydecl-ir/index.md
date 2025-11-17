@@ -15,6 +15,8 @@ RelatedFiles:
       Note: Kept resolved fixture in sync with schema changes
     - Path: /home/manuel/code/others/YAPP_Box/examples/04-features.yaml
       Note: Migrated cutouts/light_tubes to new schemas
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/migrations/path-1-a-b-refactor.md
+      Note: New migration guide covering Decode()+ArrayDecl adoption
     - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-module-authoring-guide.md
       Note: Updated Steps 5-6 for typed builders + ArrayDecl registry pattern
     - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/registry_test.go
@@ -84,11 +86,14 @@ RelatedFiles:
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/playbook/01-intern-handoff-getting-started-with-path-1-a-b-refactor.md
       Note: Intern onboarding guide
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md
-      Note: Diary now covers Step B validation + module authoring guide refresh
+      Note: Diary now covers Step B validation
 ExternalSources: []
 Summary: 'Refactor module builder contract: generate Decode() to eliminate marshal/unmarshal boilerplate, add ArrayDecl IR to unify single/multi-array handling. Single-shot refactor of 7 modules.'
 LastUpdated: 2025-11-17T11:52:41.254711306-05:00
 ---
+
+
+
 
 
 

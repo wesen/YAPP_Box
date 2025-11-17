@@ -127,3 +127,13 @@ Refreshed module authoring guide Step 5/6 to show typed Build() + ArrayDecl regi
 - /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-module-authoring-guide.md — Builder/registry instructions now match Decode + ArrayDecl architecture
 - /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Diary entry for Task 17
 
+
+## 2025-11-17
+
+Added pkg/docs/migrations/path-1-a-b-refactor.md with the official Decode()+ArrayDecl migration checklist, updated the diary, and reran go test ./pkg/yappgen/modules/... && go build ./...
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/docs/migrations/path-1-a-b-refactor.md — New migration guide
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/17/YAPP-BUILDER-REFACTOR-001-implement-path-1-a-b-builder-contract-refactor-generate-decode-and-arraydecl-ir/various/2025-11-17-step-2-arraydecl-implementation-diary.md — Logged migration guide work
+
