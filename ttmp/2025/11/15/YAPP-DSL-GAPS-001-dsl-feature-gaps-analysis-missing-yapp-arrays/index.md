@@ -25,14 +25,40 @@ RelatedFiles:
       Note: STL modes + copy
     - Path: /home/manuel/code/others/YAPP_Box/pkg/docs/tutorials/yapp-dsl-reference.md
       Note: document light_tubes
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/registry/schema.go
+      Note: ModuleSchema interface for ValidateStructure/Constraints
     - Path: /home/manuel/code/others/YAPP_Box/pkg/resolver/resolver.go
       Note: treat cutouts.mask.preset as string literal for resolution
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/resolver/validation.go
+      Note: Resolver integration calling ValidateStructure/Constraints
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go
+      Note: Added validator generation and float default fix
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/schema_doc.go
+      Note: Capture items.type for arrays
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_validate.go.tmpl
+      Note: Generated structure validator template
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/*/registry.go
+      Note: Hook ValidateStructure to generated impl
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/boxmounts/schema.yaml
+      Note: Schema source for box_mounts
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/connectors/schema.yaml
+      Note: Schema source for connectors
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/module.go
       Note: mask encoding
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/registry.go
       Note: ValidateConstraints implemented
     - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/cutouts/schema.yaml
       Note: add mask object and presets
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/lighttubes/schema.yaml
+      Note: Schema source for light_tubes
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pcbstands/schema.yaml
+      Note: Schema source for pcb_stands
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/pushbuttons/schema.yaml
+      Note: Schema source for push_buttons
+    - Path: /home/manuel/code/others/YAPP_Box/pkg/yappgen/modules/snapjoins/schema.yaml
+      Note: Schema source for snap_joins
+    - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/02-2025-11-17-validatestructure-requirements-analysis.md
+      Note: ValidateStructure analysis document
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/log/03-2025-11-17-implementation-diary-pushbuttons-flags.md
       Note: push_buttons flags
     - Path: /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/scripts/validate-task16-pushbuttons-flags.sh
@@ -125,6 +151,16 @@ ExternalSources: []
 Summary: Implemented Priority 1 flags (corners, shell parts, snap joins) and boxMounts module. DSL now achieves ~70% YAPP feature coverage with working v30 demo.
 LastUpdated: 2025-11-16T00:30:35.203590956-05:00
 ---
+
+
+
+
+
+
+
+
+
+
 
 
 

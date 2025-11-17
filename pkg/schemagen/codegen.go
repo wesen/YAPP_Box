@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"go/format"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,6 +22,9 @@ var schemaTestTemplate string
 
 //go:embed templates/modules_gen.go.tmpl
 var modulesGenTemplate string
+
+//go:embed templates/schema_validate.go.tmpl
+var schemaValidateTemplate string
 
 // GenerateOptions controls schemagen output.
 type GenerateOptions struct {
@@ -42,6 +46,10 @@ func GenerateCode(docs []*SchemaDoc, opts GenerateOptions) error {
 		}
 		if err := generateModuleTests(doc, opts.RootDir); err != nil {
 			return err
+		}
+		if err := generateModuleValidator(doc, opts.RootDir); err != nil {
+			// Do not fail entire generation on validator errors; log and continue
+			log.Printf("warn: generate validator for %s: %v", doc.Path, err)
 		}
 	}
 	if err := generateModulesRegistry(docs, opts.RootDir, opts.ModulePath); err != nil {
@@ -69,6 +77,31 @@ func generateModuleCode(doc *SchemaDoc, root string) error {
 	}
 
 	outPath := filepath.Join(resolveRoot(root, doc.ModuleDir()), "schema_gen.go")
+	return writeGoFile(outPath, buf.Bytes())
+}
+
+func generateModuleValidator(doc *SchemaDoc, root string) error {
+	tmpl, err := template.New("schema_validate").
+		Funcs(template.FuncMap{
+			"toCamel": toCamel,
+		}).
+		Parse(schemaValidateTemplate)
+	if err != nil {
+		return fmt.Errorf("parse schema_validate template: %w", err)
+	}
+
+	data := map[string]any{
+		"Package": doc.GoPackage,
+		"Module":  doc.Module,
+		"Fields":  doc.Fields,
+	}
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return fmt.Errorf("execute schema_validate template: %w", err)
+	}
+
+	outPath := filepath.Join(resolveRoot(root, doc.ModuleDir()), "schema_validate.go")
 	return writeGoFile(outPath, buf.Bytes())
 }
 
@@ -306,7 +339,11 @@ func buildDefaultAssignment(field, fieldType string, defaultNode *yaml.Node) str
 			}
 		case "float64":
 			if n, ok := toNumber(val); ok {
-				return fmt.Sprintf("if %s == nil {\n\t\tv := %v\n\t\t%s = &v\n\t}", field, n, field)
+				s := fmt.Sprintf("%g", n)
+				if !strings.ContainsAny(s, ".eE") {
+					s = s + ".0"
+				}
+				return fmt.Sprintf("if %s == nil {\n\t\tv := %s\n\t\t%s = &v\n\t}", field, s, field)
 			}
 		case "bool":
 			if b, ok := val.(bool); ok {

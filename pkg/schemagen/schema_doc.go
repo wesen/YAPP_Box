@@ -29,6 +29,8 @@ type SchemaField struct {
 	Default     *yaml.Node
 	Description string
 	Enum        []string
+	// For array types, the 'items.type' value (e.g., "string", "number", "bool", "object").
+	ItemType    string
 	Children    []*SchemaField
 }
 
@@ -102,6 +104,14 @@ func parseFields(node *yaml.Node) []*SchemaField {
 			Type:        stringField(valueNode, "type"),
 			Required:    boolField(valueNode, "required"),
 			Description: stringField(valueNode, "desc"),
+		}
+		// Capture array item type if present
+		if field.Type == "array" {
+			if itemsNode := mapValueNode(valueNode, "items"); itemsNode != nil {
+				if t := stringField(itemsNode, "type"); t != "" {
+					field.ItemType = t
+				}
+			}
 		}
 		if enumNode := mapValueNode(valueNode, "enum"); enumNode != nil && enumNode.Kind == yaml.SequenceNode {
 			for _, entry := range enumNode.Content {

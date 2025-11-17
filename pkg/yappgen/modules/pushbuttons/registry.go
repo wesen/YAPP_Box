@@ -31,6 +31,6 @@ func (pushButtonsSchema) Description() string { return "Push button extenders (g
 func (pushButtonsSchema) Fields() []registry.FieldSpec {
 	return nil
 }
-func (pushButtonsSchema) ValidateStructure(path string, data any) error    { return nil }
+func (pushButtonsSchema) ValidateStructure(path string, data any) error    { return _svValidateStructureImpl(path, data) }
 func (pushButtonsSchema) ValidateConstraints(path string, data any) error  { return nil }
 

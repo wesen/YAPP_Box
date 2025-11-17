@@ -45,8 +45,7 @@ func (s *moduleSchema) Description() string {
 }
 
 func (s *moduleSchema) ValidateStructure(path string, data any) error {
-	// TODO: implement schema-driven validation
-	return nil
+	return _svValidateStructureImpl(path, data)
 }
 
 func (s *moduleSchema) ValidateConstraints(path string, data any) error {

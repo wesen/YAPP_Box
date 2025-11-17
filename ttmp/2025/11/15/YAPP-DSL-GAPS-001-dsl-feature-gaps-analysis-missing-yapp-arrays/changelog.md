@@ -332,3 +332,30 @@ Accepts common hyphenated synonyms (e.g., 6pt-star, hex-circles) by normalizing 
 - /home/manuel/code/others/YAPP_Box/examples/yapp-demo-buttons-v30.yaml — base mesh cutout
 - /tmp/yapp_compare/buttons_v30 — comparison artifacts
 
+
+## 2025-11-16
+
+Added analysis: ValidateStructure requirements for all modules; defined Phase-1 checks and boundaries with constraints; linked all source schemas and DSL reference.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/02-2025-11-17-validatestructure-requirements-analysis.md — analysis document
+
+
+## 2025-11-16
+
+Expanded analysis with Option 2: schemagen-generated ValidateStructure (templates, code shape, hints, testing, milestones).
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/ttmp/2025/11/15/YAPP-DSL-GAPS-001-dsl-feature-gaps-analysis-missing-yapp-arrays/analysis/02-2025-11-17-validatestructure-requirements-analysis.md — Option 2 expansion
+
+
+## 2025-11-16
+
+schemagen now generates ValidateStructure (hint-free) for all modules. Added template, generator hook, and wired registry methods to call generated implementation. Fixed float default literal emission to ensure *float64 defaults compile.
+
+### Related Files
+
+- /home/manuel/code/others/YAPP_Box/pkg/schemagen/templates/schema_validate.go.tmpl — new template; /home/manuel/code/others/YAPP_Box/pkg/schemagen/codegen.go: generator updated; /home/manuel/code/others/YAPP_Box/pkg/schemagen/schema_doc.go: parse items.type; module registries: ValidateStructure call generated impl
+
