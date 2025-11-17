@@ -33,10 +33,10 @@ vars:
   back_open_radius: 3
 
   # Base cutout (rounded rectangle)
-  base_cut_from_face_back: 17
-  base_cut_from_face_left: 21
-  base_cut_width: 15
-  base_cut_length: 15
+  base_cut_from_face_back: shell_length / 2
+  base_cut_from_face_left: shell_width / 2
+  base_cut_width: 25
+  base_cut_length: 25
   base_cut_radius: 5
 
   # Buttons
@@ -89,7 +89,14 @@ features:
       width: base_cut_width
       length: base_cut_length
       radius: base_cut_radius
-      shape: rounded_rect
+      shape: polygon
+      polygon: hexagon
+      angle: 30
+      origin: center
+      mask:
+        preset: hex_circles
+        offset_x: 0
+        offset_y: 5
     - face: front
       from_face_left: front_open_from_face_left
       from_face_bottom: front_open_from_face_bottom
