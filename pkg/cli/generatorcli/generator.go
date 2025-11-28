@@ -72,6 +72,8 @@ type STLOptions struct {
 	OpenSCAD string
 	// PrintSwitchExtenders toggles tactile button extender geometry.
 	PrintSwitchExtenders bool
+	// QualityValue overrides renderQuality when > 0.
+	QualityValue int
 }
 
 // RenderSTLs renders any requested STL files using OpenSCAD.
@@ -85,26 +87,26 @@ func RenderSTLs(ctx context.Context, scadPath string, opts STLOptions) error {
 	}
 	if opts.BasePath != "" {
 		// Base: never include push button extenders
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false, false); err != nil {
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.BasePath, true, false, false, opts.QualityValue); err != nil {
 			return errors.Wrap(err, "base STL")
 		}
 	}
 	if opts.LidPath != "" {
 		// Lid: include extenders if present
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.LidPath, false, true, opts.PrintSwitchExtenders); err != nil {
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.LidPath, false, true, opts.PrintSwitchExtenders, opts.QualityValue); err != nil {
 			return errors.Wrap(err, "lid STL")
 		}
 	}
 	if opts.AllPath != "" {
 		// All-in-one: include both shells and extenders (if present)
-		if err := renderSingleSTL(ctx, bin, scadPath, opts.AllPath, true, true, opts.PrintSwitchExtenders); err != nil {
+		if err := renderSingleSTL(ctx, bin, scadPath, opts.AllPath, true, true, opts.PrintSwitchExtenders, opts.QualityValue); err != nil {
 			return errors.Wrap(err, "all STL")
 		}
 	}
 	return nil
 }
 
-func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBase, printLid bool, printExtenders bool) error {
+func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBase, printLid bool, printExtenders bool, qualityValue int) error {
 	if err := os.MkdirAll(filepath.Dir(outPath), 0o755); err != nil {
 		return errors.Wrap(err, "create STL directory")
 	}
@@ -115,8 +117,12 @@ func renderSingleSTL(ctx context.Context, bin, scadPath, outPath string, printBa
 		"-D", fmt.Sprintf("printLidShell=%t", printLid),
 		"-D", fmt.Sprintf("printSwitchExtenders=%t", printExtenders),
 		"-D", "printDisplayClips=false",
-		scadPath,
 	}
+	if qualityValue > 0 {
+		args = append(args, "-D", fmt.Sprintf("renderQuality=%d", qualityValue))
+	}
+	args = append(args, scadPath)
+	fmt.Printf("OpenSCAD command: %s %s\n", bin, strings.Join(args, " "))
 	cmd := exec.CommandContext(ctx, bin, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -130,14 +136,14 @@ func rewriteInclude(scad []byte, outputPath, generatorInclude string) []byte {
 	if generatorInclude == "" {
 		generatorInclude = defaultGeneratorInclude
 	}
-	
+
 	// If generatorInclude is just a filename (no path), it's in the same directory
 	if filepath.Base(generatorInclude) == generatorInclude {
 		// Use relative path in same directory
 		updated := strings.Replace(string(scad), "include <./YAPPgenerator_v3.scad>", fmt.Sprintf("include <%s>", generatorInclude), 1)
 		return []byte(updated)
 	}
-	
+
 	// Otherwise compute relative path from output to generator
 	genAbs, err := filepath.Abs(generatorInclude)
 	if err != nil {

@@ -18,17 +18,18 @@ import (
 var _ cmds.BareCommand = &GenerateCommand{}
 
 type GenerateSettings struct {
-	Input          string `glazed.parameter:"input"`
-	SCADOut        string `glazed.parameter:"scad-out"`
-	MaxIterations  int    `glazed.parameter:"max-iterations"`
-	Strict         bool   `glazed.parameter:"strict"`
-	BaseSTL        string `glazed.parameter:"stl-base"`
-	LidSTL         string `glazed.parameter:"stl-lid"`
-	AllSTL         string `glazed.parameter:"stl-all"`
-	OpenSCADBin    string `glazed.parameter:"openscad-bin"`
-	RenderTimeout  string `glazed.parameter:"render-timeout"`
-	CopyGenerator  bool   `glazed.parameter:"copy-generator"`
-	GeneratorPath  string `glazed.parameter:"generator-path"`
+	Input         string `glazed.parameter:"input"`
+	SCADOut       string `glazed.parameter:"scad-out"`
+	MaxIterations int    `glazed.parameter:"max-iterations"`
+	Strict        bool   `glazed.parameter:"strict"`
+	BaseSTL       string `glazed.parameter:"stl-base"`
+	LidSTL        string `glazed.parameter:"stl-lid"`
+	AllSTL        string `glazed.parameter:"stl-all"`
+	OpenSCADBin   string `glazed.parameter:"openscad-bin"`
+	RenderTimeout string `glazed.parameter:"render-timeout"`
+	CopyGenerator bool   `glazed.parameter:"copy-generator"`
+	GeneratorPath string `glazed.parameter:"generator-path"`
+	QualityValue  int    `glazed.parameter:"quality-value"`
 }
 
 type GenerateCommand struct {
@@ -121,6 +122,12 @@ Examples:
 				parameters.WithDefault(""),
 				parameters.WithHelp("Optional path to YAPPgenerator_v3.scad (uses embedded version if not specified)"),
 			),
+			parameters.NewParameterDefinition(
+				"quality-value",
+				parameters.ParameterTypeInteger,
+				parameters.WithDefault(0),
+				parameters.WithHelp("Override the YAPP generator renderQuality (1-32). Zero keeps generator defaults"),
+			),
 		),
 		cmds.WithLayersList(commandSettingsLayer),
 	)
@@ -144,7 +151,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 
 	// Auto-enable generator copying if rendering STLs (OpenSCAD needs the generator file)
 	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != "" || settings.AllSTL != ""
-	
+
 	scadPath, model, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
 		OutputPath:    settings.SCADOut,
 		CopyGenerator: copyGenerator,
@@ -177,5 +184,6 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		AllPath:              settings.AllSTL,
 		OpenSCAD:             settings.OpenSCADBin,
 		PrintSwitchExtenders: model != nil && model.PrintSwitchExtenders,
+		QualityValue:         settings.QualityValue,
 	})
 }

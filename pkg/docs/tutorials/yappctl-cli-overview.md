@@ -63,6 +63,7 @@ go run ./cmd/yappctl generate \
 - **Automatic generator copying:** When `--stl-base` or `--stl-lid` is specified, the generator is automatically copied (no manual `sed` commands needed). The include path is rewritten to `include <YAPPgenerator_v3.scad>` (same directory).
 - **Manual copy mode:** Use `--copy-generator` to extract the generator even when not rendering STLs (useful for sharing standalone SCAD files).
 - **Custom generator:** Use `--generator-path /path/to/custom/YAPPgenerator_v3.scad` to use a modified generator version.
+- **Quality overrides:** Use `--quality-value 4` to force the YAPP generator’s `renderQuality` to a lower value during STL generation for faster iteration.
 
 **Flags:**
 
@@ -74,6 +75,7 @@ go run ./cmd/yappctl generate \
 - `--generator-path`: Use custom generator instead of embedded version
 - `--openscad-bin`: OpenSCAD executable path (default: `openscad`)
 - `--render-timeout`: Rendering timeout duration (default: `30s`)
+- `--quality-value`: Override the generator `renderQuality` (set to `0` to keep defaults)
 - `--max-iterations`: Resolver passes (default: 16)
 - `--strict`: Enable strict validation
 
