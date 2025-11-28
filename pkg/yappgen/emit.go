@@ -1,11 +1,11 @@
 package yappgen
 
 import (
-    "context"
-    "fmt"
-    "strings"
+	"context"
+	"fmt"
+	"strings"
 
-    "github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
+	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/scad"
 )
 
 // EmitSCAD renders a complete SCAD file for YAPP based on the given model.
@@ -22,51 +22,51 @@ func EmitSCAD(ctx context.Context, m *Model) ([]byte, error) {
 	}
 
 	// Globals (subset)
-	writeVarFloat(&b, "pcbLength", m.PcbLength)
-	writeVarFloat(&b, "pcbWidth", m.PcbWidth)
-	writeVarFloat(&b, "pcbThickness", m.PcbThickness)
-	writeVarFloat(&b, "standoffHeight", m.StandoffHeight)
+	writeVarFloat(&b, "pcbLength", m.PcbLength, m.Provenance)
+	writeVarFloat(&b, "pcbWidth", m.PcbWidth, m.Provenance)
+	writeVarFloat(&b, "pcbThickness", m.PcbThickness, m.Provenance)
+	writeVarFloat(&b, "standoffHeight", m.StandoffHeight, m.Provenance)
 	if m.StandoffDiameter > 0 {
-		writeVarFloat(&b, "standoffDiameter", m.StandoffDiameter)
+		writeVarFloat(&b, "standoffDiameter", m.StandoffDiameter, m.Provenance)
 	}
 	if m.StandoffPinDia > 0 {
-		writeVarFloat(&b, "standoffPinDiameter", m.StandoffPinDia)
+		writeVarFloat(&b, "standoffPinDiameter", m.StandoffPinDia, m.Provenance)
 	}
 	if m.StandoffHoleSlack > 0 {
-		writeVarFloat(&b, "standoffHoleSlack", m.StandoffHoleSlack)
+		writeVarFloat(&b, "standoffHoleSlack", m.StandoffHoleSlack, m.Provenance)
 	}
 	if m.WallThickness > 0 {
-		writeVarFloat(&b, "wallThickness", m.WallThickness)
+		writeVarFloat(&b, "wallThickness", m.WallThickness, m.Provenance)
 	}
 	if m.BasePlaneThickness > 0 {
-		writeVarFloat(&b, "basePlaneThickness", m.BasePlaneThickness)
+		writeVarFloat(&b, "basePlaneThickness", m.BasePlaneThickness, m.Provenance)
 	}
 	if m.LidPlaneThickness > 0 {
-		writeVarFloat(&b, "lidPlaneThickness", m.LidPlaneThickness)
+		writeVarFloat(&b, "lidPlaneThickness", m.LidPlaneThickness, m.Provenance)
 	}
 	if m.BaseWallHeight > 0 {
-		writeVarFloat(&b, "baseWallHeight", m.BaseWallHeight)
+		writeVarFloat(&b, "baseWallHeight", m.BaseWallHeight, m.Provenance)
 	}
 	if m.LidWallHeight > 0 {
-		writeVarFloat(&b, "lidWallHeight", m.LidWallHeight)
+		writeVarFloat(&b, "lidWallHeight", m.LidWallHeight, m.Provenance)
 	}
 	if m.RidgeHeight > 0 {
-		writeVarFloat(&b, "ridgeHeight", m.RidgeHeight)
+		writeVarFloat(&b, "ridgeHeight", m.RidgeHeight, m.Provenance)
 	}
 	if m.RoundRadius > 0 {
-		writeVarFloat(&b, "roundRadius", m.RoundRadius)
+		writeVarFloat(&b, "roundRadius", m.RoundRadius, m.Provenance)
 	}
 	if m.PaddingFront > 0 {
-		writeVarFloat(&b, "paddingFront", m.PaddingFront)
+		writeVarFloat(&b, "paddingFront", m.PaddingFront, m.Provenance)
 	}
 	if m.PaddingBack > 0 {
-		writeVarFloat(&b, "paddingBack", m.PaddingBack)
+		writeVarFloat(&b, "paddingBack", m.PaddingBack, m.Provenance)
 	}
 	if m.PaddingLeft > 0 {
-		writeVarFloat(&b, "paddingLeft", m.PaddingLeft)
+		writeVarFloat(&b, "paddingLeft", m.PaddingLeft, m.Provenance)
 	}
 	if m.PaddingRight > 0 {
-		writeVarFloat(&b, "paddingRight", m.PaddingRight)
+		writeVarFloat(&b, "paddingRight", m.PaddingRight, m.Provenance)
 	}
 	b.WriteString("\n")
 
@@ -80,14 +80,29 @@ func EmitSCAD(ctx context.Context, m *Model) ([]byte, error) {
 	return []byte(b.String()), nil
 }
 
-func writeVarFloat(b *strings.Builder, name string, val float64) {
+func writeVarFloat(b *strings.Builder, name string, val float64, prov *Provenance) {
+	if prov != nil {
+		for _, line := range prov.ScalarComment(name) {
+			b.WriteString(line)
+			b.WriteByte('\n')
+		}
+	}
 	fmt.Fprintf(b, "%s = %s;\n", name, formatFloat(val))
 }
 
-func writeArrayDecl(b *strings.Builder, name string, rows [][]any) {
+func writeArrayDecl(b *strings.Builder, name string, rows [][]any, rowComments [][]string) {
 	b.WriteString(name)
 	b.WriteString(" =\n[\n")
 	for i, row := range rows {
+		if len(rowComments) > i {
+			for _, line := range rowComments[i] {
+				if line == "" {
+					continue
+				}
+				b.WriteString(line)
+				b.WriteByte('\n')
+			}
+		}
 		b.WriteString("  [")
 		for j, v := range row {
 			writeScadValue(b, v)
@@ -106,8 +121,8 @@ func writeArrayDecl(b *strings.Builder, name string, rows [][]any) {
 
 func writeScadValue(b *strings.Builder, v any) {
 	switch t := v.(type) {
-    case scad.Raw:
-        b.WriteString(string(t))
+	case scad.Raw:
+		b.WriteString(string(t))
 	case string:
 		// strings are quoted; MVP rarely uses quoted strings in arrays
 		fmt.Fprintf(b, "%q", t)

@@ -1,0 +1,250 @@
+package yappgen
+
+import (
+	"fmt"
+	"sort"
+	"strconv"
+	"strings"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
+)
+
+// Provenance tracks how SCAD outputs map back to DSL paths and expressions.
+type Provenance struct {
+	trace        resolver.Trace
+	resolved     map[string]any
+	scalarPaths  map[string]string
+	featurePaths map[string][]string
+}
+
+// NewProvenance initializes a provenance tracker.
+func NewProvenance(trace resolver.Trace, resolved map[string]any) *Provenance {
+	return &Provenance{
+		trace:        trace,
+		resolved:     resolved,
+		scalarPaths:  map[string]string{},
+		featurePaths: map[string][]string{},
+	}
+}
+
+// AddScalar records the DSL path that feeds a SCAD global variable.
+func (p *Provenance) AddScalar(scadName, path string) {
+	if p == nil || scadName == "" || path == "" {
+		return
+	}
+	p.scalarPaths[scadName] = path
+}
+
+// RegisterFeature records base paths for feature array items.
+func (p *Provenance) RegisterFeature(featureKey string, count int) {
+	if p == nil || featureKey == "" || count <= 0 {
+		return
+	}
+	bases := make([]string, count)
+	for i := 0; i < count; i++ {
+		bases[i] = fmt.Sprintf("features.%s.%d", featureKey, i)
+	}
+	p.featurePaths[featureKey] = bases
+}
+
+// ScalarComment returns the comment lines for a SCAD scalar variable.
+func (p *Provenance) ScalarComment(scadName string) []string {
+	if p == nil {
+		return nil
+	}
+	path, ok := p.scalarPaths[scadName]
+	if !ok {
+		return nil
+	}
+	line := p.formatFieldLine(path, scadName, p.lookupValue(path), 0)
+	if line == "" {
+		return nil
+	}
+	return []string{line}
+}
+
+// DescribeFeatureRow produces comment lines for a single feature array row.
+func (p *Provenance) DescribeFeatureRow(featureKey, scadName string, idx int, item map[string]any) []string {
+	if p == nil || item == nil {
+		return nil
+	}
+	bases, ok := p.featurePaths[featureKey]
+	if !ok || idx < 0 || idx >= len(bases) {
+		return nil
+	}
+	basePath := bases[idx]
+	header := fmt.Sprintf("// %s[%d] ← %s", scadName, idx, humanizePath(basePath))
+	lines := []string{header}
+	lines = append(lines, p.describeMap(basePath, "", item, 2)...)
+	return lines
+}
+
+func (p *Provenance) describeMap(path, labelPrefix string, data map[string]any, indent int) []string {
+	if data == nil {
+		return nil
+	}
+	keys := make([]string, 0, len(data))
+	for k := range data {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var lines []string
+	for _, key := range keys {
+		childLabel := joinLabel(labelPrefix, key)
+		childPath := joinPathParts(path, key)
+		lines = append(lines, p.describeValue(childPath, childLabel, data[key], indent)...)
+	}
+	return lines
+}
+
+func (p *Provenance) describeArray(path, labelPrefix string, data []any, indent int) []string {
+	var lines []string
+	for idx, val := range data {
+		childLabel := fmt.Sprintf("%s[%d]", labelPrefix, idx)
+		childPath := fmt.Sprintf("%s.%d", path, idx)
+		lines = append(lines, p.describeValue(childPath, childLabel, val, indent)...)
+	}
+	return lines
+}
+
+func (p *Provenance) describeValue(path, label string, value any, indent int) []string {
+	switch t := value.(type) {
+	case map[string]any:
+		return p.describeMap(path, label, t, indent)
+	case []any:
+		return p.describeArray(path, label, t, indent)
+	default:
+		line := p.formatFieldLine(path, label, t, indent)
+		if line == "" {
+			return nil
+		}
+		return []string{line}
+	}
+}
+
+func (p *Provenance) formatFieldLine(path, label string, value any, indent int) string {
+	if path == "" || p == nil {
+		return ""
+	}
+	humanPath := humanizePath(path)
+	if label == "" {
+		label = humanPath
+	}
+	prefix := strings.Repeat(" ", indent)
+	if entry, ok := p.trace.Get(path); ok {
+		switch entry.Kind {
+		case resolver.TraceKindExpression:
+			expr := entry.Expression
+			if expr == "" {
+				expr = "expression"
+			}
+			line := fmt.Sprintf("%s// %s (source: %s) expr=\"%s\" => %s",
+				prefix, label, humanPath, expr, formatDisplayValue(entry.Value))
+			if depStr := p.formatDependencies(entry.Dependencies); depStr != "" {
+				line += " " + depStr
+			}
+			return line
+		default:
+			note := "literal"
+			if entry.Expression != "" {
+				note = fmt.Sprintf("literal %q", entry.Expression)
+			}
+			return fmt.Sprintf("%s// %s (source: %s) = %s (%s)",
+				prefix, label, humanPath, formatDisplayValue(entry.Value), note)
+		}
+	}
+	if value == nil {
+		return ""
+	}
+	return fmt.Sprintf("%s// %s (source: %s) = %s",
+		prefix, label, humanPath, formatDisplayValue(value))
+}
+
+func (p *Provenance) formatDependencies(refs []string) string {
+	if len(refs) == 0 || p.resolved == nil {
+		return ""
+	}
+	var parts []string
+	for _, ref := range refs {
+		val, ok := lookupPath(p.resolved, ref)
+		if !ok {
+			continue
+		}
+		parts = append(parts, fmt.Sprintf("%s=%s", humanizePath(ref), formatDisplayValue(val)))
+	}
+	if len(parts) == 0 {
+		return ""
+	}
+	return "deps: " + strings.Join(parts, ", ")
+}
+
+func (p *Provenance) lookupValue(path string) any {
+	if p == nil || path == "" {
+		return nil
+	}
+	val, _ := lookupPath(p.resolved, path)
+	return val
+}
+
+func humanizePath(path string) string {
+	if path == "" {
+		return ""
+	}
+	parts := strings.Split(path, ".")
+	out := strings.Builder{}
+	for _, part := range parts {
+		if part == "" {
+			continue
+		}
+		if _, err := strconv.Atoi(part); err == nil {
+			out.WriteString("[")
+			out.WriteString(part)
+			out.WriteString("]")
+			continue
+		}
+		if out.Len() > 0 {
+			out.WriteString(".")
+		}
+		out.WriteString(part)
+	}
+	return out.String()
+}
+
+func joinLabel(prefix, key string) string {
+	if prefix == "" {
+		return key
+	}
+	if key == "" {
+		return prefix
+	}
+	return prefix + "." + key
+}
+
+func joinPathParts(base, key string) string {
+	if base == "" {
+		return key
+	}
+	if key == "" {
+		return base
+	}
+	return base + "." + key
+}
+
+func formatDisplayValue(v any) string {
+	switch t := v.(type) {
+	case float64:
+		return formatFloat(t)
+	case float32:
+		return formatFloat(float64(t))
+	case int:
+		return fmt.Sprintf("%d", t)
+	case int64:
+		return fmt.Sprintf("%d", t)
+	case string:
+		return fmt.Sprintf("%q", t)
+	case bool:
+		return fmt.Sprintf("%t", t)
+	default:
+		return fmt.Sprintf("%v", t)
+	}
+}

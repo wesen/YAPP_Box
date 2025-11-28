@@ -116,6 +116,9 @@ func (m *arrayFeatureModule) Collect(resolved map[string]any, features map[strin
 	}
 	items := normalizeArrayOfMaps(arr)
 	*ptr = items
+	if model != nil && model.Provenance != nil {
+		model.Provenance.RegisterFeature(m.key, len(items))
+	}
 	if m.afterCollect != nil {
 		m.afterCollect(model, items)
 	}
@@ -145,7 +148,17 @@ func (m *arrayFeatureModule) Emit(ctx context.Context, model *Model, b *strings.
 		return nil
 	}
 
-	writeArrayDecl(b, decls[0].Name, decls[0].Rows)
+	var rowComments [][]string
+	if model != nil && model.Provenance != nil {
+		items := *m.field(model)
+		if len(items) == len(decls[0].Rows) {
+			rowComments = make([][]string, len(items))
+			for idx := range items {
+				rowComments[idx] = model.Provenance.DescribeFeatureRow(m.key, decls[0].Name, idx, items[idx])
+			}
+		}
+	}
+	writeArrayDecl(b, decls[0].Name, decls[0].Rows, rowComments)
 	b.WriteString("\n")
 	return nil
 }
@@ -185,6 +198,9 @@ func (m *multiArrayFeatureModule) Collect(resolved map[string]any, features map[
 	}
 	items := normalizeArrayOfMaps(arr)
 	*ptr = items
+	if model != nil && model.Provenance != nil {
+		model.Provenance.RegisterFeature(m.key, len(items))
+	}
 	return nil
 }
 
@@ -203,7 +219,7 @@ func (m *multiArrayFeatureModule) Emit(ctx context.Context, model *Model, b *str
 		if len(decl.Rows) == 0 {
 			continue
 		}
-		writeArrayDecl(b, decl.Name, decl.Rows)
+		writeArrayDecl(b, decl.Name, decl.Rows, nil)
 		b.WriteString("\n")
 	}
 	return nil

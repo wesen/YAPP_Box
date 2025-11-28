@@ -3,8 +3,11 @@ package yappgen
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
 )
 
 // Model holds the normalized, resolved configuration needed to emit a YAPP SCAD file.
@@ -44,12 +47,17 @@ type Model struct {
 
 	// Derived feature toggles
 	PrintSwitchExtenders bool
+
+	// Provenance metadata for comment emission.
+	Provenance *Provenance
 }
 
 // BuildModel converts a resolved DSL document into a Model.
 // The input is expected to be fully numeric where applicable (use pkg/resolver before calling).
-func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
-	m := &Model{}
+func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Trace) (*Model, error) {
+	m := &Model{
+		Provenance: NewProvenance(trace, resolved),
+	}
 
 	// Project (optional)
 	if v, ok := getString(resolved, "project"); ok {
@@ -61,52 +69,67 @@ func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
 	if m.PcbLength, ok = getFloat(resolved, "pcb.length"); !ok {
 		return nil, errors.Errorf("missing required pcb.length")
 	}
+	m.Provenance.AddScalar("pcbLength", "pcb.length")
 	if m.PcbWidth, ok = getFloat(resolved, "pcb.width"); !ok {
 		return nil, errors.Errorf("missing required pcb.width")
 	}
+	m.Provenance.AddScalar("pcbWidth", "pcb.width")
 	if m.PcbThickness, ok = getFloat(resolved, "pcb.thickness"); !ok {
 		return nil, errors.Errorf("missing required pcb.thickness")
 	}
+	m.Provenance.AddScalar("pcbThickness", "pcb.thickness")
 	// standoff height maps from pcb.z_clearance when present; else default to 1.0 (YAPP default)
 	if v, ok := getFloat(resolved, "pcb.z_clearance"); ok {
 		m.StandoffHeight = v
+		m.Provenance.AddScalar("standoffHeight", "pcb.z_clearance")
 	} else {
 		m.StandoffHeight = 1.0
 	}
 	// Optional standoff details
 	if v, ok := getFloat(resolved, "pcb.standoffs.diameter"); ok {
 		m.StandoffDiameter = v
+		m.Provenance.AddScalar("standoffDiameter", "pcb.standoffs.diameter")
 	}
 	if v, ok := getFloat(resolved, "pcb.standoffs.screw_d"); ok {
 		m.StandoffPinDia = v
+		m.Provenance.AddScalar("standoffPinDiameter", "pcb.standoffs.screw_d")
 	}
 	if v, ok := getFloat(resolved, "tolerances.holes"); ok {
 		m.StandoffHoleSlack = v
+		m.Provenance.AddScalar("standoffHoleSlack", "tolerances.holes")
 	}
 
 	// Enclosure
 	if v, ok := getFloat(resolved, "enclosure.wall.thickness"); ok {
 		m.WallThickness = v
+		m.Provenance.AddScalar("wallThickness", "enclosure.wall.thickness")
 	}
 	if v, ok := getFloat(resolved, "enclosure.base.thickness"); ok {
 		m.BasePlaneThickness = v
+		m.Provenance.AddScalar("basePlaneThickness", "enclosure.base.thickness")
 		// Use base thickness for lid thickness if none provided (pragmatic default)
 		m.LidPlaneThickness = v
+		m.Provenance.AddScalar("lidPlaneThickness", "enclosure.base.thickness")
 	}
 	if v, ok := getFloat(resolved, "enclosure.lid.thickness"); ok {
 		m.LidPlaneThickness = v
+		m.Provenance.AddScalar("lidPlaneThickness", "enclosure.lid.thickness")
 	}
 	if v, ok := getFloat(resolved, "enclosure.base.wall_height"); ok {
 		m.BaseWallHeight = v
+		m.Provenance.AddScalar("baseWallHeight", "enclosure.base.wall_height")
 	}
 	if v, ok := getFloat(resolved, "enclosure.lid.wall_height"); ok {
 		m.LidWallHeight = v
+		m.Provenance.AddScalar("lidWallHeight", "enclosure.lid.wall_height")
 	}
 	if v, ok := getFloat(resolved, "enclosure.ridge.height"); ok {
 		m.RidgeHeight = v
+		m.Provenance.AddScalar("ridgeHeight", "enclosure.ridge.height")
 	}
 	if v, ok := getFloat(resolved, "enclosure.wall.fillet_radius"); ok {
 		m.RoundRadius = v
+		m.Provenance.AddScalar("roundRadius", "enclosure.wall.fillet_radius")
 	}
 	// Map a single clearance value to all paddings if present
 	if v, ok := getFloat(resolved, "enclosure.wall.clearance"); ok {
@@ -114,6 +137,10 @@ func BuildModel(ctx context.Context, resolved map[string]any) (*Model, error) {
 		m.PaddingBack = v
 		m.PaddingLeft = v
 		m.PaddingRight = v
+		m.Provenance.AddScalar("paddingFront", "enclosure.wall.clearance")
+		m.Provenance.AddScalar("paddingBack", "enclosure.wall.clearance")
+		m.Provenance.AddScalar("paddingLeft", "enclosure.wall.clearance")
+		m.Provenance.AddScalar("paddingRight", "enclosure.wall.clearance")
 	}
 
 	features, _ := getMap(resolved, "features")
@@ -169,15 +196,22 @@ func getArray(root map[string]any, path string) ([]any, bool) {
 func lookupPath(root any, path string) (any, bool) {
 	cur := root
 	for _, part := range splitPath(path) {
-		asMap, ok := cur.(map[string]any)
-		if !ok {
+		switch t := cur.(type) {
+		case map[string]any:
+			next, ok := t[part]
+			if !ok {
+				return nil, false
+			}
+			cur = next
+		case []any:
+			idx, err := strconv.Atoi(part)
+			if err != nil || idx < 0 || idx >= len(t) {
+				return nil, false
+			}
+			cur = t[idx]
+		default:
 			return nil, false
 		}
-		next, ok := asMap[part]
-		if !ok {
-			return nil, false
-		}
-		cur = next
 	}
 	return cur, true
 }

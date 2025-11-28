@@ -22,6 +22,15 @@ type Options struct {
 // or failing with an error (unresolved dependencies, cycles, invalid paths).
 // It returns a deep copy with all expressions resolved to numeric values.
 func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]any, error) {
+	result, err := ResolveResult(ctx, doc, opts)
+	if err != nil {
+		return nil, err
+	}
+	return result.Document, nil
+}
+
+// ResolveResult behaves like Resolve but also captures trace metadata for every scalar value.
+func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Result, error) {
 	if opts.MaxIterations <= 0 {
 		opts.MaxIterations = 16
 	}
@@ -42,6 +51,7 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 
 	// Track used variables (vars.*) to optionally validate unused vars in strict mode.
 	usedVars := map[string]struct{}{}
+	trace := newTraceRecorder()
 
 	var changed bool
 	for iter := 0; iter < opts.MaxIterations; iter++ {
@@ -51,7 +61,7 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 		default:
 		}
 		changed = false
-		resolved, iterChanged, err := resolvePass(state, usedVars)
+		resolved, iterChanged, err := resolvePass(state, usedVars, trace)
 		if err != nil {
 			return nil, err
 		}
@@ -85,11 +95,14 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 		return nil, errors.Wrap(err, "constraint validation")
 	}
 
-	return state, nil
+	return &Result{
+		Document: state,
+		Trace:    trace.Trace(),
+	}, nil
 }
 
 // resolvePass performs one pass and tries to evaluate as many expressions as possible.
-func resolvePass(state map[string]any, usedVars map[string]struct{}) (map[string]any, bool, error) {
+func resolvePass(state map[string]any, usedVars map[string]struct{}, trace *traceRecorder) (map[string]any, bool, error) {
 	changed := false
 	env := buildEnv(state)
 
@@ -125,10 +138,16 @@ func resolvePass(state map[string]any, usedVars map[string]struct{}) (map[string
 		case string:
 			// Treat some fields as literal strings, not expressions
 			if isStringFieldPath(path) {
+				if trace != nil {
+					trace.recordLiteral(path, t, t)
+				}
 				return v, false, nil
 			}
 			// Try to parse as number if it looks like one
 			if num, ok := parseNumericString(t); ok {
+				if trace != nil {
+					trace.recordLiteral(path, num, t)
+				}
 				return num, true, nil
 			}
 			// Treat as expression
@@ -147,11 +166,18 @@ func resolvePass(state map[string]any, usedVars map[string]struct{}) (map[string
 			}
 			if ok {
 				changed = true
+				if trace != nil {
+					deps := canonicalizeDependencies(t, state)
+					trace.recordExpression(path, t, out, deps)
+				}
 				return out, true, nil
 			}
 			return t, false, nil
 		default:
 			// numeric or other literal types remain as is
+			if trace != nil {
+				trace.recordLiteral(path, v, "")
+			}
 			return v, false, nil
 		}
 	}
@@ -465,6 +491,61 @@ func extractVarRefs(exprStr string) []string {
 		out = append(out, m)
 	}
 	return out
+}
+
+func extractDependencyRefs(exprStr string) []string {
+	if exprStr == "" {
+		return nil
+	}
+	matches := identRe.FindAllString(exprStr, -1)
+	if len(matches) == 0 {
+		return nil
+	}
+	funcs := functionsEnv()
+	seen := map[string]struct{}{}
+	var out []string
+	for _, m := range matches {
+		if _, ok := funcs[m]; ok {
+			continue
+		}
+		lower := strings.ToLower(m)
+		if lower == "true" || lower == "false" {
+			continue
+		}
+		if _, ok := seen[m]; ok {
+			continue
+		}
+		seen[m] = struct{}{}
+		out = append(out, m)
+	}
+	return out
+}
+
+func canonicalizeDependencies(exprStr string, state map[string]any) []string {
+	refs := extractDependencyRefs(exprStr)
+	if len(refs) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(refs))
+	for _, ref := range refs {
+		if canon := canonicalizeRef(ref, state); canon != "" {
+			out = append(out, canon)
+		}
+	}
+	return out
+}
+
+func canonicalizeRef(ref string, state map[string]any) string {
+	candidates := []string{ref}
+	if !strings.Contains(ref, ".") {
+		candidates = append([]string{"vars." + ref}, candidates...)
+	}
+	for _, candidate := range candidates {
+		if _, ok := lookupPath(state, candidate); ok {
+			return candidate
+		}
+	}
+	return ref
 }
 
 func findMissingDependencies(exprStr string, state map[string]any) []string {

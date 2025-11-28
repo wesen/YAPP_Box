@@ -10,6 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen"
 	"github.com/wesen/yapp-encl-resolver/pkg/yappgen/assets"
 )
@@ -31,11 +32,11 @@ type SCADOptions struct {
 }
 
 // WriteSCAD builds the YAPP model, emits the SCAD, adjusts include paths, and writes the file.
-func WriteSCAD(ctx context.Context, resolved map[string]any, opts SCADOptions) (string, *yappgen.Model, error) {
+func WriteSCAD(ctx context.Context, resolved map[string]any, trace resolver.Trace, opts SCADOptions) (string, *yappgen.Model, error) {
 	if opts.OutputPath == "" {
 		return "", nil, errors.New("output path is required")
 	}
-	model, err := yappgen.BuildModel(ctx, resolved)
+	model, err := yappgen.BuildModel(ctx, resolved, trace)
 	if err != nil {
 		return "", nil, errors.Wrap(err, "build model")
 	}

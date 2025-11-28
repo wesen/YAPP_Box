@@ -141,7 +141,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 		return errors.Wrap(err, "parse parameters")
 	}
 
-	resolved, err := resolvercli.LoadAndResolve(ctx, settings.Input, resolvercli.LoadOptions{
+	loadResult, err := resolvercli.LoadAndResolveResult(ctx, settings.Input, resolvercli.LoadOptions{
 		MaxIterations: settings.MaxIterations,
 		Strict:        settings.Strict,
 	})
@@ -152,7 +152,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 	// Auto-enable generator copying if rendering STLs (OpenSCAD needs the generator file)
 	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != "" || settings.AllSTL != ""
 
-	scadPath, model, err := generatorcli.WriteSCAD(ctx, resolved, generatorcli.SCADOptions{
+	scadPath, model, err := generatorcli.WriteSCAD(ctx, loadResult.Document, loadResult.Trace, generatorcli.SCADOptions{
 		OutputPath:    settings.SCADOut,
 		CopyGenerator: copyGenerator,
 		GeneratorPath: settings.GeneratorPath,
