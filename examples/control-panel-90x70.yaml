@@ -1,0 +1,161 @@
+project: control-panel-90x70
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+  z_clearance: 4.0
+  standoffs:
+    diameter: 6.5
+    screw_d: 3.0
+    hole_slack: 0.4
+
+vars:
+  hole_offset_x: (pcb.length - 85.0) / 2
+  hole_offset_y: (pcb.width - 65.0) / 2
+  standoff_pin_d: 3.2
+  top_clearance: 45.0
+  button_diameter: 27.0
+  button_radius: button_diameter / 2
+  button_spacing: 28.0
+  button_row_center: pcb.length / 2
+  button_row_y: pcb.width - 18.0
+  button_stack_height: 40.0
+  button_clearance: 1.0
+  display_width: 36.0
+  display_height: 17.0
+  display_center_x: pcb.length / 2
+  display_center_y: pcb.width / 2
+  display_center_z: 24.0
+
+enclosure:
+  wall:
+    thickness: 2.6
+    clearance: 2.0
+    fillet_radius: 3.0
+  base:
+    thickness: 2.2
+    wall_height: pcb.z_clearance + pcb.thickness + 6.0
+  lid:
+    thickness: 2.0
+    wall_height: vars.top_clearance
+  ridge:
+    height: 6.0
+    slack: 0.25
+    gap: 0.5
+
+features:
+  pcb_stands:
+    - x: vars.hole_offset_x
+      y: vars.hole_offset_y
+      diameter: pcb.standoffs.diameter
+      pin_diameter: vars.standoff_pin_d
+      fillet_radius: 1.5
+    - x: pcb.length - vars.hole_offset_x
+      y: vars.hole_offset_y
+      diameter: pcb.standoffs.diameter
+      pin_diameter: vars.standoff_pin_d
+      fillet_radius: 1.5
+    - x: pcb.length - vars.hole_offset_x
+      y: pcb.width - vars.hole_offset_y
+      diameter: pcb.standoffs.diameter
+      pin_diameter: vars.standoff_pin_d
+      fillet_radius: 1.5
+    - x: vars.hole_offset_x
+      y: pcb.width - vars.hole_offset_y
+      diameter: pcb.standoffs.diameter
+      pin_diameter: vars.standoff_pin_d
+      fillet_radius: 1.5
+
+  cutouts:
+    - name: display-window-lid
+      face: lid
+      from_face_back: enclosure.wall.clearance + enclosure.wall.thickness + vars.display_center_x
+      from_face_left: enclosure.wall.clearance + enclosure.wall.thickness + vars.display_center_y
+      width: vars.display_width + 2.0
+      length: vars.display_height + 2.0
+      radius: 1.5
+      shape: rounded_rect
+
+    - name: button-left-cutout
+      face: lid
+      from_face_back: enclosure.wall.clearance + enclosure.wall.thickness + (vars.button_row_center - vars.button_spacing)
+      from_face_left: enclosure.wall.clearance + enclosure.wall.thickness + vars.button_row_y
+      radius: vars.button_radius + vars.button_clearance
+      shape: circle
+    - name: button-center-cutout
+      face: lid
+      from_face_back: enclosure.wall.clearance + enclosure.wall.thickness + vars.button_row_center
+      from_face_left: enclosure.wall.clearance + enclosure.wall.thickness + vars.button_row_y
+      radius: vars.button_radius + vars.button_clearance
+      shape: circle
+    - name: button-right-cutout
+      face: lid
+      from_face_back: enclosure.wall.clearance + enclosure.wall.thickness + (vars.button_row_center + vars.button_spacing)
+      from_face_left: enclosure.wall.clearance + enclosure.wall.thickness + vars.button_row_y
+      radius: vars.button_radius + vars.button_clearance
+      shape: circle
+
+# push_buttons:
+#     - name: button-left
+#       x: vars.button_row_center - vars.button_spacing
+#       y: vars.button_row_y
+#       shape: circle
+#       cap:
+#         length: vars.button_diameter
+#         width: vars.button_diameter
+#         radius: vars.button_radius
+#       lid:
+#         protrusion: 0
+#         wall: 2.0
+#         plate_thickness: 2.2
+#         slack: 0.4
+#         snap_slack: 0.2
+#       switch:
+#         height: vars.button_stack_height
+#         travel: 1.0
+#         pole_diameter: 3.5
+#     - name: button-center
+#       x: vars.button_row_center
+#       y: vars.button_row_y
+#       shape: circle
+#       cap:
+#         length: vars.button_diameter
+#         width: vars.button_diameter
+#         radius: vars.button_radius
+#       lid:
+#         protrusion: 0
+#         wall: 2.0
+#         plate_thickness: 2.2
+#         slack: 0.4
+#         snap_slack: 0.2
+#       switch:
+#         height: vars.button_stack_height
+#         travel: 1.0
+#         pole_diameter: 3.5
+#     - name: button-right
+#       x: vars.button_row_center + vars.button_spacing
+#       y: vars.button_row_y
+#       shape: circle
+#       cap:
+#         length: vars.button_diameter
+#         width: vars.button_diameter
+#         radius: vars.button_radius
+#       lid:
+#         protrusion: 0
+#         wall: 2.0
+#         plate_thickness: 2.2
+#         slack: 0.4
+#         snap_slack: 0.2
+#       switch:
+#         height: vars.button_stack_height
+#         travel: 1.0
+#         pole_diameter: 3.5
+
+tolerances:
+  holes: 0.45
+  perimeter: 1.2
+

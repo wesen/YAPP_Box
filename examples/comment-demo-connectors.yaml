@@ -1,0 +1,59 @@
+project: comment-demo-connectors
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+# Compact PCB with two mounting points and USB cutout
+pcb:
+  length: 50.0        # long edge dimension
+  width: 30.0
+  thickness: 1.6
+  z_clearance: 4.0
+
+vars:
+  standoff_offset: 5.0                # distance from corners
+  usb_center_x: pcb.length - 10.0     # USB toward right edge
+  usb_center_y: pcb.width / 2         # centered vertically
+  usb_width: 12.0
+  usb_height: 5.0
+
+enclosure:
+  wall:
+    thickness: 2.2
+    clearance: 1.2
+  base:
+    thickness: 2.0
+    wall_height: pcb.z_clearance + 3.0
+  lid:
+    thickness: 2.0
+    wall_height: 25.0
+
+features:
+  pcb_stands:
+    - # southwest corner stand
+      x: vars.standoff_offset
+      y: vars.standoff_offset
+      diameter: 5.0
+      pin_diameter: 2.5
+    - # northeast corner stand
+      x: pcb.length - vars.standoff_offset
+      y: pcb.width - vars.standoff_offset
+      diameter: 5.0
+      pin_diameter: 2.5
+
+  cutouts:
+    - name: usb-cutout
+      face: front
+      # center USB opening horizontally near the right edge
+      from_face_left: enclosure.wall.clearance + enclosure.wall.thickness + vars.usb_center_x
+      from_face_bottom: enclosure.wall.clearance + enclosure.wall.thickness + vars.usb_center_y
+      width: vars.usb_width
+      length: vars.usb_height
+      radius: 1.0
+      shape: rectangle
+
+tolerances:
+  holes: 0.3
+  perimeter: 0.8
+
+

@@ -1,0 +1,96 @@
+project: comment-demo-buttons
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+# PCB spec comes from the prototype board datasheet
+pcb:
+  length: 60.0      # body length
+  width: 35.0       # body width
+  thickness: 1.6    # standard FR4
+  z_clearance: 3.0  # standoff height target
+
+# helper variables for button math
+vars:
+  button_spacing: 16.0                 # distance center-to-center
+  button_center: pcb.length / 2        # align row to center
+  button_row_y: pcb.width - 10.0       # keep buttons toward top edge
+  cap_size: 20.0                       # square cap
+  cap_radius: cap_size / 2             # convert to radius
+  stack_height: 15.5                   # switch stack height
+
+enclosure:
+  wall:
+    thickness: 2.4
+    clearance: 1.5
+  base:
+    thickness: 2.0
+    wall_height: pcb.z_clearance + pcb.thickness + 4.0
+  lid:
+    thickness: 2.0
+    wall_height: 35.0
+
+features:
+  push_buttons:
+    - name: btn-left
+      # left-most button (subtract spacing)
+      x: vars.button_center - vars.button_spacing
+      y: vars.button_row_y
+      shape: circle
+      cap:
+        length: vars.cap_size
+        width: vars.cap_size
+        radius: vars.cap_radius
+      lid:
+        protrusion: 0
+        wall: 1.8
+        plate_thickness: 2.0
+        slack: 0.3
+        snap_slack: 0.15
+      switch:
+        height: vars.stack_height
+        travel: 0.8
+        pole_diameter: 3.0
+    - name: btn-center
+      # center button sits at button_center
+      x: vars.button_center
+      y: vars.button_row_y
+      shape: circle
+      cap:
+        length: vars.cap_size
+        width: vars.cap_size
+        radius: vars.cap_radius
+      lid:
+        protrusion: 0
+        wall: 1.8
+        plate_thickness: 2.0
+        slack: 0.3
+        snap_slack: 0.15
+      switch:
+        height: vars.stack_height
+        travel: 0.8
+        pole_diameter: 3.0
+    - name: btn-right
+      # right-most button (add spacing)
+      x: vars.button_center + vars.button_spacing
+      y: vars.button_row_y
+      shape: circle
+      cap:
+        length: vars.cap_size
+        width: vars.cap_size
+        radius: vars.cap_radius
+      lid:
+        protrusion: 0
+        wall: 1.8
+        plate_thickness: 2.0
+        slack: 0.3
+        snap_slack: 0.15
+      switch:
+        height: vars.stack_height
+        travel: 0.8
+        pole_diameter: 3.0
+
+tolerances:
+  holes: 0.35
+
+
