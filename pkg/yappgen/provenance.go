@@ -13,15 +13,17 @@ import (
 type Provenance struct {
 	trace        resolver.Trace
 	resolved     map[string]any
+	comments     map[string][]string
 	scalarPaths  map[string]string
 	featurePaths map[string][]string
 }
 
 // NewProvenance initializes a provenance tracker.
-func NewProvenance(trace resolver.Trace, resolved map[string]any) *Provenance {
+func NewProvenance(trace resolver.Trace, resolved map[string]any, comments map[string][]string) *Provenance {
 	return &Provenance{
 		trace:        trace,
 		resolved:     resolved,
+		comments:     comments,
 		scalarPaths:  map[string]string{},
 		featurePaths: map[string][]string{},
 	}
@@ -56,11 +58,11 @@ func (p *Provenance) ScalarComment(scadName string) []string {
 	if !ok {
 		return nil
 	}
-	line := p.formatFieldLine(path, scadName, p.lookupValue(path), 0)
-	if line == "" {
-		return nil
+	lines := append([]string{}, p.emitCommentLines(path, 0)...)
+	if line := p.formatFieldLine(path, scadName, p.lookupValue(path), 0); line != "" {
+		lines = append(lines, line)
 	}
-	return []string{line}
+	return lines
 }
 
 // DescribeFeatureRow produces comment lines for a single feature array row.
@@ -74,7 +76,8 @@ func (p *Provenance) DescribeFeatureRow(featureKey, scadName string, idx int, it
 	}
 	basePath := bases[idx]
 	header := fmt.Sprintf("// %s[%d] ← %s", scadName, idx, humanizePath(basePath))
-	lines := []string{header}
+	lines := append([]string{}, p.emitCommentLines(basePath, 0)...)
+	lines = append(lines, header)
 	lines = append(lines, p.describeMap(basePath, "", item, 2)...)
 	return lines
 }
@@ -110,15 +113,15 @@ func (p *Provenance) describeArray(path, labelPrefix string, data []any, indent 
 func (p *Provenance) describeValue(path, label string, value any, indent int) []string {
 	switch t := value.(type) {
 	case map[string]any:
-		return p.describeMap(path, label, t, indent)
+		return append(p.emitCommentLines(path, indent), p.describeMap(path, label, t, indent)...)
 	case []any:
-		return p.describeArray(path, label, t, indent)
+		return append(p.emitCommentLines(path, indent), p.describeArray(path, label, t, indent)...)
 	default:
-		line := p.formatFieldLine(path, label, t, indent)
-		if line == "" {
-			return nil
+		lines := append([]string{}, p.emitCommentLines(path, indent)...)
+		if line := p.formatFieldLine(path, label, t, indent); line != "" {
+			lines = append(lines, line)
 		}
-		return []string{line}
+		return lines
 	}
 }
 
@@ -184,6 +187,26 @@ func (p *Provenance) lookupValue(path string) any {
 	}
 	val, _ := lookupPath(p.resolved, path)
 	return val
+}
+
+func (p *Provenance) emitCommentLines(path string, indent int) []string {
+	if p == nil || path == "" {
+		return nil
+	}
+	raw := p.comments[path]
+	if len(raw) == 0 {
+		return nil
+	}
+	prefix := strings.Repeat(" ", indent)
+	lines := make([]string, 0, len(raw))
+	for _, line := range raw {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		lines = append(lines, fmt.Sprintf("%s// %s", prefix, line))
+	}
+	return lines
 }
 
 func humanizePath(path string) string {

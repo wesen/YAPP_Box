@@ -54,9 +54,9 @@ type Model struct {
 
 // BuildModel converts a resolved DSL document into a Model.
 // The input is expected to be fully numeric where applicable (use pkg/resolver before calling).
-func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Trace) (*Model, error) {
+func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Trace, comments map[string][]string) (*Model, error) {
 	m := &Model{
-		Provenance: NewProvenance(trace, resolved),
+		Provenance: NewProvenance(trace, resolved, comments),
 	}
 
 	// Project (optional)

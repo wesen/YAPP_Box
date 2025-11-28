@@ -32,11 +32,11 @@ type SCADOptions struct {
 }
 
 // WriteSCAD builds the YAPP model, emits the SCAD, adjusts include paths, and writes the file.
-func WriteSCAD(ctx context.Context, resolved map[string]any, trace resolver.Trace, opts SCADOptions) (string, *yappgen.Model, error) {
+func WriteSCAD(ctx context.Context, resolved map[string]any, trace resolver.Trace, comments map[string][]string, opts SCADOptions) (string, *yappgen.Model, error) {
 	if opts.OutputPath == "" {
 		return "", nil, errors.New("output path is required")
 	}
-	model, err := yappgen.BuildModel(ctx, resolved, trace)
+	model, err := yappgen.BuildModel(ctx, resolved, trace, comments)
 	if err != nil {
 		return "", nil, errors.Wrap(err, "build model")
 	}

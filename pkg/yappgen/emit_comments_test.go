@@ -53,7 +53,14 @@ func TestEmitSCADIncludesProvenanceComments(t *testing.T) {
 		t.Fatalf("resolver failed: %v", err)
 	}
 
-	model, err := BuildModel(ctx, result.Document, result.Trace)
+	comments := map[string][]string{
+		"pcb.length":                  {"PCB length from spec sheet"},
+		"features.push_buttons.0":     {"Front-left tactile switch"},
+		"features.push_buttons.0.x":   {"Center minus spacing"},
+		"features.push_buttons.0.cap": {"Match cap to bezel opening"},
+	}
+
+	model, err := BuildModel(ctx, result.Document, result.Trace, comments)
 	if err != nil {
 		t.Fatalf("BuildModel failed: %v", err)
 	}
@@ -75,5 +82,11 @@ func TestEmitSCADIncludesProvenanceComments(t *testing.T) {
 	}
 	if !strings.Contains(scad, `// pushButtons[0] ← features.push_buttons[0]`) {
 		t.Fatalf("expected pushButtons row header comment, got:\n%s", scad)
+	}
+	if !strings.Contains(scad, `// PCB length from spec sheet`) {
+		t.Fatalf("expected YAML comment for pcb.length, got:\n%s", scad)
+	}
+	if !strings.Contains(scad, `// Front-left tactile switch`) {
+		t.Fatalf("expected YAML comment for push button entry, got:\n%s", scad)
 	}
 }
