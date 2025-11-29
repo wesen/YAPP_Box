@@ -7,7 +7,7 @@ func DefaultRegistry() *Registry {
 	reg.Register(&EnumSuggestClosestRule{})
 	reg.Register(&VarsScaffoldRule{})
 	reg.Register(&ModuleDocEmbedRule{})
-	reg.Register(&ModuleDocEmbedRule{})
+	reg.Register(&DependencyGraphRule{})
 	return reg
 }
 

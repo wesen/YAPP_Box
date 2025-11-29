@@ -26,6 +26,8 @@ RelatedFiles:
       Note: PositionMap type for tracking line/column positions
     - Path: pkg/resolver/resolver.go
       Note: Resolver with PositionMap integration
+    - Path: pkg/resolver/rules/dependency_graph.go
+      Note: New DependencyGraphRule implementation showing dependency chains for missing variables
     - Path: pkg/resolver/rules/enum_suggest.go
       Note: Implements enum suggestion rule example
     - Path: pkg/resolver/rules/enum_suggest_test.go
@@ -54,6 +56,7 @@ ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-28T16:52:31.520526183-05:00
 ---
+
 
 
 

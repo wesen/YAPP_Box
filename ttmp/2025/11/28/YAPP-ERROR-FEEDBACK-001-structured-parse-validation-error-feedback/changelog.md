@@ -120,3 +120,12 @@ Created continuation guide for interns: Comprehensive document covering all rece
 
 - playbook/02-continuation-guide.md — Comprehensive continuation guide for interns
 
+
+## 2025-11-29
+
+Implemented DependencyGraphRule: Shows dependency chains and resolution order for missing variables
+
+### Related Files
+
+- pkg/resolver/rules/dependency_graph.go — New rule implementation
+
