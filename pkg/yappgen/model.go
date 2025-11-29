@@ -35,6 +35,9 @@ type Model struct {
 	PaddingBack        float64
 	PaddingLeft        float64
 	PaddingRight       float64
+	// Final dimensions (mutually exclusive with per-side padding)
+	FinalLength float64 // >0 if final dimensions configured
+	FinalWidth  float64 // >0 if final dimensions configured
 
 	// Features
 	PcbStands   []map[string]any
@@ -53,6 +56,48 @@ type Model struct {
 
 	// RawDocument retains the original DSL (pre-resolution) for YAML snippets.
 	RawDocument map[string]any
+}
+
+// hasPerSideClearance checks if the resolved document has per-side clearance configuration.
+func hasPerSideClearance(resolved map[string]any) bool {
+	wall, ok := getMap(resolved, "enclosure.wall")
+	if !ok {
+		return false
+	}
+	clearance, ok := wall["clearance"]
+	if !ok {
+		return false
+	}
+	// Check if clearance is a map (per-side) rather than a number (uniform)
+	_, isMap := clearance.(map[string]any)
+	return isMap
+}
+
+// hasFinalDimensions checks if the resolved document has final dimensions configuration.
+func hasFinalDimensions(resolved map[string]any) bool {
+	if _, ok := getMap(resolved, "enclosure.dimensions"); !ok {
+		return false
+	}
+	// Check if at least one dimension is specified
+	_, hasLength := getFloat(resolved, "enclosure.dimensions.length")
+	_, hasWidth := getFloat(resolved, "enclosure.dimensions.width")
+	return hasLength || hasWidth
+}
+
+// hasUniformClearance checks if the resolved document has uniform clearance configuration.
+func hasUniformClearance(resolved map[string]any) bool {
+	wall, ok := getMap(resolved, "enclosure.wall")
+	if !ok {
+		return false
+	}
+	clearance, ok := wall["clearance"]
+	if !ok {
+		return false
+	}
+	// Check if clearance is a number (uniform) rather than a map (per-side)
+	_, isFloat := clearance.(float64)
+	_, isInt := clearance.(int)
+	return isFloat || isInt
 }
 
 // BuildModel converts a resolved DSL document into a Model.
@@ -135,16 +180,60 @@ func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Tra
 		m.RoundRadius = v
 		m.Provenance.AddScalar("roundRadius", "enclosure.wall.fillet_radius")
 	}
-	// Map a single clearance value to all paddings if present
-	if v, ok := getFloat(resolved, "enclosure.wall.clearance"); ok {
-		m.PaddingFront = v
-		m.PaddingBack = v
-		m.PaddingLeft = v
-		m.PaddingRight = v
-		m.Provenance.AddScalar("paddingFront", "enclosure.wall.clearance")
-		m.Provenance.AddScalar("paddingBack", "enclosure.wall.clearance")
-		m.Provenance.AddScalar("paddingLeft", "enclosure.wall.clearance")
-		m.Provenance.AddScalar("paddingRight", "enclosure.wall.clearance")
+
+	// Validate enclosure dimension configuration (mutual exclusivity)
+	if err := validateEnclosureDimensions(resolved); err != nil {
+		return nil, err
+	}
+
+	// Handle clearance/dimensions configuration (mutually exclusive modes)
+	hasPerSide := hasPerSideClearance(resolved)
+	hasFinalDims := hasFinalDimensions(resolved)
+	hasUniform := hasUniformClearance(resolved)
+
+	if hasFinalDims {
+		// Mode: Final dimensions → compute padding backwards
+		if v, ok := getFloat(resolved, "enclosure.dimensions.length"); ok {
+			m.FinalLength = v
+			m.Provenance.AddScalar("finalLength", "enclosure.dimensions.length")
+		}
+		if v, ok := getFloat(resolved, "enclosure.dimensions.width"); ok {
+			m.FinalWidth = v
+			m.Provenance.AddScalar("finalWidth", "enclosure.dimensions.width")
+		}
+		if err := m.computePaddingFromDimensions(); err != nil {
+			return nil, err
+		}
+	} else if hasPerSide {
+		// Mode: Per-side clearance
+		if v, ok := getFloat(resolved, "enclosure.wall.clearance.front"); ok {
+			m.PaddingFront = v
+			m.Provenance.AddScalar("paddingFront", "enclosure.wall.clearance.front")
+		}
+		if v, ok := getFloat(resolved, "enclosure.wall.clearance.back"); ok {
+			m.PaddingBack = v
+			m.Provenance.AddScalar("paddingBack", "enclosure.wall.clearance.back")
+		}
+		if v, ok := getFloat(resolved, "enclosure.wall.clearance.left"); ok {
+			m.PaddingLeft = v
+			m.Provenance.AddScalar("paddingLeft", "enclosure.wall.clearance.left")
+		}
+		if v, ok := getFloat(resolved, "enclosure.wall.clearance.right"); ok {
+			m.PaddingRight = v
+			m.Provenance.AddScalar("paddingRight", "enclosure.wall.clearance.right")
+		}
+	} else if hasUniform {
+		// Mode: Uniform clearance (backward compatible)
+		if v, ok := getFloat(resolved, "enclosure.wall.clearance"); ok {
+			m.PaddingFront = v
+			m.PaddingBack = v
+			m.PaddingLeft = v
+			m.PaddingRight = v
+			m.Provenance.AddScalar("paddingFront", "enclosure.wall.clearance")
+			m.Provenance.AddScalar("paddingBack", "enclosure.wall.clearance")
+			m.Provenance.AddScalar("paddingLeft", "enclosure.wall.clearance")
+			m.Provenance.AddScalar("paddingRight", "enclosure.wall.clearance")
+		}
 	}
 
 	features, _ := getMap(resolved, "features")
@@ -153,6 +242,62 @@ func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Tra
 	}
 
 	return m, nil
+}
+
+// computePaddingFromDimensions computes padding values from final dimensions.
+// It distributes padding evenly between front/back and left/right.
+func (m *Model) computePaddingFromDimensions() error {
+	if m.FinalLength <= 0 && m.FinalWidth <= 0 {
+		return errors.New("at least one final dimension must be specified")
+	}
+
+	// Use default wall thickness if not specified (YAPP default is typically 2.4)
+	wallThickness := m.WallThickness
+	if wallThickness <= 0 {
+		wallThickness = 2.4 // YAPP default
+	}
+
+	// Compute padding for length dimension
+	if m.FinalLength > 0 {
+		totalPaddingNeeded := m.FinalLength - (m.PcbLength + wallThickness*2)
+		if totalPaddingNeeded < 0 {
+			return errors.Errorf("final length %.2f is too small for PCB (%.2f) + walls (%.2f × 2)",
+				m.FinalLength, m.PcbLength, wallThickness)
+		}
+		// Distribute evenly
+		m.PaddingFront = totalPaddingNeeded / 2
+		m.PaddingBack = totalPaddingNeeded / 2
+		m.Provenance.AddScalar("paddingFront", "enclosure.dimensions.length")
+		m.Provenance.AddScalar("paddingBack", "enclosure.dimensions.length")
+	}
+
+	// Compute padding for width dimension
+	if m.FinalWidth > 0 {
+		totalPaddingNeeded := m.FinalWidth - (m.PcbWidth + wallThickness*2)
+		if totalPaddingNeeded < 0 {
+			return errors.Errorf("final width %.2f is too small for PCB (%.2f) + walls (%.2f × 2)",
+				m.FinalWidth, m.PcbWidth, wallThickness)
+		}
+		// Distribute evenly
+		m.PaddingLeft = totalPaddingNeeded / 2
+		m.PaddingRight = totalPaddingNeeded / 2
+		m.Provenance.AddScalar("paddingLeft", "enclosure.dimensions.width")
+		m.Provenance.AddScalar("paddingRight", "enclosure.dimensions.width")
+	}
+
+	// If only one dimension specified, use default clearance for the other
+	// Default clearance is 1.0 (YAPP default)
+	defaultClearance := 1.0
+	if m.FinalLength <= 0 {
+		m.PaddingFront = defaultClearance
+		m.PaddingBack = defaultClearance
+	}
+	if m.FinalWidth <= 0 {
+		m.PaddingLeft = defaultClearance
+		m.PaddingRight = defaultClearance
+	}
+
+	return nil
 }
 
 func getFloat(root map[string]any, path string) (float64, bool) {

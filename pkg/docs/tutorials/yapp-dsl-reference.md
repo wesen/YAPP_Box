@@ -189,10 +189,34 @@ The `enclosure` block controls the structural shell that wraps around your PCB: 
 | Field | Required | Default | Notes |
 |-------|----------|---------|-------|
 | `thickness` | ✓ | — | Wall material thickness (mm). Typical range: `1.8` to `3.0`. Thinner walls save material but reduce rigidity; thicker walls improve durability. |
-| `clearance` | optional | `1.0` | Uniform padding between the PCB edge and the inner wall surface on all four sides. Increase if components overhang the board edge. |
+| `clearance` | optional | `1.0` | Padding between the PCB edge and the inner wall surface. Can be specified in three mutually exclusive ways: (1) a single number for uniform padding on all sides, (2) an object with `front`, `back`, `left`, `right` keys for per-side clearance, or (3) omitted entirely if using `enclosure.dimensions` (see below). |
 | `fillet_radius` | optional | `2.0` | Rounds internal corners where walls meet the base. Larger radii improve printability and strength but consume more interior space. |
 
-**Design note:** `wall.clearance` applies symmetrically to front/back/left/right. If you need asymmetric padding (e.g., extra clearance on one side for a connector), compute custom offsets in `vars` and adjust cutout positions accordingly. Native per-side clearance is on the roadmap.
+**Clearance modes:**
+
+1. **Uniform clearance (backward compatible):**
+   ```yaml
+   enclosure:
+     wall:
+       clearance: 1.5  # Same padding on all four sides
+   ```
+
+2. **Per-side clearance (asymmetric padding):**
+   ```yaml
+   enclosure:
+     wall:
+       clearance:
+         front: 2.0   # Extra clearance for front-mounted components
+         back: 1.5
+         left: 1.0
+         right: 1.0
+   ```
+   All four sides (`front`, `back`, `left`, `right`) must be specified when using per-side clearance.
+
+3. **Final dimensions (reverse computation):**
+   See the `dimensions` subsection below. When `enclosure.dimensions` is specified, padding is computed backwards from the target shell dimensions.
+
+**Mutual exclusivity:** You cannot specify both `wall.clearance` (uniform or per-side) and `enclosure.dimensions` in the same configuration. Doing so will result in a validation error.
 
 ### Base and lid subsections
 
@@ -205,6 +229,39 @@ The `enclosure` block controls the structural shell that wraps around your PCB: 
 - If your base hosts many standoffs or heavy components, use at least `1.6 mm`.
 - Very thin bases (`< 1.2 mm`) can work for lightweight projects but may warp during printing.
 - Lid thickness can be thinner than the base if it doesn't bear loads, saving print time.
+
+### Dimensions subsection
+
+| Field | Required | Default | Notes |
+|-------|----------|---------|-------|
+| `length` | optional | — | Target final outer length of the enclosure shell (mm). When specified, padding is computed backwards to achieve this dimension. |
+| `width` | optional | — | Target final outer width of the enclosure shell (mm). When specified, padding is computed backwards to achieve this dimension. |
+
+**Final dimensions mode:**
+
+Instead of specifying padding directly, you can specify the desired final outer dimensions of the enclosure. The generator computes the required padding automatically, distributing it evenly between front/back and left/right.
+
+```yaml
+enclosure:
+  wall:
+    thickness: 2.4
+  dimensions:
+    length: 100.0  # Target final length
+    width: 80.0    # Target final width
+```
+
+**Computation:** Padding is computed as:
+- Length: `(target_length - pcb_length - wall_thickness × 2) / 2` for front and back
+- Width: `(target_width - pcb_width - wall_thickness × 2) / 2` for left and right
+
+**Partial specification:** You can specify only `length` or only `width`. The unspecified dimension will use default clearance (`1.0 mm`).
+
+**Mutual exclusivity:** Cannot be used together with `wall.clearance` (uniform or per-side). Specifying both results in a validation error.
+
+**Use cases:**
+- Fitting into a specific space (e.g., "must fit in a 100×80mm slot")
+- Matching existing enclosure dimensions
+- Ensuring consistent outer dimensions across multiple designs
 
 ### Ridge subsection
 
@@ -228,7 +285,7 @@ The ridge is the raised lip on one half (typically the base) that nests into a m
 enclosure:
   wall:
     thickness: 2.4        # Sturdy without being bulky
-    clearance: 1.5        # Extra room for edge-mounted components
+    clearance: 1.5        # Extra room for edge-mounted components (uniform)
     fillet_radius: 2.0    # Smooth internal corners
   
   base:
@@ -241,6 +298,30 @@ enclosure:
     height: 5.0           # 2.08 × wall.thickness, well above minimum
     slack: 0.25           # Slightly loose for easy open/close
     gap: 0.5              # Standard clearance
+```
+
+**Alternative: Per-side clearance example:**
+```yaml
+enclosure:
+  wall:
+    thickness: 2.4
+    clearance:
+      front: 2.0   # Extra clearance for front-mounted components
+      back: 1.5
+      left: 1.0
+      right: 1.0
+  # ... base, lid, ridge as above
+```
+
+**Alternative: Final dimensions example:**
+```yaml
+enclosure:
+  wall:
+    thickness: 2.4
+  dimensions:
+    length: 100.0  # Target final length
+    width: 80.0    # Target final width
+  # ... base, lid, ridge as above
 ```
 
 This configuration produces a robust enclosure with comfortable hand-feel and reliable closure mechanics. Adjust `clearance` and `ridge.slack` based on your printer's tolerances and the intended use case (frequent access vs. permanent seal).

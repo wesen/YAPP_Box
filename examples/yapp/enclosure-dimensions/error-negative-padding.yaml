@@ -1,0 +1,27 @@
+---
+# ERROR EXAMPLE: Final dimension too small
+# This file demonstrates a validation error that occurs when
+# the target final dimension is smaller than PCB + walls.
+
+project: Error Example - Negative Padding
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+
+enclosure:
+  wall:
+    thickness: 2.4
+  # ERROR: Target length (90.0) is too small for PCB (90.0) + walls (2.4×2 = 4.8)
+  # Minimum possible length would be 90.0 + 4.8 = 94.8
+  dimensions:
+    length: 90.0  # Too small!
+    width: 80.0
+
+# Expected error:
+# "final length 90.00 is too small for PCB (90.00) + walls (2.40 × 2)"
+

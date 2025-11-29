@@ -1,0 +1,33 @@
+---
+# ERROR EXAMPLE: Conflicting configuration
+# This file demonstrates a validation error that occurs when
+# both clearance and final dimensions are specified.
+
+project: Error Example - Conflicting Config
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+
+enclosure:
+  wall:
+    thickness: 2.4
+    clearance:
+      front: 2.0
+      back: 1.5
+      left: 1.0
+      right: 1.0
+  # ERROR: Cannot specify both clearance and dimensions
+  dimensions:
+    length: 100.0
+    width: 80.0
+
+# Expected error:
+# "enclosure configuration conflict: cannot specify both clearance 
+# (uniform or per-side) and final dimensions (enclosure.dimensions.length/width). 
+# Choose one mode."
+

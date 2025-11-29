@@ -1,0 +1,39 @@
+---
+# Example: Uniform clearance configuration (backward compatible)
+# This demonstrates the traditional single clearance value
+# applied to all four sides equally.
+
+project: Uniform Clearance Example
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+  z_clearance: 2.0
+
+enclosure:
+  wall:
+    thickness: 2.4
+    # Uniform clearance: single value for all sides
+    clearance: 1.5  # Same padding on front, back, left, right
+    fillet_radius: 2.0
+  
+  base:
+    thickness: 1.8
+  
+  lid:
+    thickness: 1.6
+  
+  ridge:
+    height: 5.0
+    slack: 0.2
+    gap: 0.5
+
+# Resulting shell dimensions:
+# shellLength = 90 + 1.5 + 1.5 + (2.4 × 2) = 97.8 mm
+# shellWidth = 70 + 1.5 + 1.5 + (2.4 × 2) = 77.8 mm
+# All padding values are equal: paddingFront = paddingBack = paddingLeft = paddingRight = 1.5
+

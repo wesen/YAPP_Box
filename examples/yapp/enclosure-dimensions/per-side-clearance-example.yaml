@@ -1,0 +1,42 @@
+---
+# Example: Per-side clearance configuration
+# This demonstrates asymmetric padding with different clearance values
+# for front, back, left, and right sides.
+
+project: Per-Side Clearance Example
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+  z_clearance: 2.0
+
+enclosure:
+  wall:
+    thickness: 2.4
+    # Per-side clearance: different padding on each side
+    clearance:
+      front: 2.0   # Extra clearance for front-mounted components
+      back: 1.5
+      left: 1.0
+      right: 1.0
+    fillet_radius: 2.0
+  
+  base:
+    thickness: 1.8
+  
+  lid:
+    thickness: 1.6
+  
+  ridge:
+    height: 5.0
+    slack: 0.2
+    gap: 0.5
+
+# Resulting shell dimensions:
+# shellLength = 90 + 2.0 + 1.5 + (2.4 × 2) = 98.3 mm
+# shellWidth = 70 + 1.0 + 1.0 + (2.4 × 2) = 76.8 mm
+

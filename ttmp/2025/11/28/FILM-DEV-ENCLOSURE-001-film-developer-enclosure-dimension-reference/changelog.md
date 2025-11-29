@@ -26,3 +26,8 @@ Extended cutout offset analysis to cover all shape types: circle-based shapes (C
 
 Added DSL-side cutout position transformation document explaining how face-relative coordinates (from_face_left, from_face_bottom, from_face_back) transform into SCAD array positions, and how the origin flag affects positioning.
 
+
+## 2025-11-28
+
+Fixed DSL reference documentation: corrected cutout positioning behavior (default is corner-based, not center-based), added missing origin field documentation, and updated field names to match schema (from_face_left, from_face_bottom, from_face_back).
+

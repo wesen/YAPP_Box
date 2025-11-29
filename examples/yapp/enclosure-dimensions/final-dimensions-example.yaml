@@ -1,0 +1,40 @@
+---
+# Example: Final dimensions configuration
+# This demonstrates specifying target outer dimensions directly,
+# with padding computed automatically.
+
+project: Final Dimensions Example
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+  z_clearance: 2.0
+
+enclosure:
+  wall:
+    thickness: 2.4
+  # Final dimensions: specify target outer size
+  dimensions:
+    length: 100.0  # Target final length
+    width: 80.0    # Target final width
+  
+  base:
+    thickness: 1.8
+  
+  lid:
+    thickness: 1.6
+  
+  ridge:
+    height: 5.0
+    slack: 0.2
+    gap: 0.5
+
+# Computed padding:
+# Length: (100.0 - 90.0 - 2.4×2) / 2 = 2.6 mm (front and back)
+# Width: (80.0 - 70.0 - 2.4×2) / 2 = 2.6 mm (left and right)
+# Resulting shell dimensions match targets: 100.0 × 80.0 mm
+

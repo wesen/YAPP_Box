@@ -1,0 +1,28 @@
+---
+# ERROR EXAMPLE: Incomplete per-side clearance
+# This file demonstrates a validation error that occurs when
+# per-side clearance is specified but not all four sides are provided.
+
+project: Error Example - Incomplete Per-Side Clearance
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+
+enclosure:
+  wall:
+    thickness: 2.4
+    # ERROR: Missing 'right' key - all four sides must be specified
+    clearance:
+      front: 2.0
+      back: 1.5
+      left: 1.0
+      # right: missing!
+
+# Expected error:
+# "per-side clearance missing required keys: [right]"
+

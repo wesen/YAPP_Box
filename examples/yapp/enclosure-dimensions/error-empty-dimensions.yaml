@@ -1,0 +1,24 @@
+---
+# ERROR EXAMPLE: Empty dimensions block
+# This file demonstrates a validation error that occurs when
+# dimensions is specified but neither length nor width is provided.
+
+project: Error Example - Empty Dimensions
+version: 1
+units: mm
+yapp_version: v3.3.8
+
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+
+enclosure:
+  wall:
+    thickness: 2.4
+  # ERROR: dimensions block exists but is empty
+  dimensions: {}
+
+# Expected error:
+# "enclosure.dimensions specified but neither length nor width provided"
+
