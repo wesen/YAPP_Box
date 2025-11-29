@@ -1,11 +1,65 @@
 {
   "version": 1,
   "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/beforeShellExecution.sh"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": ".cursor/hooks/afterShellExecution.sh"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": ".cursor/hooks/beforeMCPExecution.sh"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": ".cursor/hooks/afterMCPExecution.sh"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": ".cursor/hooks/beforeReadFile.sh"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/afterFileEdit.sh"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/beforeSubmitPrompt.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/stop.sh"
+      }
+    ],
     "afterAgentResponse": [
       {
-        "command": "./hooks/afterAgentResponse.sh"
+        "command": ".cursor/hooks/afterAgentResponse.sh"
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": ".cursor/hooks/afterAgentThought.sh"
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": ".cursor/hooks/beforeTabFileRead.sh"
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": ".cursor/hooks/afterTabFileEdit.sh"
       }
     ]
   }
 }
-

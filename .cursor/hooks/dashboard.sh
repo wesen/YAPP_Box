@@ -37,52 +37,21 @@ show_stats() {
     
     # Count by hook type
     echo -e "${GREEN}Hook Events by Type:${NC}"
-    sqlite3 "$DB_PATH" <<EOF | while IFS='|' read -r table count; do
+    sqlite3 "$DB_PATH" <<EOF | while IFS='|' read -r hook_name count; do
 SELECT 
-    CASE 
-        WHEN table_name = 'shell_executions' THEN 'Shell Executions'
-        WHEN table_name = 'mcp_executions' THEN 'MCP Executions'
-        WHEN table_name = 'file_operations' THEN 'File Operations'
-        WHEN table_name = 'prompt_submissions' THEN 'Prompt Submissions'
-        WHEN table_name = 'agent_stops' THEN 'Agent Stops'
-        WHEN table_name = 'agent_responses' THEN 'Agent Responses'
-        WHEN table_name = 'agent_thoughts' THEN 'Agent Thoughts'
-        WHEN table_name = 'tab_file_reads' THEN 'Tab File Reads'
-        WHEN table_name = 'tab_file_edits' THEN 'Tab File Edits'
-        ELSE table_name
-    END as display_name,
+    hook_event_name,
     COUNT(*) as count
-FROM (
-    SELECT 'shell_executions' as table_name FROM shell_executions
-    UNION ALL SELECT 'mcp_executions' FROM mcp_executions
-    UNION ALL SELECT 'file_operations' FROM file_operations
-    UNION ALL SELECT 'prompt_submissions' FROM prompt_submissions
-    UNION ALL SELECT 'agent_stops' FROM agent_stops
-    UNION ALL SELECT 'agent_responses' FROM agent_responses
-    UNION ALL SELECT 'agent_thoughts' FROM agent_thoughts
-    UNION ALL SELECT 'tab_file_reads' FROM tab_file_reads
-    UNION ALL SELECT 'tab_file_edits' FROM tab_file_edits
-) GROUP BY table_name ORDER BY count DESC;
+FROM hook_invocations
+GROUP BY hook_event_name
+ORDER BY count DESC;
 EOF
-        if [ -n "$table" ]; then
-            printf "  %-25s %s\n" "$table" "$count"
+        if [ -n "$hook_name" ]; then
+            printf "  %-30s %s\n" "$hook_name" "$count"
         fi
     done
     
     # Total events
-    TOTAL=$(sqlite3 "$DB_PATH" <<EOF
-SELECT 
-    (SELECT COUNT(*) FROM shell_executions) +
-    (SELECT COUNT(*) FROM mcp_executions) +
-    (SELECT COUNT(*) FROM file_operations) +
-    (SELECT COUNT(*) FROM prompt_submissions) +
-    (SELECT COUNT(*) FROM agent_stops) +
-    (SELECT COUNT(*) FROM agent_responses) +
-    (SELECT COUNT(*) FROM agent_thoughts) +
-    (SELECT COUNT(*) FROM tab_file_reads) +
-    (SELECT COUNT(*) FROM tab_file_edits);
-EOF
-)
+    TOTAL=$(sqlite3 "$DB_PATH" "SELECT COUNT(*) FROM hook_invocations;")
     echo -e "\n${GREEN}Total Events:${NC} $TOTAL"
     echo
 }
@@ -95,36 +64,18 @@ show_recent_events() {
     sqlite3 -header -column "$DB_PATH" <<EOF
 SELECT 
     timestamp as Time,
-    CASE 
-        WHEN source = 'shell_executions' THEN 'Shell'
-        WHEN source = 'mcp_executions' THEN 'MCP'
-        WHEN source = 'file_operations' THEN 'File'
-        WHEN source = 'prompt_submissions' THEN 'Prompt'
-        WHEN source = 'agent_stops' THEN 'Stop'
-        WHEN source = 'agent_responses' THEN 'Response'
-        WHEN source = 'agent_thoughts' THEN 'Thought'
-        WHEN source = 'tab_file_reads' THEN 'Tab Read'
-        WHEN source = 'tab_file_edits' THEN 'Tab Edit'
-        ELSE source
-    END as Type,
+    hook_event_name as Hook,
     conversation_id as Conversation,
-    model as Model
-FROM (
-    SELECT timestamp, 'shell_executions' as source, conversation_id, model FROM shell_executions
-    UNION ALL SELECT timestamp, 'mcp_executions', conversation_id, model FROM mcp_executions
-    UNION ALL SELECT timestamp, 'file_operations', conversation_id, model FROM file_operations
-    UNION ALL SELECT timestamp, 'prompt_submissions', conversation_id, model FROM prompt_submissions
-    UNION ALL SELECT timestamp, 'agent_stops', conversation_id, model FROM agent_stops
-    UNION ALL SELECT timestamp, 'agent_responses', conversation_id, model FROM agent_responses
-    UNION ALL SELECT timestamp, 'agent_thoughts', conversation_id, model FROM agent_thoughts
-    UNION ALL SELECT timestamp, 'tab_file_reads', conversation_id, model FROM tab_file_reads
-    UNION ALL SELECT timestamp, 'tab_file_edits', conversation_id, model FROM tab_file_edits
-) ORDER BY timestamp DESC LIMIT 10;
+    model as Model,
+    pwd as PWD
+FROM hook_invocations
+ORDER BY timestamp DESC
+LIMIT 10;
 EOF
     echo
 }
 
-# Function to show recent agent responses (most relevant for current setup)
+# Function to show recent agent responses
 show_recent_responses() {
     echo -e "${YELLOW}💬 Recent Agent Responses (Last 5)${NC}"
     echo "─────────────────────────────────────────────────────────────"
@@ -133,14 +84,17 @@ show_recent_responses() {
 SELECT 
     timestamp,
     conversation_id,
-    substr(text, 1, 100) || '...' as text_preview
-FROM agent_responses
+    json_extract(raw_json, '$.text') as text_preview
+FROM hook_invocations
+WHERE hook_event_name = 'afterAgentResponse'
 ORDER BY timestamp DESC
 LIMIT 5;
 EOF
         if [ -n "$timestamp" ]; then
             echo -e "${BLUE}[$timestamp]${NC} ${GREEN}Conv: $conversation_id${NC}"
-            echo "  ${text_preview}"
+            # Truncate text preview to 100 chars
+            text_preview_short=$(echo "$text_preview" | cut -c1-100)
+            echo "  ${text_preview_short}..."
             echo
         fi
     done
@@ -155,17 +109,11 @@ show_timeline() {
 SELECT 
     strftime('%H:%M', timestamp) as time_bucket,
     COUNT(*) as count
-FROM (
-    SELECT timestamp FROM shell_executions WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM mcp_executions WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM file_operations WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM prompt_submissions WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM agent_stops WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM agent_responses WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM agent_thoughts WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM tab_file_reads WHERE timestamp > datetime('now', '-1 hour')
-    UNION ALL SELECT timestamp FROM tab_file_edits WHERE timestamp > datetime('now', '-1 hour')
-) GROUP BY time_bucket ORDER BY time_bucket DESC LIMIT 10;
+FROM hook_invocations
+WHERE timestamp > datetime('now', '-1 hour')
+GROUP BY time_bucket
+ORDER BY time_bucket DESC
+LIMIT 10;
 EOF
         if [ -n "$time_bucket" ]; then
             printf "  %s: %s events\n" "$time_bucket" "$count"
@@ -196,4 +144,3 @@ else
         sleep 2
     done
 fi
-
