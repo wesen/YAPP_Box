@@ -340,38 +340,31 @@ go test ./pkg/resolver/errorx/... -run TestAsTaxonomy
 
 ## Remaining Tasks
 
-### Task 1: Implement DependencyGraphRule ⚠️ NEXT PRIORITY
+### Task 1: Implement DependencyGraphRule ✅ COMPLETE
 
 **What:** Show dependency chains for missing variables to help users understand resolution order.
 
-**Why:** When variables are missing, users need to understand which variables depend on which, and in what order they should be defined.
+**Status:** ✅ **COMPLETE** - Fully functional after YAPP-BUG-001 fix
 
-**How:**
-1. Extract dependency graph from resolver trace
-2. Build dependency chain visualization
-3. Show which variables are missing and what depends on them
-4. Suggest resolution order
+**Files Created:**
+- `pkg/resolver/rules/dependency_graph.go` - Rule implementation
+- `pkg/resolver/rules/dependency_graph_test.go` - Comprehensive unit tests including `TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar`
 
-**Files to create:**
-- `pkg/resolver/rules/dependency_graph.go`
+**Features:**
+- Shows missing variables list
+- Displays dependency chain visualization
+- Suggests resolution order (sorted alphabetically)
+- Handles edge cases (empty refs, no expression)
+- Works correctly with array paths after YAPP-BUG-001 fix
 
-**Example output:**
-```
-Missing variables: vars.height, vars.width
+**Testing:**
+- Unit tests: `go test ./pkg/resolver/rules/... -v -run TestDependencyGraphRule`
+- CLI examples: See `YAPP-BUG-001/playbook/02-test-examples-cli.md`
+- Verified working case documented with exact output
 
-Dependency chain:
-  vars.height → features.cutouts[0].width
-  vars.width → features.cutouts[0].height
-
-Suggested resolution order:
-  1. Define vars.height first
-  2. Then vars.width
-```
-
-**Where to look:**
-- `pkg/resolver/trace.go` - Trace recording infrastructure
-- `pkg/resolver/resolver.go` - How dependencies are tracked
-- `pkg/resolver/rules/vars_scaffold.go` - Similar rule for reference
+**Related:**
+- YAPP-BUG-001: Bug fix for array path expression extraction
+- Test coverage: `TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar` verifies array path handling
 
 ### Task 2: Implement YamlKnownFieldsRule
 

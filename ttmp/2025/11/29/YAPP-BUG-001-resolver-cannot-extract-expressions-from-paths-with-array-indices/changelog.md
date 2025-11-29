@@ -34,3 +34,8 @@ Bug fixed: lookupPath() now handles array indices. DependencyGraphRule now works
 
 Added unit test TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar for verified working case. Updated CLI examples playbook with verified output.
 
+
+## 2025-11-29
+
+All tasks complete: Bug fixed, tests added, CLI examples documented
+

@@ -54,10 +54,13 @@ RelatedFiles:
       Note: Extraction functions for enum values and constraints from schema errors
     - Path: ttmp/2025/11/29/YAPP-BUG-001-resolver-cannot-extract-expressions-from-paths-with-array-indices
       Note: Related bug ticket affecting DependencyGraphRule
+    - Path: ttmp/2025/11/29/YAPP-BUG-001-resolver-cannot-extract-expressions-from-paths-with-array-indices/playbook/02-test-examples-cli.md
+      Note: CLI test examples for DependencyGraphRule with verified output
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-28T16:52:31.520526183-05:00
 ---
+
 
 
 
