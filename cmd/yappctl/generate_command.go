@@ -152,7 +152,7 @@ func (c *GenerateCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) 
 	// Auto-enable generator copying if rendering STLs (OpenSCAD needs the generator file)
 	copyGenerator := settings.CopyGenerator || settings.BaseSTL != "" || settings.LidSTL != "" || settings.AllSTL != ""
 
-	scadPath, model, err := generatorcli.WriteSCAD(ctx, loadResult.Document, loadResult.Trace, loadResult.Comments, generatorcli.SCADOptions{
+	scadPath, model, err := generatorcli.WriteSCAD(ctx, loadResult.Document, loadResult.Trace, loadResult.Comments, loadResult.Raw, generatorcli.SCADOptions{
 		OutputPath:    settings.SCADOut,
 		CopyGenerator: copyGenerator,
 		GeneratorPath: settings.GeneratorPath,

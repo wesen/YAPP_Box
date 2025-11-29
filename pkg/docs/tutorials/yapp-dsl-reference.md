@@ -309,15 +309,18 @@ Cutouts are openings in the enclosure walls, base, or lid for cables, connectors
 | Field | Required | Description |
 |-------|----------|-------------|
 | `face` | ✓ | Which surface to cut: `front`, `back`, `left`, `right`, `base`, or `lid`. |
-| `from_back` | ✓ | Distance along the face's horizontal axis (mm), measured from the back edge. For vertical faces, this runs left-right; for base/lid, it's the Y coordinate. |
-| `from_left` | ✓ | Distance along the face's vertical or depth axis (mm), measured from the left edge. For vertical faces, this is the Z height; for base/lid, it's the X coordinate. |
+| `from_face_left` | ✓ | Horizontal position along the face from the left edge (mm). Used by all faces. |
+| `from_face_bottom` | optional | Vertical position from the bottom edge (mm). Required for side faces (front, back, left, right). Not valid for horizontal faces (base, lid). |
+| `from_face_back` | optional | Depth position from the back edge (mm). Required for horizontal faces (base, lid). Not valid for side faces (front, back, left, right). |
 | `width`, `length` | optional | Cutout dimensions (mm). Shape-dependent: rectangle/rounded_rect/polygon require `width` and `length`; circles ignore these. |
 | `radius` | optional | For circular or rounded shapes (mm). Shape-dependent: `circle` requires `radius`; `rounded_rect` also requires `radius`. |
-| `shape` | ✓ | Cutout profile: `rectangle`, `circle`, `rounded_rect`, `circle_with_flats`, `circle_with_key`. See shape guide below. |
+| `shape` | ✓ | Cutout profile: `rectangle`, `circle`, `rounded_rect`, `circle_with_flats`, `circle_with_key`, `polygon`. See shape guide below. |
 | `depth` | optional | How far the cutout penetrates (mm). Defaults to the thickness of the target face. Reduce if you want a partial recess instead of a through-hole. |
 | `angle` | optional | Rotation in degrees. Useful for angled USB ports or displays. |
-| `mask` | optional | Reserved for future preset patterns (hex grids for ventilation, arrow shapes, etc.). |
-| `polygon` | optional | Custom polygon definition for advanced shapes. Planned feature. |
+| `origin` | optional | Position reference point: `global` (default, corner-based), `center` (center-based), or `alt` (alternate origin). See positioning details below. |
+| `coordinate` | optional | Coordinate system: `pcb` (default), `box`, or `box_inside`. |
+| `mask` | optional | Ventilation mask preset with optional offsets and rotation. See mask section below. |
+| `polygon` | optional | Polygon preset name (required when `shape: polygon`). Options: `hexagon`, `arrow`, `6pt_star`, `iso_triangle`, `iso_triangle2`, `triangle`, `triangle2`. |
 
 **Shape reference (dimension rules):**
 - `rectangle` – Requires `width` and `length`.
@@ -325,62 +328,68 @@ Cutouts are openings in the enclosure walls, base, or lid for cables, connectors
 - `rounded_rect` – Requires `width`, `length`, and `radius`.
 - `circle_with_flats` – Requires `width`, `length`, and `radius`.
 - `circle_with_key` – Requires `width`, `length`, and `radius`.
+- `polygon` – Requires `width`, `length`, and `polygon` preset name.
 
-**Positioning tips:**
-- `from_back` and `from_left` reference the **center** of the cutout, not an edge.
-- For a USB-C port `15mm` wide and `8mm` tall, centered `10mm` from the left edge of the back face and `5mm` up from the base, use:
-  ```yaml
-  face: back
-  from_left: 10.0
-  from_back: 5.0
-  width: 15.0
-  height: 8.0
-  shape: rounded_rect
-  radius: 1.5
-  ```
-- Measure connector positions on your PCB, then add `enclosure.wall.clearance` and `enclosure.wall.thickness` to translate PCB coordinates to face coordinates.
+**Positioning behavior:**
+
+**Default (`origin: global` or omitted):**
+- `from_face_left` and `from_face_bottom`/`from_face_back` specify the **bottom-left corner** of the cutout's bounding box.
+- The generator applies shape-specific offsets to position the shape:
+  - **Circles:** Offset by `radius` in both X and Y (corner → center)
+  - **Rectangles:** Offset by `width/2` and `length/2` (corner → center)
+  - **Other shapes:** Similar offset patterns based on shape type
+
+**With `origin: center`:**
+- `from_face_left` and `from_face_bottom`/`from_face_back` specify the **center** of the cutout directly.
+- No offset is applied; the position is used as-is.
+
+**Note:** For circles, using `origin: center` is more intuitive since you typically want to specify the center position. Without it, you must subtract the radius from your desired center position.
 
 **Example: USB-C and power jack cutouts**
 
 ```yaml
 features:
   cutouts:
-    # USB-C port on back face
+    # USB-C port on back face (corner-based positioning)
     - face: back
-      from_left: 20.0      # 20mm from left edge
-      from_back: 8.0       # 8mm up from bottom
-      width: 9.0           # Standard USB-C width
-      height: 3.5          # Standard USB-C height
-      radius: 0.5          # Slight corner rounding
+      from_face_left: 20.0      # 20mm from left edge (corner position)
+      from_face_bottom: 8.0     # 8mm up from bottom (corner position)
+      width: 9.0                # Standard USB-C width
+      length: 3.5               # Standard USB-C height
+      radius: 0.5               # Slight corner rounding
       shape: rounded_rect
+      # origin defaults to "global" (corner-based)
     
-    # Barrel jack on left face
+    # Barrel jack on left face (center-based positioning)
     - face: left
-      from_left: 15.0      # 15mm from front
-      from_back: 10.0      # 10mm up from bottom
-      width: 8.0
-      height: 8.0
-      radius: 4.0          # Circle for round jack
+      from_face_left: 15.0      # 15mm from front (center position)
+      from_face_bottom: 10.0    # 10mm up from bottom (center position)
+      radius: 4.0               # Circle radius
       shape: circle
+      origin: center            # Specify center directly (more intuitive for circles)
     
-    # Ventilation slot on lid
+    # Ventilation slot on lid (corner-based positioning)
     - face: lid
-      from_left: 30.0
-      from_back: 20.0
+      from_face_left: 30.0      # 30mm from left edge (corner position)
+      from_face_back: 20.0      # 20mm from back edge (corner position)
       width: 25.0
-      height: 3.0
+      length: 3.0
       radius: 1.5
       shape: rounded_rect
 ```
 
+**Positioning tips:**
+- Measure connector positions on your PCB, then add `enclosure.wall.clearance` and `enclosure.wall.thickness` to translate PCB coordinates to face coordinates.
+- For circles, prefer `origin: center` to avoid manual radius subtraction: `from_face_left: 50.0` with `origin: center` places the circle center at 50mm, whereas without it you'd need `from_face_left: 50.0 - radius`.
+
 These cutouts provide access for power and data while allowing passive cooling through the lid slot.
 
-#### Cutouts: face-wise coordinate mapping and new options
+#### Cutouts: face-wise coordinate mapping
 
 - Coordinate mapping by face:
-  - front/back: `from_back` → posy (left↔right), `from_left` → posz (height from base)
-  - left/right: `from_back` → posx (front↔back), `from_left` → posz (height from base)
-  - base/lid: `from_back` → posx (from back edge), `from_left` → posy (from left edge)
+  - front/back: `from_face_left` → horizontal (left↔right), `from_face_bottom` → vertical (height from base)
+  - left/right: `from_face_left` → horizontal (front↔back), `from_face_bottom` → vertical (height from base)
+  - base/lid: `from_face_left` → Y (left↔right), `from_face_back` → X (back↔front)
 - New optional `pos_z` (side faces only): specify vertical position explicitly. If provided, it overrides `from_left` for `front/back/left/right`.
 - New `shape: polygon` support with presets:
   - Presets: `hexagon`, `arrow`, `6pt_star`, `iso_triangle`, `iso_triangle2`, `triangle`, `triangle2`
@@ -415,10 +424,7 @@ Because the face rotates relative to the global axes, the same two numbers land 
 
 This is why the table above looks “weird”: it’s simply documenting how each face’s local directions map onto the global axes.
 
-Why `pos_z` as an override?
-- On vertical faces (front/back/left/right) the second coordinate controls height. Historically we called it `from_left` (matching base/lid usage), which can be confusing because it actually means “height from the base” on those faces.
-- We introduced optional `pos_z` so you can write the vertical height explicitly when working on side faces. If `pos_z` is set, it takes precedence over `from_left` on side faces. This keeps backward compatibility while making intent obvious.
-- Could we have `from_bottom` / `from_top`? Yes—these aliases are reasonable ergonomically. For now we keep the schema stable and offer `pos_z` as a clear, explicit option. If you want these aliases, open a ticket and we can add them as synonyms.
+**Note:** The field names `from_face_left`, `from_face_bottom`, and `from_face_back` are face-relative and intuitive, but their meaning varies by face orientation. The `origin` field controls whether these positions specify a corner (default) or center (`origin: center`).
 
 What do “front/back/left/right” mean?
 - front: the wall you’re “looking at”
@@ -431,28 +437,30 @@ Quick examples:
 - Front face (center-left window 11 mm above base):
   ```yaml
   face: front
-  from_back: 15   # along the wall, left↔right
-  pos_z: 11       # 11 mm up from base (overrides from_left)
+  from_face_left: 15        # along the wall, left↔right
+  from_face_bottom: 11      # 11 mm up from base
   width: 24
   length: 8
   shape: rectangle
   ```
-- Left face (near top):
+- Left face (near top, center-based):
   ```yaml
   face: left
-  from_back: 18   # along the wall, front↔back
-  pos_z: 18       # height from base
+  from_face_left: 18       # along the wall, front↔back (center position)
+  from_face_bottom: 18      # height from base (center position)
   width: 18
   length: 8
   shape: rectangle
+  origin: center            # Position specifies center, not corner
   ```
-- Lid (top plane):
+- Lid (top plane, circle with center-based positioning):
   ```yaml
   face: lid
-  from_back: 30   # X from back edge
-  from_left: 25   # Y from left edge
+  from_face_back: 30        # X from back edge (center position)
+  from_face_left: 25        # Y from left edge (center position)
   radius: 6
   shape: circle
+  origin: center            # More intuitive for circles
   ```
 
 ### `light_tubes`
