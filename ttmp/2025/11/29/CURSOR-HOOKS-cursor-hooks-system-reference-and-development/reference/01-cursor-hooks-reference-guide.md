@@ -96,6 +96,50 @@ All hooks receive a base set of fields in addition to hook-specific fields:
 }
 ```
 
+### Understanding conversation_id and generation_id
+
+**conversation_id:**
+- **Stable** across the entire conversation session
+- Multiple user messages in the same conversation share the same `conversation_id`
+- Useful for tracking all activity in a single conversation
+- Example: A conversation with 5 user messages will have 5 different `generation_id` values but the same `conversation_id`
+
+**generation_id:**
+- **Changes** with every user message/submission
+- All hooks fired during one complete agent loop cycle share the same `generation_id`
+- Represents one "turn": user prompt → agent processing → agent response
+- A single generation may trigger many hooks:
+  - `beforeSubmitPrompt` (start)
+  - Multiple `beforeReadFile` / `afterFileEdit` (file operations)
+  - Multiple `beforeShellExecution` / `afterShellExecution` (commands)
+  - Multiple `afterAgentThought` (reasoning blocks)
+  - `afterAgentResponse` (final response)
+  - `stop` (end)
+
+**Example Timeline:**
+
+For generation `4ca49744-abe1-446c-9682-c68e3642de0e`:
+```
+18:37:24  afterFileEdit          (editing files)
+18:37:27  beforeReadFile         (reading files)
+18:37:30  afterAgentThought      (agent reasoning)
+18:37:33  afterFileEdit          (more edits)
+... (many more file edits and thoughts)
+18:39:31  beforeShellExecution   (running commands)
+18:39:34  afterShellExecution
+18:39:38  afterAgentThought      (final reasoning)
+18:39:39  afterAgentResponse     (final response)
+18:39:40  stop                   (generation complete)
+```
+
+All these hooks share the same `generation_id` because they're part of one agent loop cycle responding to a single user message.
+
+**Use Cases:**
+- **Track complete agent cycles:** Filter by `generation_id` to see all activity for one user message
+- **Analyze conversation flow:** Use `conversation_id` to see all generations in a conversation
+- **Performance analysis:** Measure time between `beforeSubmitPrompt` and `stop` for a generation
+- **Debugging:** Correlate file edits, shell commands, and thoughts within a single generation
+
 ### Hook Types and Their Inputs/Outputs
 
 #### 1. `afterAgentResponse`
