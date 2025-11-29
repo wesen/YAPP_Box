@@ -50,13 +50,17 @@ type Model struct {
 
 	// Provenance metadata for comment emission.
 	Provenance *Provenance
+
+	// RawDocument retains the original DSL (pre-resolution) for YAML snippets.
+	RawDocument map[string]any
 }
 
 // BuildModel converts a resolved DSL document into a Model.
 // The input is expected to be fully numeric where applicable (use pkg/resolver before calling).
-func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Trace, comments map[string][]string) (*Model, error) {
+func BuildModel(ctx context.Context, resolved map[string]any, trace resolver.Trace, comments map[string][]string, raw map[string]any) (*Model, error) {
 	m := &Model{
-		Provenance: NewProvenance(trace, resolved, comments),
+		Provenance:  NewProvenance(trace, resolved, comments, raw),
+		RawDocument: raw,
 	}
 
 	// Project (optional)

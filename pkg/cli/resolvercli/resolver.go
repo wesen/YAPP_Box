@@ -24,6 +24,7 @@ type LoadResult struct {
 	Document map[string]any
 	Trace    resolver.Trace
 	Comments map[string][]string
+	Raw      map[string]any
 }
 
 // LoadAndResolveResult reads a YAML DSL file, resolves it, and returns metadata.
@@ -44,10 +45,13 @@ func LoadAndResolveResult(ctx context.Context, path string, opts LoadOptions) (*
 	if err != nil {
 		return nil, err
 	}
+	rawCopy := deepCopy(doc).(map[string]any)
+
 	return &LoadResult{
 		Document: result.Document,
 		Trace:    result.Trace,
 		Comments: comments,
+		Raw:      rawCopy,
 	}, nil
 }
 
@@ -84,6 +88,25 @@ func decodeDocumentWithComments(raw []byte) (map[string]any, map[string][]string
 		return nil, nil, errors.New("parse yaml: root document must be a mapping")
 	}
 	return doc, comments, nil
+}
+
+func deepCopy(v any) any {
+	switch t := v.(type) {
+	case map[string]any:
+		m := make(map[string]any, len(t))
+		for k, vv := range t {
+			m[k] = deepCopy(vv)
+		}
+		return m
+	case []any:
+		a := make([]any, len(t))
+		for i, vv := range t {
+			a[i] = deepCopy(vv)
+		}
+		return a
+	default:
+		return t
+	}
 }
 
 func nodeToInterface(node *yaml.Node, path string, comments map[string][]string) (any, error) {

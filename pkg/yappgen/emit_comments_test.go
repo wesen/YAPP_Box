@@ -60,7 +60,7 @@ func TestEmitSCADIncludesProvenanceComments(t *testing.T) {
 		"features.push_buttons.0.cap": {"Match cap to bezel opening"},
 	}
 
-	model, err := BuildModel(ctx, result.Document, result.Trace, comments)
+	model, err := BuildModel(ctx, result.Document, result.Trace, comments, doc)
 	if err != nil {
 		t.Fatalf("BuildModel failed: %v", err)
 	}

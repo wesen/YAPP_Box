@@ -27,25 +27,26 @@ type FeatureModule interface {
 var featureModules = []FeatureModule{
 	newArrayFeatureModule("pcb_stands", "pcbStands",
 		func(m *Model) *[]map[string]any { return &m.PcbStands },
-		pcbstands.NewModule().Build, nil),
+		pcbstands.NewModule().Build, nil, nil),
 	newArrayFeatureModule("connectors", "connectors",
 		func(m *Model) *[]map[string]any { return &m.Connectors },
-		connectors.NewModule().Build, nil),
+		connectors.NewModule().Build, nil, nil),
 	newArrayFeatureModule("box_mounts", "boxMounts",
 		func(m *Model) *[]map[string]any { return &m.BoxMounts },
-		boxmounts.NewModule().Build, nil),
+		boxmounts.NewModule().Build, nil, nil),
 	newArrayFeatureModule("push_buttons", "pushButtons",
 		func(m *Model) *[]map[string]any { return &m.PushButtons },
 		pushbuttons.NewModule().Build,
 		func(m *Model, items []map[string]any) {
 			m.PrintSwitchExtenders = len(items) > 0
-		}),
+		},
+		pushButtonsHeader()),
 	newArrayFeatureModule("snap_joins", "snapJoins",
 		func(m *Model) *[]map[string]any { return &m.SnapJoins },
-		snapjoins.NewModule().Build, nil),
+		snapjoins.NewModule().Build, nil, nil),
 	newArrayFeatureModule("light_tubes", "lightTubes",
 		func(m *Model) *[]map[string]any { return &m.LightTubes },
-		lighttubes.NewModule().Build, nil),
+		lighttubes.NewModule().Build, nil, nil),
 	newMultiArrayFeatureModule("cutouts",
 		func(m *Model) *[]map[string]any { return &m.Cutouts },
 		cutouts.NewModule().Build),
@@ -69,12 +70,70 @@ func emitFeatureModules(ctx context.Context, model *Model, b *strings.Builder) e
 	return nil
 }
 
+func yappArrayHeader(arrayName string, override []string) []string {
+	if len(override) > 0 {
+		return override
+	}
+	switch arrayName {
+	case "pcbStands":
+		return paramSpecHeader("pcbStands", pcbStandsSchema)
+	case "connectors":
+		return paramSpecHeader("connectors", connectorsSchema)
+	case "snapJoins":
+		header := paramSpecHeader("snapJoins", snapJoinsSchema)
+		header = append(header, "// Followed by required yapp<Side> flag (left/right/front/back) and optional alignment/origin flags.")
+		return header
+	case "boxMounts":
+		return []string{
+			"// YAPP boxMounts row: [pos | [pos, offset], screw_d, slot_width, height, fillet_radius?, face_flags..., optional flags: yappNoFillet, yappLid, yappCenter, yappAltOrigin]",
+		}
+	case "lightTubes":
+		return []string{
+			"// YAPP lightTubes row: [x, y, tube_length, tube_width, tube_wall, gap_above_pcb, shape_flag, lens_thickness?, height?, fillet_radius?, flags...]",
+		}
+	case "cutoutsFront", "cutoutsBack", "cutoutsLeft", "cutoutsRight", "cutoutsLid", "cutoutsBase":
+		return []string{
+			"// YAPP cutouts row: [pos0, pos1, width, length, radius, shape_flag, depth?, angle?, extras...]",
+			"// Extras may include polygon presets, mask definitions, coordinate/origin flags, yappNoFillet, [yappPCBName, pcb_name].",
+		}
+	case "pushButtons":
+		return pushButtonsHeader()
+	default:
+		return nil
+	}
+}
+
+func paramSpecHeader(scadName string, specs []ParamSpec) []string {
+	if len(specs) == 0 {
+		return nil
+	}
+	names := make([]string, len(specs))
+	for i, spec := range specs {
+		name := spec.Name
+		if !spec.Required {
+			name += "?"
+		}
+		names[i] = name
+	}
+	return []string{
+		fmt.Sprintf("// YAPP %s row: [%s]", scadName, strings.Join(names, ", ")),
+	}
+}
+
+func pushButtonsHeader() []string {
+	return []string{
+		"// YAPP pushButtons row: [x, y, cap_length, cap_width, cap_radius, lid_protrusion, switch_height, switch_travel, switch_pole_diameter, top_height?, shape_flag, angle?, cap_fillet?, lid_wall?, lid_plate_thickness?, lid_slack?, lid_snap_slack?, extras...]",
+		"// Extras include coordinate/origin flags, [yappPCBName, pcb_name], yappNoFillet, shape presets, mask definitions, and other generator tokens.",
+	}
+}
+
 type arrayFeatureModule struct {
 	key          string
 	scadName     string
 	field        func(*Model) *[]map[string]any
 	builder      func([]map[string]any) ([]registry.ArrayDecl, error)
 	afterCollect func(*Model, []map[string]any)
+	header       []string
 }
 
 func newArrayFeatureModule(
@@ -83,6 +142,7 @@ func newArrayFeatureModule(
 	field func(*Model) *[]map[string]any,
 	builder func([]map[string]any) ([]registry.ArrayDecl, error),
 	afterCollect func(*Model, []map[string]any),
+	header []string,
 ) FeatureModule {
 	return &arrayFeatureModule{
 		key:          key,
@@ -90,6 +150,7 @@ func newArrayFeatureModule(
 		field:        field,
 		builder:      builder,
 		afterCollect: afterCollect,
+		header:       header,
 	}
 }
 
@@ -158,7 +219,8 @@ func (m *arrayFeatureModule) Emit(ctx context.Context, model *Model, b *strings.
 			}
 		}
 	}
-	writeArrayDecl(b, decls[0].Name, decls[0].Rows, rowComments)
+	header := yappArrayHeader(decls[0].Name, m.header)
+	writeArrayDecl(b, decls[0].Name, decls[0].Rows, header, rowComments)
 	b.WriteString("\n")
 	return nil
 }
@@ -215,11 +277,25 @@ func (m *multiArrayFeatureModule) Emit(ctx context.Context, model *Model, b *str
 		return err
 	}
 
+	globalIdx := 0
 	for _, decl := range decls {
 		if len(decl.Rows) == 0 {
 			continue
 		}
-		writeArrayDecl(b, decl.Name, decl.Rows, nil)
+		header := yappArrayHeader(decl.Name, nil)
+		var rowComments [][]string
+		if model != nil && model.Provenance != nil {
+			rowComments = make([][]string, len(decl.Rows))
+			for i := range decl.Rows {
+				if globalIdx < len(*ptr) {
+					rowComments[i] = model.Provenance.DescribeFeatureRow(m.key, decl.Name, globalIdx, (*ptr)[globalIdx])
+				}
+				globalIdx++
+			}
+		} else {
+			globalIdx += len(decl.Rows)
+		}
+		writeArrayDecl(b, decl.Name, decl.Rows, header, rowComments)
 		b.WriteString("\n")
 	}
 	return nil

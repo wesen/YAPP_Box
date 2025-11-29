@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
 )
 
@@ -14,16 +16,18 @@ type Provenance struct {
 	trace        resolver.Trace
 	resolved     map[string]any
 	comments     map[string][]string
+	raw          map[string]any
 	scalarPaths  map[string]string
 	featurePaths map[string][]string
 }
 
 // NewProvenance initializes a provenance tracker.
-func NewProvenance(trace resolver.Trace, resolved map[string]any, comments map[string][]string) *Provenance {
+func NewProvenance(trace resolver.Trace, resolved map[string]any, comments map[string][]string, raw map[string]any) *Provenance {
 	return &Provenance{
 		trace:        trace,
 		resolved:     resolved,
 		comments:     comments,
+		raw:          raw,
 		scalarPaths:  map[string]string{},
 		featurePaths: map[string][]string{},
 	}
@@ -77,6 +81,7 @@ func (p *Provenance) DescribeFeatureRow(featureKey, scadName string, idx int, it
 	basePath := bases[idx]
 	header := fmt.Sprintf("// %s[%d] ← %s", scadName, idx, humanizePath(basePath))
 	lines := append([]string{}, p.emitCommentLines(basePath, 0)...)
+	lines = append(lines, p.yamlCommentLines(basePath, 0)...)
 	lines = append(lines, header)
 	lines = append(lines, p.describeMap(basePath, "", item, 2)...)
 	return lines
@@ -113,9 +118,13 @@ func (p *Provenance) describeArray(path, labelPrefix string, data []any, indent 
 func (p *Provenance) describeValue(path, label string, value any, indent int) []string {
 	switch t := value.(type) {
 	case map[string]any:
-		return append(p.emitCommentLines(path, indent), p.describeMap(path, label, t, indent)...)
+		lines := append([]string{}, p.emitCommentLines(path, indent)...)
+		lines = append(lines, p.describeMap(path, label, t, indent)...)
+		return lines
 	case []any:
-		return append(p.emitCommentLines(path, indent), p.describeArray(path, label, t, indent)...)
+		lines := append([]string{}, p.emitCommentLines(path, indent)...)
+		lines = append(lines, p.describeArray(path, label, t, indent)...)
+		return lines
 	default:
 		lines := append([]string{}, p.emitCommentLines(path, indent)...)
 		if line := p.formatFieldLine(path, label, t, indent); line != "" {
@@ -173,7 +182,11 @@ func (p *Provenance) formatDependencies(refs []string) string {
 		if !ok {
 			continue
 		}
-		parts = append(parts, fmt.Sprintf("%s=%s", humanizePath(ref), formatDisplayValue(val)))
+		segment := fmt.Sprintf("%s=%s", humanizePath(ref), formatDisplayValue(val))
+		if comment := p.firstComment(ref); comment != "" {
+			segment = fmt.Sprintf("%s (%s)", segment, comment)
+		}
+		parts = append(parts, segment)
 	}
 	if len(parts) == 0 {
 		return ""
@@ -207,6 +220,47 @@ func (p *Provenance) emitCommentLines(path string, indent int) []string {
 		lines = append(lines, fmt.Sprintf("%s// %s", prefix, line))
 	}
 	return lines
+}
+
+func (p *Provenance) firstComment(path string) string {
+	if p == nil || path == "" {
+		return ""
+	}
+	raw := p.comments[path]
+	if len(raw) == 0 {
+		return ""
+	}
+	return raw[0]
+}
+
+func (p *Provenance) yamlCommentLines(path string, indent int) []string {
+	if p == nil || path == "" || p.raw == nil {
+		return nil
+	}
+	val, ok := lookupPath(p.raw, path)
+	if !ok {
+		return nil
+	}
+	data, err := yaml.Marshal(val)
+	if err != nil {
+		return nil
+	}
+	content := strings.TrimRight(string(data), "\n")
+	if content == "" {
+		return nil
+	}
+	lines := strings.Split(content, "\n")
+	prefix := strings.Repeat(" ", indent)
+	out := make([]string, 0, len(lines)+1)
+	out = append(out, fmt.Sprintf("%s// YAML %s:", prefix, humanizePath(path)))
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		out = append(out, fmt.Sprintf("%s//   %s", prefix, line))
+	}
+	return out
 }
 
 func humanizePath(path string) string {
