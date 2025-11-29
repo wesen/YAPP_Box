@@ -1,0 +1,221 @@
+---
+# Project metadata
+project: film-developer-enclosure-rect-90x70
+version: 0
+units: mm
+yapp_version: v3.3.8
+
+# Reusable constants
+vars:
+  # Minimum clearance required from PCB top to the underside of the lid (mm)
+  top_clearance: 68.0
+
+  # Button layout parameters
+  button_radius: 14.0
+  button_spacing: button_radius * 2 + 2 * 4
+  # Note: button_cutout_radius removed; holes use button_radius directly
+
+  # Clearance computation: solve for clearance to achieve target shell length
+  min_clearance: 1.5
+  # target shell length = (span of three buttons) + (2 * edge margin)
+  # span along X for three buttons with centers at ±button_spacing:
+  #   total = 2*button_spacing + 2*button_radius
+  clearance_for_length: (((2 * button_spacing) + (2 * button_radius)) + 10.0 - pcb.length - 2 * enclosure.wall.thickness) / 2
+
+  # Clearance requirement to fit display window and mounting holes vertically (Y), above buttons
+  display_y_edge_margin: 2.0
+  clearance_for_width: (enclosure.wall.thickness + vars.button_radius + 6.0 + (vars.display_window_height / 2) + vars.display_mount_dy + vars.display_y_edge_margin) - (pcb.width / 2)
+
+  # Centers on lid for cutout placement (origin: center), computed from PCB + clearance + wall thickness
+  row_center_x: pcb.length / 2 + enclosure.wall.clearance + enclosure.wall.thickness
+  row_center_y: pcb.width / 2 + enclosure.wall.clearance + enclosure.wall.thickness
+
+  # Probe outlet and display window
+  probe_hole_radius: 3.0        # 6mm diameter
+  probe_hole_height: 25.0       # height from base for side cutouts (adjust as needed)
+
+  # Display window (with extra offset around display)
+  display_window_width: 37.0
+  display_window_height: 17.0
+  # Horizontal shifts towards the left edge (Y- direction on lid)
+  buttons_left_shift: 12.0
+  display_center_y: (row_center_y - 4.0) + button_radius + 6.0 + (display_window_height / 2)
+
+  # Display mounting holes (center-to-center spacing)
+  display_mount_dx: 17.0      # half of 34mm
+  display_mount_dy: 12.5      # half of 25mm
+  display_mount_hole_radius: 1.3   # ~2.6mm diameter for M2 clearance
+
+  # Micro-USB square cutout
+  usb_width: 11.0                 # horizontal size along face (front↔back)
+  usb_height: 6.5                 # vertical size (height)
+  usb_center_height: 25.0         # center height from base (mm)
+
+# PCB specifications
+pcb:
+  length: 90.0
+  width: 70.0
+  thickness: 1.6
+  # Clearance between PCB bottom and base plane (standoff height)
+  z_clearance: 3.0
+
+  # Default standoff parameters (can be overridden per stand)
+  standoffs:
+    diameter: 7.0   # robust for M3
+    screw_d: 3.0    # M3 screws/inserts
+
+# Enclosure structure
+enclosure:
+  wall:
+    thickness: 2.4
+    clearance: max(vars.min_clearance, max(vars.clearance_for_length, vars.clearance_for_width))
+    fillet_radius: 2.0
+
+  base:
+    thickness: 2.0
+    # Base wall height tall enough to comfortably host standoffs
+    wall_height: pcb.z_clearance + pcb.thickness + 4.0
+
+  lid:
+    thickness: 2.0
+    # Ensure at least `vars.top_clearance` space above PCB top:
+    # (baseWallHeight + lidWallHeight) - (pcb.z_clearance + pcb.thickness) >= top_clearance
+    wall_height: vars.top_clearance + pcb.z_clearance + pcb.thickness - enclosure.base.wall_height
+
+  ridge:
+    height: 5.0
+    slack: 0.2
+    gap: 0.5
+
+# Features
+features:
+  # Mounting hole pattern: 85 x 65 on a 90 x 70 PCB → 2.5mm in from each edge
+  # Hole centers (from PCB origin at bottom-left):
+  # (2.5, 2.5), (87.5, 2.5), (87.5, 67.5), (2.5, 67.5)
+  pcb_stands:
+    - x: 2.5
+      y: 2.5
+      diameter: 7.0
+      pin_diameter: 3.0
+      fillet_radius: 1.5
+
+    - x: 87.5
+      y: 2.5
+      diameter: 7.0
+      pin_diameter: 3.0
+      fillet_radius: 1.5
+
+    - x: 87.5
+      y: 67.5
+      diameter: 7.0
+      pin_diameter: 3.0
+      fillet_radius: 1.5
+
+    - x: 2.5
+      y: 67.5
+      diameter: 7.0
+      pin_diameter: 3.0
+      fillet_radius: 1.5
+
+  # Three circular button cutouts on the lid, 28mm diameter with 4mm gaps
+  cutouts:
+    # Lid button holes (existing)
+    - face: lid
+      from_face_back: vars.row_center_x - vars.button_spacing
+      from_face_left: vars.row_center_y - vars.buttons_left_shift
+      radius: vars.button_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: lid
+      from_face_back: vars.row_center_x
+      from_face_left: vars.row_center_y - vars.buttons_left_shift
+      radius: vars.button_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: lid
+      from_face_back: vars.row_center_x + vars.button_spacing
+      from_face_left: vars.row_center_y - vars.buttons_left_shift
+      radius: vars.button_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    # OLED display window above buttons (rectangle 36x17)
+    - face: lid
+      from_face_back: vars.row_center_x
+      from_face_left: vars.display_center_y
+      width: vars.display_window_width
+      length: vars.display_window_height
+      radius: 0
+      shape: rectangle
+      coordinate: box
+      origin: center
+
+    # Display mounting holes (4x), circle cutouts
+    - face: lid
+      from_face_back: vars.row_center_x - vars.display_mount_dx
+      from_face_left: vars.display_center_y - vars.display_mount_dy
+      radius: vars.display_mount_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: lid
+      from_face_back: vars.row_center_x + vars.display_mount_dx
+      from_face_left: vars.display_center_y - vars.display_mount_dy
+      radius: vars.display_mount_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: lid
+      from_face_back: vars.row_center_x + vars.display_mount_dx
+      from_face_left: vars.display_center_y + vars.display_mount_dy
+      radius: vars.display_mount_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: lid
+      from_face_back: vars.row_center_x - vars.display_mount_dx
+      from_face_left: vars.display_center_y + vars.display_mount_dy
+      radius: vars.display_mount_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+    # Two probe output holes on right side face (6mm diameter)
+    - face: right
+      from_face_left: vars.row_center_x - 25.0
+      from_face_bottom: vars.probe_hole_height
+      radius: vars.probe_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    - face: right
+      from_face_left: vars.row_center_x + 25.0
+      from_face_bottom: vars.probe_hole_height
+      radius: vars.probe_hole_radius
+      shape: circle
+      coordinate: box
+      origin: center
+
+    # Micro-USB rectangular cutout on right face (centered horizontally), 11.0 x 6.5 mm
+    - face: right
+      from_face_left: vars.row_center_x
+      from_face_bottom: vars.usb_center_height
+      width: vars.usb_width
+      length: vars.usb_height
+      radius: 0
+      shape: rectangle
+      coordinate: box
+      origin: center
+
+# Printer-specific tolerances
+tolerances:
+  holes: 0.4
+  perimeter: 1.0
