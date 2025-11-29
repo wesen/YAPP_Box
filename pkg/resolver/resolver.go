@@ -601,8 +601,12 @@ func lookupPath(state any, path string) (any, bool) {
 			}
 			cur = v
 		case []any:
-			// indexes are not expected in dotted paths here; bail
-			return nil, false
+			// Try to parse segment as array index
+			idx, err := strconv.Atoi(p)
+			if err != nil || idx < 0 || idx >= len(t) {
+				return nil, false
+			}
+			cur = t[idx]
 		default:
 			return nil, false
 		}
