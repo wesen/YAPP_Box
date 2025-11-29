@@ -10,6 +10,8 @@ import (
 
 	"github.com/expr-lang/expr"
 	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver/errorx"
 )
 
 // Options configures the resolver behavior.
@@ -75,13 +77,13 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 	unresolvedPaths := collectUnresolved(state)
 	if len(unresolvedPaths) > 0 {
 		// Try to report missing deps with a best-effort variable extraction.
-		missing := map[string][]string{}
-		for _, p := range unresolvedPaths {
-			exprStr, _ := getPathString(state, p)
-			missing[p] = findMissingDependencies(exprStr, state)
-		}
-		return nil, errors.Errorf("unresolved expressions after %d passes: %v (missing=%v)",
-			opts.MaxIterations, unresolvedPaths, missing)
+		// For now, report the first unresolved path with taxonomy.
+		// TODO: Consider aggregating multiple taxonomy entries for multiple unresolved paths.
+		firstPath := unresolvedPaths[0]
+		exprStr, _ := getPathString(state, firstPath)
+		missingRefs := findMissingDependencies(exprStr, state)
+		taxonomy := errorx.NewExprDependencyTaxonomy(firstPath, exprStr, missingRefs, opts.MaxIterations)
+		return nil, errors.Wrapf(taxonomy, "unresolved expressions after %d passes", opts.MaxIterations)
 	}
 
 	if opts.Strict {
@@ -160,7 +162,8 @@ func resolvePass(state map[string]any, usedVars map[string]struct{}, trace *trac
 				// Not resolvable yet is not an error here; only return error on fatal eval issues (syntax etc.)
 				// We detect syntax by checking err type/message; be permissive and only consider "unexpected" tokens fatal.
 				if isSyntaxError(err) {
-					return nil, false, errors.Wrapf(err, "invalid expression at %s: %q", path, t)
+					taxonomy := errorx.NewExprSyntaxTaxonomy(path, t, "", 0)
+					return nil, false, errors.Wrapf(taxonomy, "invalid expression at %s: %q", path, t)
 				}
 				return t, false, nil
 			}

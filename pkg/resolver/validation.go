@@ -1,9 +1,12 @@
 package resolver
 
 import (
+	"strings"
+
 	"github.com/pkg/errors"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/registry"
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver/errorx"
 )
 
 // validateStructure performs Phase 1 validation (before expression resolution).
@@ -24,7 +27,10 @@ func validateStructure(doc map[string]any) error {
 
 		schema := module.Schema()
 		if err := schema.ValidateStructure(path, value); err != nil {
-			return errors.Wrapf(err, "validate %s", path)
+			// Extract field path from error message if possible
+			fieldPath := extractFieldPath(err.Error(), key)
+			taxonomy := errorx.NewSchemaStructureTaxonomy(path, key, fieldPath, "", "", true)
+			return errors.Wrapf(taxonomy, "validate %s", path)
 		}
 	}
 
@@ -48,9 +54,35 @@ func validateConstraints(doc map[string]any) error {
 
 		schema := module.Schema()
 		if err := schema.ValidateConstraints(path, value); err != nil {
-			return errors.Wrapf(err, "validate %s", path)
+			// For now, create basic taxonomy entry. TODO: Extract enum/allowed values from schema.
+			taxonomy := errorx.NewSchemaConstraintTaxonomy(path, key, "", "constraint", nil, nil, nil, nil)
+			return errors.Wrapf(taxonomy, "validate %s", path)
 		}
 	}
 
 	return nil
+}
+
+// extractFieldPath tries to extract field path from error message.
+// Schema validation errors often have format "path: message", so we extract the path part.
+func extractFieldPath(errMsg, moduleName string) string {
+	// Error messages from generated code often have format "features.module[idx].field: message"
+	// Try to extract the field part after the last dot
+	parts := strings.Split(errMsg, ":")
+	if len(parts) > 0 {
+		pathPart := strings.TrimSpace(parts[0])
+		// Remove module prefix if present
+		prefix := "features." + moduleName
+		if strings.HasPrefix(pathPart, prefix) {
+			fieldPart := strings.TrimPrefix(pathPart, prefix)
+			// Remove array index if present (e.g., "[0]")
+			fieldPart = strings.TrimPrefix(fieldPart, "[0]")
+			fieldPart = strings.TrimPrefix(fieldPart, "[1]")
+			fieldPart = strings.TrimPrefix(fieldPart, "[2]")
+			fieldPart = strings.TrimPrefix(fieldPart, "[3]")
+			fieldPart = strings.TrimPrefix(fieldPart, ".")
+			return fieldPart
+		}
+	}
+	return ""
 }

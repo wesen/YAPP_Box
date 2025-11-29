@@ -2,6 +2,8 @@ package resolver
 
 import (
 	"github.com/pkg/errors"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver/errorx"
 )
 
 // validateTopLevelKeys checks for unknown top-level keys in strict mode.
@@ -17,7 +19,8 @@ func validateTopLevelKeys(state map[string]any) error {
 		}
 	}
 	if len(unknown) > 0 {
-		return errors.Errorf("unknown top-level keys (strict mode): %v", unknown)
+		taxonomy := errorx.NewStrictModeTaxonomy("unknown-key", unknown)
+		return errors.Wrap(taxonomy, "unknown top-level keys (strict mode)")
 	}
 	return nil
 }
@@ -36,7 +39,8 @@ func validateUnusedVars(state map[string]any, used map[string]struct{}) error {
 		}
 	}
 	if len(unused) > 0 {
-		return errors.Errorf("unused variables (strict mode): %v", unused)
+		taxonomy := errorx.NewStrictModeTaxonomy("unused-var", unused)
+		return errors.Wrap(taxonomy, "unused variables (strict mode)")
 	}
 	return nil
 }

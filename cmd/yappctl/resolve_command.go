@@ -14,6 +14,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/wesen/yapp-encl-resolver/pkg/cli/resolvercli"
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver/errorx"
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver/rules"
 )
 
 // Ensure interface compliance
@@ -25,6 +27,7 @@ type ResolveSettings struct {
 	Format        string `glazed.parameter:"format"`
 	MaxIterations int    `glazed.parameter:"max-iterations"`
 	Strict        bool   `glazed.parameter:"strict"`
+	ShowTaxonomy  bool   `glazed.parameter:"show-taxonomy"`
 }
 
 type ResolveCommand struct {
@@ -85,6 +88,12 @@ Examples:
 				parameters.WithDefault(false),
 				parameters.WithHelp("Enable strict validation (unknown keys, unused vars)"),
 			),
+			parameters.NewParameterDefinition(
+				"show-taxonomy",
+				parameters.ParameterTypeBool,
+				parameters.WithDefault(false),
+				parameters.WithHelp("Show raw taxonomy structure instead of executing rules"),
+			),
 		),
 		cmds.WithLayersList(commandSettingsLayer),
 	)
@@ -103,6 +112,28 @@ func (c *ResolveCommand) Run(ctx context.Context, parsed *layers.ParsedLayers) e
 		Strict:        settings.Strict,
 	})
 	if err != nil {
+		// Try to extract taxonomy from error
+		if taxonomy, ok := errorx.AsTaxonomy(err); ok {
+			if settings.ShowTaxonomy {
+				// Show raw taxonomy structure
+				if settings.Format == "json" {
+					jsonStr, jsonErr := errorx.FormatTaxonomyJSON(taxonomy)
+					if jsonErr != nil {
+						return errors.Wrap(jsonErr, "format taxonomy as JSON")
+					}
+					fmt.Println(jsonStr)
+				} else {
+					fmt.Println(errorx.FormatTaxonomy(taxonomy))
+				}
+				return nil
+			}
+			// Execute rules and show help
+			reg := rules.DefaultRegistry()
+			results, ruleErr := reg.RenderAll(ctx, taxonomy)
+			if ruleErr == nil && len(results) > 0 {
+				fmt.Fprintf(os.Stderr, "\n%s\n", rules.RenderToText(results))
+			}
+		}
 		return err
 	}
 

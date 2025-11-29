@@ -9,11 +9,24 @@ Topics:
 DocType: index
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: cmd/yappctl/resolve_command.go
+      Note: CLI integration with --show-taxonomy flag
+    - Path: pkg/resolver/errorx/taxonomy.go
+      Note: Implements taxonomy schema design
+    - Path: pkg/resolver/rules/enum_suggest.go
+      Note: Implements enum suggestion rule example
+    - Path: pkg/resolver/rules/registry.go
+      Note: Implements rule registry design
+    - Path: pkg/resolver/rules/vars_scaffold.go
+      Note: Implements vars scaffold rule example
+    - Path: pkg/resolver/rules/yaml_syntax.go
+      Note: Implements YAML syntax rule example
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-28T16:52:31.520526183-05:00
 ---
+
 
 # Structured parse/validation error feedback
 
