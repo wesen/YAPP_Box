@@ -24,3 +24,13 @@ Fixed lookupPath() function to handle array indices in paths. Enhanced lookupPat
 
 Bug fix implemented and verified. All tests passing.
 
+
+## 2025-11-29
+
+Bug fixed: lookupPath() now handles array indices. DependencyGraphRule now works correctly with array paths.
+
+
+## 2025-11-29
+
+Added unit test TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar for verified working case. Updated CLI examples playbook with verified output.
+

@@ -134,3 +134,8 @@ Implemented DependencyGraphRule: Shows dependency chains and resolution order fo
 
 Completed DependencyGraphRule implementation. Note: Limited by YAPP-BUG-001 bug where expressions cannot be extracted from array paths
 
+
+## 2025-11-29
+
+DependencyGraphRule now fully functional after YAPP-BUG-001 fix. Can extract expressions from array paths.
+

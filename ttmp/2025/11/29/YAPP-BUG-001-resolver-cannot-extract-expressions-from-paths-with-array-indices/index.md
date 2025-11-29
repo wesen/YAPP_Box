@@ -18,10 +18,14 @@ RelatedFiles:
       Note: Added integration tests for array expression extraction with missing dependencies
     - Path: pkg/resolver/rules/dependency_graph.go
       Note: DependencyGraphRule affected by this bug
+    - Path: pkg/resolver/rules/dependency_graph_test.go
+      Note: Added TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar test for verified case
 ExternalSources: []
 Summary: Resolver cannot extract expression strings from paths containing array indices, causing missing dependency information in error reporting
-LastUpdated: 2025-11-29T12:51:01.151213047-05:00
+LastUpdated: 2025-11-29T12:52:53.029388416-05:00
 ---
+
+
 
 
 
