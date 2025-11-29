@@ -1,7 +1,7 @@
 ---
 Title: Structured parse/validation error feedback
 Ticket: YAPP-ERROR-FEEDBACK-001
-Status: active
+Status: complete
 Topics:
     - yapp
     - dx
@@ -44,6 +44,8 @@ RelatedFiles:
       Note: Implements vars scaffold rule example
     - Path: pkg/resolver/rules/vars_scaffold_test.go
       Note: Unit tests for vars scaffold rule
+    - Path: pkg/resolver/rules/yaml_known_fields.go
+      Note: New YamlKnownFieldsRule implementation
     - Path: pkg/resolver/rules/yaml_syntax.go
       Note: Implements YAML syntax rule example
     - Path: pkg/resolver/rules/yaml_syntax_test.go
@@ -58,8 +60,10 @@ RelatedFiles:
       Note: CLI test examples for DependencyGraphRule with verified output
 ExternalSources: []
 Summary: ""
-LastUpdated: 2025-11-28T16:52:31.520526183-05:00
+LastUpdated: 2025-11-29T13:51:59.414799041-05:00
 ---
+
+
 
 
 

@@ -18,4 +18,4 @@
 - [x] Enhance schema validation taxonomy: Extract enum values and min/max constraints from schema validation errors to populate SchemaConstraintContext.Allowed, Min, Max fields
 - [x] Implement ModuleDocEmbedRule: Rule that embeds module field tables from pkg/docs/schema_help.go for schema validation errors
 - [x] Implement DependencyGraphRule: Rule that shows dependency chains for missing variables to help users understand resolution order (Fixed in YAPP-BUG-001 - now fully functional with array paths)
-- [ ] Implement YamlKnownFieldsRule: Rule that suggests known fields when unknown keys are detected (requires yaml.v3 KnownFields support)
+- [x] Implement YamlKnownFieldsRule: Rule that suggests known fields when unknown keys are detected (requires yaml.v3 KnownFields support)

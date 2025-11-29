@@ -8,6 +8,7 @@ func DefaultRegistry() *Registry {
 	reg.Register(&VarsScaffoldRule{})
 	reg.Register(&ModuleDocEmbedRule{})
 	reg.Register(&DependencyGraphRule{})
+	reg.Register(&YamlKnownFieldsRule{})
 	return reg
 }
 

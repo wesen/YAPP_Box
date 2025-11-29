@@ -366,24 +366,39 @@ go test ./pkg/resolver/errorx/... -run TestAsTaxonomy
 - YAPP-BUG-001: Bug fix for array path expression extraction
 - Test coverage: `TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar` verifies array path handling
 
-### Task 2: Implement YamlKnownFieldsRule
+### Task 2: Implement YamlKnownFieldsRule ✅ COMPLETE
 
 **What:** Suggest known fields when unknown keys are detected.
 
-**Why:** Users often make typos in field names. This rule would suggest valid field names.
+**Status:** ✅ **COMPLETE** - Works with strict mode unknown keys
 
-**Requirements:**
-- Requires yaml.v3 KnownFields support (already enabled in resolvercli)
-- Need to extract unknown keys from error messages
-- Use Levenshtein distance (like EnumSuggestClosestRule) to suggest closest field names
+**Files Created:**
+- `pkg/resolver/rules/yaml_known_fields.go` - Rule implementation
+- `pkg/resolver/rules/yaml_known_fields_test.go` - Unit tests
 
-**Files to create:**
-- `pkg/resolver/rules/yaml_known_fields.go`
+**Features:**
+- Matches strict mode unknown key errors (`StageStrictUnknownKey`)
+- Suggests closest known top-level keys using Levenshtein distance
+- Shows list of unknown keys detected
+- Provides "Did you mean" suggestions for typos
+- Can load module schema to suggest known fields (future enhancement for module-level unknown fields)
 
-**Where to look:**
-- `pkg/cli/resolvercli/resolver.go` - KnownFields is already enabled
-- `pkg/resolver/rules/enum_suggest.go` - Similar pattern for suggestions
-- `pkg/resolver/strict.go` - Strict mode validation (might have unknown key detection)
+**Current Limitations:**
+- Only works with strict mode top-level unknown keys
+- Module-level unknown field detection requires enhancement to schema validation pipeline
+- yaml.v3 KnownFields(true) only works when decoding into structs, not yaml.Node
+
+**Testing:**
+- Unit tests: `go test ./pkg/resolver/rules/... -v -run TestYamlKnownFieldsRule`
+- CLI test: `go run ./cmd/yappctl resolve -i test.yaml --strict` with unknown top-level keys
+
+**Example Output:**
+```
+Unknown keys: featurs
+
+**Did you mean:**
+- `featurs` → `features`
+```
 
 ## Key Files to Understand
 
