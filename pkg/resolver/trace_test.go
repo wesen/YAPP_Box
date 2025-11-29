@@ -41,7 +41,7 @@ func TestResolveResultCapturesExpressionsAndDependencies(t *testing.T) {
 		},
 	}
 
-	result, err := ResolveResult(ctx, doc, Options{})
+	result, err := ResolveResult(ctx, doc, Options{}, nil)
 	if err != nil {
 		t.Fatalf("ResolveResult returned error: %v", err)
 	}

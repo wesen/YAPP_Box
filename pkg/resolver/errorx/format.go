@@ -29,20 +29,36 @@ func FormatTaxonomy(t *Taxonomy) string {
 		if len(ctx.Allowed) > 0 {
 			buf.WriteString(fmt.Sprintf("  Allowed: %v\n", ctx.Allowed))
 		}
+		if ctx.Line > 0 || ctx.Column > 0 {
+			buf.WriteString(fmt.Sprintf("  Line: %d\n", ctx.Line))
+			buf.WriteString(fmt.Sprintf("  Column: %d\n", ctx.Column))
+		}
 	case *SchemaStructureContext:
 		buf.WriteString(fmt.Sprintf("  Module: %s\n", ctx.Module))
 		buf.WriteString(fmt.Sprintf("  FieldPath: %s\n", ctx.FieldPath))
 		buf.WriteString(fmt.Sprintf("  Expected: %s\n", ctx.Expected))
 		buf.WriteString(fmt.Sprintf("  Actual: %s\n", ctx.Actual))
 		buf.WriteString(fmt.Sprintf("  Required: %v\n", ctx.Required))
+		if ctx.Line > 0 || ctx.Column > 0 {
+			buf.WriteString(fmt.Sprintf("  Line: %d\n", ctx.Line))
+			buf.WriteString(fmt.Sprintf("  Column: %d\n", ctx.Column))
+		}
 	case *ExprDependencyContext:
 		buf.WriteString(fmt.Sprintf("  Expression: %s\n", ctx.Expression))
 		buf.WriteString(fmt.Sprintf("  MissingRefs: %v\n", ctx.MissingRefs))
 		buf.WriteString(fmt.Sprintf("  Iterations: %d\n", ctx.Iterations))
+		if ctx.Line > 0 || ctx.Column > 0 {
+			buf.WriteString(fmt.Sprintf("  Line: %d\n", ctx.Line))
+			buf.WriteString(fmt.Sprintf("  Column: %d\n", ctx.Column))
+		}
 	case *ExprSyntaxContext:
 		buf.WriteString(fmt.Sprintf("  Expression: %s\n", ctx.Expression))
 		buf.WriteString(fmt.Sprintf("  Token: %s\n", ctx.Token))
 		buf.WriteString(fmt.Sprintf("  Position: %d\n", ctx.Position))
+		if ctx.Line > 0 || ctx.Column > 0 {
+			buf.WriteString(fmt.Sprintf("  Line: %d\n", ctx.Line))
+			buf.WriteString(fmt.Sprintf("  Column: %d\n", ctx.Column))
+		}
 	case *ExprRuntimeContext:
 		buf.WriteString(fmt.Sprintf("  Expression: %s\n", ctx.Expression))
 		buf.WriteString(fmt.Sprintf("  Function: %s\n", ctx.Function))
@@ -76,33 +92,53 @@ func FormatTaxonomyJSON(t *Taxonomy) (string, error) {
 			"snippet": ctx.Snippet,
 		}
 	case *SchemaConstraintContext:
-		data["context"] = map[string]any{
+		ctxData := map[string]any{
 			"module":     ctx.Module,
 			"field_path": ctx.FieldPath,
 			"expected":   ctx.Expected,
 			"actual":     ctx.Actual,
 			"allowed":    ctx.Allowed,
 		}
+		if ctx.Line > 0 || ctx.Column > 0 {
+			ctxData["line"] = ctx.Line
+			ctxData["column"] = ctx.Column
+		}
+		data["context"] = ctxData
 	case *SchemaStructureContext:
-		data["context"] = map[string]any{
+		ctxData := map[string]any{
 			"module":     ctx.Module,
 			"field_path": ctx.FieldPath,
 			"expected":   ctx.Expected,
 			"actual":     ctx.Actual,
 			"required":   ctx.Required,
 		}
+		if ctx.Line > 0 || ctx.Column > 0 {
+			ctxData["line"] = ctx.Line
+			ctxData["column"] = ctx.Column
+		}
+		data["context"] = ctxData
 	case *ExprDependencyContext:
-		data["context"] = map[string]any{
+		ctxData := map[string]any{
 			"expression":   ctx.Expression,
 			"missing_refs": ctx.MissingRefs,
 			"iterations":   ctx.Iterations,
 		}
+		if ctx.Line > 0 || ctx.Column > 0 {
+			ctxData["line"] = ctx.Line
+			ctxData["column"] = ctx.Column
+		}
+		data["context"] = ctxData
 	case *ExprSyntaxContext:
-		data["context"] = map[string]any{
+		ctxData := map[string]any{
 			"expression": ctx.Expression,
 			"token":      ctx.Token,
 			"position":   ctx.Position,
 		}
+		if ctx.Line > 0 || ctx.Column > 0 {
+			ctxData["line"] = ctx.Line
+			ctxData["column"] = ctx.Column
+		}
+		data["context"] = ctxData
 	case *ExprRuntimeContext:
 		data["context"] = map[string]any{
 			"expression": ctx.Expression,

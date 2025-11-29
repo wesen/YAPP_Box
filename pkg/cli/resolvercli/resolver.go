@@ -26,7 +26,7 @@ type LoadOptions struct {
 type DecodeResult struct {
 	Document  map[string]any      // Parsed document structure
 	Comments  map[string][]string // Comments extracted from YAML nodes
-	Positions PositionMap         // Path-to-position mapping for error reporting
+	Positions resolver.PositionMap // Path-to-position mapping for error reporting
 }
 
 // LoadResult contains the fully resolved document plus trace + comment metadata.
@@ -35,7 +35,7 @@ type LoadResult struct {
 	Trace    resolver.Trace
 	Comments map[string][]string
 	Raw      map[string]any
-	Positions PositionMap // Path-to-position mapping for error reporting
+	Positions resolver.PositionMap // Path-to-position mapping for error reporting
 }
 
 // LoadAndResolveResult reads a YAML DSL file, resolves it, and returns metadata.
@@ -53,7 +53,7 @@ func LoadAndResolveResult(ctx context.Context, path string, opts LoadOptions) (*
 	result, err := resolver.ResolveResult(ctx, decodeResult.Document, resolver.Options{
 		MaxIterations: opts.MaxIterations,
 		Strict:        opts.Strict,
-	})
+	}, decodeResult.Positions)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func decodeDocumentWithComments(raw []byte, filePath string) (*DecodeResult, err
 		node = root.Content[0]
 	}
 	comments := map[string][]string{}
-	positions := make(PositionMap)
+	positions := make(resolver.PositionMap)
 	buildPositionMap(node, "", positions)
 	value, err := nodeToInterface(node, "", comments)
 	if err != nil {

@@ -48,7 +48,7 @@ func TestEmitSCADIncludesProvenanceComments(t *testing.T) {
 		},
 	}
 
-	result, err := resolver.ResolveResult(ctx, doc, resolver.Options{})
+	result, err := resolver.ResolveResult(ctx, doc, resolver.Options{}, nil)
 	if err != nil {
 		t.Fatalf("resolver failed: %v", err)
 	}

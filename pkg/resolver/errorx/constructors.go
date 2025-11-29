@@ -17,7 +17,7 @@ func NewYAMLIngestTaxonomy(file string, line, column int, snippet string) *Taxon
 }
 
 // NewSchemaConstraintTaxonomy creates a taxonomy entry for schema constraint violations.
-func NewSchemaConstraintTaxonomy(path, module, fieldPath string, expected string, actual any, allowed []string, min, max *float64) *Taxonomy {
+func NewSchemaConstraintTaxonomy(path, module, fieldPath string, expected string, actual any, allowed []string, min, max *float64, line, column int) *Taxonomy {
 	return &Taxonomy{
 		Stage:    StageSchemaConstraints,
 		Symptom:  SymptomEnumMismatch, // Default to enum mismatch if allowed values provided
@@ -31,12 +31,14 @@ func NewSchemaConstraintTaxonomy(path, module, fieldPath string, expected string
 			Actual:    actual,
 			Min:       min,
 			Max:       max,
+			Line:      line,
+			Column:    column,
 		},
 	}
 }
 
 // NewSchemaStructureTaxonomy creates a taxonomy entry for Phase 1 structure validation errors.
-func NewSchemaStructureTaxonomy(path, module, fieldPath, expected, actual string, required bool) *Taxonomy {
+func NewSchemaStructureTaxonomy(path, module, fieldPath, expected, actual string, required bool, line, column int) *Taxonomy {
 	symptom := SymptomTypeMismatch
 	if required {
 		symptom = SymptomMissingRequired
@@ -52,12 +54,14 @@ func NewSchemaStructureTaxonomy(path, module, fieldPath, expected, actual string
 			Expected:  expected,
 			Actual:    actual,
 			Required:  required,
+			Line:      line,
+			Column:    column,
 		},
 	}
 }
 
 // NewExprDependencyTaxonomy creates a taxonomy entry for missing dependency errors.
-func NewExprDependencyTaxonomy(path, expression string, missingRefs []string, iterations int) *Taxonomy {
+func NewExprDependencyTaxonomy(path, expression string, missingRefs []string, iterations int, line, column int) *Taxonomy {
 	return &Taxonomy{
 		Stage:    StageExprDependencyMissing,
 		Symptom:  SymptomDependencyMissing,
@@ -67,12 +71,14 @@ func NewExprDependencyTaxonomy(path, expression string, missingRefs []string, it
 			Expression:  expression,
 			MissingRefs: missingRefs,
 			Iterations:  iterations,
+			Line:        line,
+			Column:      column,
 		},
 	}
 }
 
 // NewExprSyntaxTaxonomy creates a taxonomy entry for expression syntax errors.
-func NewExprSyntaxTaxonomy(path, expression, token string, position int) *Taxonomy {
+func NewExprSyntaxTaxonomy(path, expression, token string, position int, line, column int) *Taxonomy {
 	return &Taxonomy{
 		Stage:    StageExprSyntax,
 		Symptom:  SymptomSyntax,
@@ -82,6 +88,8 @@ func NewExprSyntaxTaxonomy(path, expression, token string, position int) *Taxono
 			Expression: expression,
 			Token:      token,
 			Position:   position,
+			Line:       line,
+			Column:     column,
 		},
 	}
 }

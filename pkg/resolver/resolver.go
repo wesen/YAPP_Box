@@ -23,8 +23,9 @@ type Options struct {
 // Resolve evaluates expressions in the given document until reaching a fixed point
 // or failing with an error (unresolved dependencies, cycles, invalid paths).
 // It returns a deep copy with all expressions resolved to numeric values.
+// This is a legacy API that doesn't support position tracking. Use ResolveResult for position tracking.
 func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]any, error) {
-	result, err := ResolveResult(ctx, doc, opts)
+	result, err := ResolveResult(ctx, doc, opts, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +33,8 @@ func Resolve(ctx context.Context, doc map[string]any, opts Options) (map[string]
 }
 
 // ResolveResult behaves like Resolve but also captures trace metadata for every scalar value.
-func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Result, error) {
+// positions is optional and can be nil if position tracking is not needed.
+func ResolveResult(ctx context.Context, doc map[string]any, opts Options, positions PositionMap) (*Result, error) {
 	if opts.MaxIterations <= 0 {
 		opts.MaxIterations = 16
 	}
@@ -47,7 +49,7 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 	}
 
 	// Phase 1: Validate structure before expression resolution
-	if err := validateStructure(state); err != nil {
+	if err := validateStructure(state, positions); err != nil {
 		return nil, errors.Wrap(err, "structure validation")
 	}
 
@@ -63,7 +65,7 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 		default:
 		}
 		changed = false
-		resolved, iterChanged, err := resolvePass(state, usedVars, trace)
+		resolved, iterChanged, err := resolvePass(state, usedVars, trace, positions)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +84,11 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 		firstPath := unresolvedPaths[0]
 		exprStr, _ := getPathString(state, firstPath)
 		missingRefs := findMissingDependencies(exprStr, state)
-		taxonomy := errorx.NewExprDependencyTaxonomy(firstPath, exprStr, missingRefs, opts.MaxIterations)
+		line, column := 0, 0
+		if positions != nil {
+			line, column = positions.GetPosition(firstPath)
+		}
+		taxonomy := errorx.NewExprDependencyTaxonomy(firstPath, exprStr, missingRefs, opts.MaxIterations, line, column)
 		return nil, errors.Wrapf(taxonomy, "unresolved expressions after %d passes", opts.MaxIterations)
 	}
 
@@ -93,7 +99,7 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 	}
 
 	// Phase 2: Validate constraints after expression resolution
-	if err := validateConstraints(state); err != nil {
+	if err := validateConstraints(state, positions); err != nil {
 		return nil, errors.Wrap(err, "constraint validation")
 	}
 
@@ -104,7 +110,7 @@ func ResolveResult(ctx context.Context, doc map[string]any, opts Options) (*Resu
 }
 
 // resolvePass performs one pass and tries to evaluate as many expressions as possible.
-func resolvePass(state map[string]any, usedVars map[string]struct{}, trace *traceRecorder) (map[string]any, bool, error) {
+func resolvePass(state map[string]any, usedVars map[string]struct{}, trace *traceRecorder, positions PositionMap) (map[string]any, bool, error) {
 	changed := false
 	env := buildEnv(state)
 
@@ -162,7 +168,11 @@ func resolvePass(state map[string]any, usedVars map[string]struct{}, trace *trac
 				// Not resolvable yet is not an error here; only return error on fatal eval issues (syntax etc.)
 				// We detect syntax by checking err type/message; be permissive and only consider "unexpected" tokens fatal.
 				if isSyntaxError(err) {
-					taxonomy := errorx.NewExprSyntaxTaxonomy(path, t, "", 0)
+					line, column := 0, 0
+					if positions != nil {
+						line, column = positions.GetPosition(path)
+					}
+					taxonomy := errorx.NewExprSyntaxTaxonomy(path, t, "", 0, line, column)
 					return nil, false, errors.Wrapf(taxonomy, "invalid expression at %s: %q", path, t)
 				}
 				return t, false, nil

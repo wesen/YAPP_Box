@@ -3,26 +3,19 @@ package resolvercli
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
+
+	"github.com/wesen/yapp-encl-resolver/pkg/resolver"
 )
 
-// PositionMap maps DSL paths to their line/column positions in the source YAML.
-type PositionMap map[string]Position
-
-// Position represents a location in the source file.
-type Position struct {
-	Line   int
-	Column int
-}
-
 // buildPositionMap traverses the yaml.Node tree and builds a map from paths to positions.
-func buildPositionMap(node *yaml.Node, path string, positions PositionMap) {
+func buildPositionMap(node *yaml.Node, path string, positions resolver.PositionMap) {
 	if node == nil {
 		return
 	}
 
 	// Record position for this path if it's a scalar (leaf node)
 	if node.Kind == yaml.ScalarNode && path != "" {
-		positions[path] = Position{
+		positions[path] = resolver.Position{
 			Line:   node.Line,
 			Column: node.Column,
 		}
@@ -37,7 +30,7 @@ func buildPositionMap(node *yaml.Node, path string, positions PositionMap) {
 			childPath := joinPath(path, key)
 			// Record position for the key
 			if path != "" {
-				positions[childPath] = Position{
+				positions[childPath] = resolver.Position{
 					Line:   keyNode.Line,
 					Column: keyNode.Column,
 				}
@@ -52,11 +45,4 @@ func buildPositionMap(node *yaml.Node, path string, positions PositionMap) {
 	}
 }
 
-// getPosition looks up the position for a given path, returning 0,0 if not found.
-func (pm PositionMap) getPosition(path string) (line, column int) {
-	if pos, ok := pm[path]; ok {
-		return pos.Line, pos.Column
-	}
-	return 0, 0
-}
 

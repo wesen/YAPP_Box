@@ -27,3 +27,48 @@ Implemented taxonomy schema (pkg/resolver/errorx) with stage/symptom enums and t
 - pkg/resolver/strict.go — Updated to emit strict-mode taxonomy
 - pkg/resolver/validation.go — Updated to emit schema validation taxonomy
 
+
+## 2025-11-29
+
+Created intern onboarding guide documenting context, code structure, next steps, and testing procedures
+
+### Related Files
+
+- playbook/01-intern-onboarding-guide.md — Comprehensive guide for continuing work
+
+
+## 2025-11-29
+
+Completed position integration: Moved PositionMap to resolver package, updated taxonomy constructors to accept line/column parameters, passed PositionMap through resolver pipeline, and updated format functions to display positions. Schema validation and expression errors now include accurate line/column information.
+
+### Related Files
+
+- pkg/cli/resolvercli/positions.go — Updated to use resolver.PositionMap
+- pkg/cli/resolvercli/resolver.go — Updated to use resolver.PositionMap and pass to ResolveResult
+- pkg/resolver/errorx/constructors.go — Updated constructors to accept line/column parameters
+- pkg/resolver/errorx/format.go — Added line/column output to text and JSON formats
+- pkg/resolver/positions.go — New PositionMap type moved from resolvercli
+- pkg/resolver/resolver.go — Pass PositionMap through ResolveResult and resolvePass
+- pkg/resolver/validation.go — Accept PositionMap and look up positions for errors
+
+
+## 2025-11-29
+
+Added comprehensive unit tests for taxonomy package: Test all constructors create valid entries with correct fields, test AsTaxonomy() unwraps nested errors correctly, test context types implement TaxonomyContext interface, test Error() method. All 15 tests passing.
+
+### Related Files
+
+- pkg/resolver/errorx/taxonomy_test.go — New comprehensive test suite for taxonomy constructors and AsTaxonomy unwrapping
+
+
+## 2025-11-29
+
+Added comprehensive unit tests for rules package: Test registry matching/sorting/aggregation, test YAML syntax rule, test enum suggest rule with Levenshtein distance, test vars scaffold rule. All 24 tests passing.
+
+### Related Files
+
+- pkg/resolver/rules/enum_suggest_test.go — Tests for enum suggestion rule with distance calculation
+- pkg/resolver/rules/registry_test.go — Tests for registry matching
+- pkg/resolver/rules/vars_scaffold_test.go — Tests for vars scaffold rule
+- pkg/resolver/rules/yaml_syntax_test.go — Tests for YAML syntax pointer rule
+

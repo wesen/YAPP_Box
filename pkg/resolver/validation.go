@@ -11,7 +11,8 @@ import (
 
 // validateStructure performs Phase 1 validation (before expression resolution).
 // Checks field types and required fields against module schemas.
-func validateStructure(doc map[string]any) error {
+// positions is optional and can be nil if position tracking is not needed.
+func validateStructure(doc map[string]any, positions PositionMap) error {
 	features, ok := doc["features"].(map[string]any)
 	if !ok || features == nil {
 		return nil // No features to validate
@@ -29,7 +30,11 @@ func validateStructure(doc map[string]any) error {
 		if err := schema.ValidateStructure(path, value); err != nil {
 			// Extract field path from error message if possible
 			fieldPath := extractFieldPath(err.Error(), key)
-			taxonomy := errorx.NewSchemaStructureTaxonomy(path, key, fieldPath, "", "", true)
+			line, column := 0, 0
+			if positions != nil {
+				line, column = positions.GetPosition(path)
+			}
+			taxonomy := errorx.NewSchemaStructureTaxonomy(path, key, fieldPath, "", "", true, line, column)
 			return errors.Wrapf(taxonomy, "validate %s", path)
 		}
 	}
@@ -39,7 +44,8 @@ func validateStructure(doc map[string]any) error {
 
 // validateConstraints performs Phase 2 validation (after expression resolution).
 // Checks min/max/enum constraints against resolved values.
-func validateConstraints(doc map[string]any) error {
+// positions is optional and can be nil if position tracking is not needed.
+func validateConstraints(doc map[string]any, positions PositionMap) error {
 	features, ok := doc["features"].(map[string]any)
 	if !ok || features == nil {
 		return nil
@@ -55,7 +61,11 @@ func validateConstraints(doc map[string]any) error {
 		schema := module.Schema()
 		if err := schema.ValidateConstraints(path, value); err != nil {
 			// For now, create basic taxonomy entry. TODO: Extract enum/allowed values from schema.
-			taxonomy := errorx.NewSchemaConstraintTaxonomy(path, key, "", "constraint", nil, nil, nil, nil)
+			line, column := 0, 0
+			if positions != nil {
+				line, column = positions.GetPosition(path)
+			}
+			taxonomy := errorx.NewSchemaConstraintTaxonomy(path, key, "", "constraint", nil, nil, nil, nil, line, column)
 			return errors.Wrapf(taxonomy, "validate %s", path)
 		}
 	}
