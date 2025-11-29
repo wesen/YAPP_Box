@@ -77,10 +77,17 @@ func (r *Registry) RenderAll(ctx context.Context, taxonomy *errorx.Taxonomy) ([]
 		return severityOrder(matches[i].result.Severity) > severityOrder(matches[j].result.Severity)
 	})
 
-	// Extract results
-	results := make([]*RuleResult, len(matches))
-	for i, m := range matches {
-		results[i] = m.result
+	// Extract results and deduplicate by headline+body
+	seen := make(map[string]bool)
+	results := make([]*RuleResult, 0, len(matches))
+	for _, m := range matches {
+		// Create a key from headline and body to detect duplicates
+		key := m.result.Headline + "|" + m.result.Body
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		results = append(results, m.result)
 	}
 
 	return results, nil

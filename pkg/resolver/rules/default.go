@@ -6,6 +6,8 @@ func DefaultRegistry() *Registry {
 	reg.Register(&YamlSyntaxPointerRule{})
 	reg.Register(&EnumSuggestClosestRule{})
 	reg.Register(&VarsScaffoldRule{})
+	reg.Register(&ModuleDocEmbedRule{})
+	reg.Register(&ModuleDocEmbedRule{})
 	return reg
 }
 

@@ -72,3 +72,51 @@ Added comprehensive unit tests for rules package: Test registry matching/sorting
 - pkg/resolver/rules/vars_scaffold_test.go — Tests for vars scaffold rule
 - pkg/resolver/rules/yaml_syntax_test.go — Tests for YAML syntax pointer rule
 
+
+## 2025-11-29
+
+Enhanced schema validation taxonomy to extract enum values and min/max constraints from error messages and schema metadata. Added extractConstraintInfo() function that parses error messages for allowed enum values, queries schema Fields() for min/max constraints, and extracts actual values. SchemaConstraintContext now properly populated with Allowed, Min, Max, and Actual fields.
+
+### Related Files
+
+- pkg/resolver/validation.go — Updated validateConstraints to use extractConstraintInfo
+- pkg/resolver/validation_extract.go — New extraction functions for enum values and constraints
+
+
+## 2025-11-29
+
+Implemented ModuleDocEmbedRule: Rule that matches schema validation errors and embeds module field tables from schema.yaml files. Shows complete field reference table with types, required flags, defaults, and descriptions. Helps users understand available fields when validation errors occur.
+
+### Related Files
+
+- pkg/resolver/rules/default.go — Registered ModuleDocEmbedRule in default registry
+- pkg/resolver/rules/module_doc.go — New rule that embeds module field tables
+
+
+## 2025-11-29
+
+Implemented ModuleDocEmbedRule: Rule that matches schema validation errors and embeds module field tables from schema documentation. Shows complete field reference with types, required flags, defaults, and descriptions. Helps users understand available fields when validation errors occur.
+
+### Related Files
+
+- pkg/resolver/rules/default.go — Registered ModuleDocEmbedRule in default registry
+- pkg/resolver/rules/module_doc.go — New rule that embeds module field documentation
+
+
+## 2025-11-29
+
+Fixed duplicate rule results in registry: Added deduplication logic to prevent same rule from appearing multiple times in CLI output. ModuleDocEmbedRule now appears once per error, improving readability.
+
+### Related Files
+
+- pkg/resolver/rules/registry.go — Added deduplication by headline+body to prevent duplicate results
+
+
+## 2025-11-29
+
+Created continuation guide for interns: Comprehensive document covering all recent progress including position integration, enhanced schema validation, unit tests, ModuleDocEmbedRule, and registry deduplication. Includes testing procedures, debugging tips, and next steps for remaining tasks.
+
+### Related Files
+
+- playbook/02-continuation-guide.md — Comprehensive continuation guide for interns
+

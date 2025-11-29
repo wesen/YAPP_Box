@@ -60,12 +60,36 @@ func validateConstraints(doc map[string]any, positions PositionMap) error {
 
 		schema := module.Schema()
 		if err := schema.ValidateConstraints(path, value); err != nil {
-			// For now, create basic taxonomy entry. TODO: Extract enum/allowed values from schema.
+			// Extract enum values, min/max constraints, and actual value from error and schema
+			allowed, min, max, actual, fieldPath := extractConstraintInfo(err, schema, path, value)
+			
 			line, column := 0, 0
 			if positions != nil {
-				line, column = positions.GetPosition(path)
+				// Try to get position for the specific field if we have fieldPath
+				if fieldPath != "" {
+					fieldFullPath := path
+					if !strings.HasPrefix(fieldPath, "[") {
+						fieldFullPath = path + "." + fieldPath
+					} else {
+						fieldFullPath = path + fieldPath
+					}
+					line, column = positions.GetPosition(fieldFullPath)
+				}
+				// Fallback to module path if field position not found
+				if line == 0 && column == 0 {
+					line, column = positions.GetPosition(path)
+				}
 			}
-			taxonomy := errorx.NewSchemaConstraintTaxonomy(path, key, "", "constraint", nil, nil, nil, nil, line, column)
+			
+			// Determine expected type based on what we found
+			expected := "constraint"
+			if len(allowed) > 0 {
+				expected = "enum"
+			} else if min != nil || max != nil {
+				expected = "number"
+			}
+			
+			taxonomy := errorx.NewSchemaConstraintTaxonomy(path, key, fieldPath, expected, actual, allowed, min, max, line, column)
 			return errors.Wrapf(taxonomy, "validate %s", path)
 		}
 	}

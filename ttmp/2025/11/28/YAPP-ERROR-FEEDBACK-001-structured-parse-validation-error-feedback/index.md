@@ -30,6 +30,10 @@ RelatedFiles:
       Note: Implements enum suggestion rule example
     - Path: pkg/resolver/rules/enum_suggest_test.go
       Note: Unit tests for enum suggestion rule
+    - Path: pkg/resolver/rules/module_doc.go
+      Note: |-
+        ModuleDocEmbedRule that shows field tables for schema errors
+        Rule that embeds module field tables in error messages
     - Path: pkg/resolver/rules/registry.go
       Note: Implements rule registry design
     - Path: pkg/resolver/rules/registry_test.go
@@ -44,10 +48,15 @@ RelatedFiles:
       Note: Unit tests for YAML syntax rule
     - Path: pkg/resolver/validation.go
       Note: Validation functions with position tracking
+    - Path: pkg/resolver/validation_extract.go
+      Note: Extraction functions for enum values and constraints from schema errors
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-28T16:52:31.520526183-05:00
 ---
+
+
+
 
 
 
