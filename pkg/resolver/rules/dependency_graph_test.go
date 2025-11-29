@@ -144,3 +144,48 @@ func TestDependencyGraphRule_Render_NoExpression(t *testing.T) {
 	}
 }
 
+func TestDependencyGraphRule_Render_ArrayPath_SingleMissingVar(t *testing.T) {
+	// Test case verified in YAPP-BUG-001: single missing variable in array element
+	// This matches the exact case tested with CLI: features.cutouts.0.width with max(vars.missing_height, 10)
+	rule := &DependencyGraphRule{}
+	ctx := context.Background()
+	
+	missingRefs := []string{"vars.missing_height"}
+	tax := errorx.NewExprDependencyTaxonomy("features.cutouts.0.width", "max(vars.missing_height, 10)", missingRefs, 16, 11, 15)
+	
+	result, err := rule.Render(ctx, tax)
+	if err != nil {
+		t.Fatalf("Render returned error: %v", err)
+	}
+	
+	// Verify headline contains missing variable
+	if !strings.Contains(result.Headline, "vars.missing_height") {
+		t.Errorf("expected Headline to contain vars.missing_height, got %s", result.Headline)
+	}
+	
+	// Verify body contains all required elements
+	if !strings.Contains(result.Body, "vars.missing_height") {
+		t.Error("expected Body to contain vars.missing_height")
+	}
+	if !strings.Contains(result.Body, "features.cutouts.0.width") {
+		t.Error("expected Body to contain error path")
+	}
+	if !strings.Contains(result.Body, "max(vars.missing_height, 10)") {
+		t.Error("expected Body to contain expression")
+	}
+	if !strings.Contains(result.Body, "Dependency chain") {
+		t.Error("expected Body to contain dependency chain")
+	}
+	if !strings.Contains(result.Body, "Suggested resolution order") {
+		t.Error("expected Body to contain resolution order")
+	}
+	if !strings.Contains(result.Body, "1. Define `vars.missing_height` first") {
+		t.Error("expected Body to contain resolution order step")
+	}
+	
+	// Verify severity
+	if result.Severity != errorx.SeverityError {
+		t.Errorf("expected SeverityError, got %s", result.Severity)
+	}
+}
+
