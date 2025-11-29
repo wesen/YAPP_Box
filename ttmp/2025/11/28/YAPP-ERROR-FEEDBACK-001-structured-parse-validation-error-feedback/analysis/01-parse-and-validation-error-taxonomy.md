@@ -22,7 +22,7 @@ RelatedFiles:
       Note: Existing structured validation error type we can align to
 ExternalSources: []
 Summary: "Defines a staged taxonomy and rule engine so parse/resolution errors can emit targeted guidance via the CLI/UI."
-LastUpdated: 2025-11-28T16:52:34.704743748-05:00
+LastUpdated: 2025-11-28T17:43:18-05:00
 ---
 
 
@@ -31,13 +31,14 @@ LastUpdated: 2025-11-28T16:52:34.704743748-05:00
 ## Overview
 
 - Provide consistent, actionable error feedback for the YAPP DSL by enriching every failure with machine-readable context.
-- Current errors are plain strings wrapped via `github.com/pkg/errors` (see `pkg/resolver/resolver.go`), forcing users to guess whether a failure came from YAML parsing, schema validation, or expression evaluation.
+- `pkg/cli/resolvercli/resolver.go` now relies on `gopkg.in/yaml.v3`, so we have line/column/snippet metadata available at decode time, but we still drop that context before bubbling errors up.
 - We want a taxonomy + rule engine so the CLI (and future UI surfaces) can map each failure to curated help, including dynamic snippets or schema references.
 
 ## Current error surfaces & gaps
 
 ### 1. YAML ingest + CLI plumbing
-- `pkg/cli/resolvercli/resolver.go` only distinguishes between `read input` and `parse yaml` failures, discarding the rich `yaml.v3` metadata (line, column, context) and lumping both under the same string.
+- `pkg/cli/resolvercli/resolver.go` uses `yaml.v3`, but we still unmarshal directly into `map[string]any`. That path throws away the node-level `Line`, `Column`, and `Kind` information `yaml.Node` exposes.
+- As a result, both file I/O errors and YAML syntax issues still surface as a single plain string without pointing to the exact row/column or showing the problematic snippet, even though v3 gives us those hooks for free.
 - There is no flag to hint whether the user should rerun generation, fix whitespace, or simply ensure the file exists.
 
 ### 2. Schema structure / constraints
@@ -79,24 +80,52 @@ Every taxonomy entry should expose:
 
 - Introduce a `Taxonomy` struct returned by all validators:
   ```go
+  // Stage-specific context payloads implement TaxonomyContext.
   type Taxonomy struct {
       Stage   StageCode
       Symptom SymptomCode
       Path    string
-      Context map[string]any // value, allowed, expression, file info, etc.
+      Context TaxonomyContext
+  }
+
+  type TaxonomyContext interface {
+      // Stage returns the owning StageCode so switch statements can stay type-safe.
+      Stage() StageCode
+  }
+
+  type YAMLIngestContext struct {
+      File   string
+      Line   int
+      Column int
+      Snippet string
+  }
+
+  type SchemaConstraintContext struct {
+      Module       string
+      FieldPath    string
+      ExpectedType string
+      Allowed      []any
+      Actual       any
+  }
+
+  type ExprDependencyContext struct {
+      Expression string
+      MissingRefs []string
+      Iterations  int
   }
   ```
 - Build a rule registry keyed by `(Stage, Symptom)` that emits:
   - A concise summary (`"cutouts[0].shape must be one of round, square"`).
   - A remediation body (Markdown) that can embed schema table rows or dynamic YAML scaffolds.
   - Optional “actions” (e.g., `yappctl explain --path features.cutouts`) for future interactive flows.
+- Rules switch on the typed `TaxonomyContext` (e.g., `*YAMLIngestContext`, `*SchemaConstraintContext`) instead of downcasting `map[string]any`, ensuring compile-time coverage for new fields and enabling helpers like `Context.Line`.
 - For taxonomy entries referencing specific modules, pull doc snippets from `pkg/docs/schema_help.go` so users see the relevant table or example automatically.
 - For dependency errors, auto-generate YAML snippets showing how to declare missing variables, and include the computed dependency graph so advanced users can debug cycles.
 
 ## Implementation considerations
 
 1. **Typed errors end-to-end**
-   - Wrap YAML parser errors in `IngestError{Stage: ingest.yaml.syntax, ...}` preserving snippet + pointer to `yaml.v3` offset.
+   - Decode into a `yaml.Node` (or run `yaml.NewDecoder` with `KnownFields(true)`) so we can populate `IngestError` with exact `Line`, `Column`, and snippet data that v3 now provides.
    - Update schema validation to pass through `schemagen.ValidationErrors` so we retain structured fields.
    - In the resolver loop, replace generic `errors.Errorf` calls with constructors like `NewExprSyntaxError(path, exprText, token)` and `NewMissingDependencyError(path, missingRefs)`.
 2. **Central classifier**
