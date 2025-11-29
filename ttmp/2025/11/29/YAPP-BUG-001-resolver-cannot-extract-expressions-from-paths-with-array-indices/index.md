@@ -9,11 +9,17 @@ Topics:
 DocType: index
 Intent: long-term
 Owners: []
-RelatedFiles: []
+RelatedFiles:
+    - Path: pkg/resolver/resolver.go
+      Note: Contains lookupPath and getPathString functions that fail on array indices
+    - Path: pkg/resolver/rules/dependency_graph.go
+      Note: DependencyGraphRule affected by this bug
 ExternalSources: []
-Summary: ""
-LastUpdated: 2025-11-29T12:31:42.128817033-05:00
+Summary: Resolver cannot extract expression strings from paths containing array indices, causing missing dependency information in error reporting
+LastUpdated: 2025-11-29T12:41:25.011393288-05:00
 ---
+
+
 
 # Resolver cannot extract expressions from paths with array indices
 

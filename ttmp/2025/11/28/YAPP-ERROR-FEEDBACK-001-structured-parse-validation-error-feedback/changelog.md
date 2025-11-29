@@ -129,3 +129,8 @@ Implemented DependencyGraphRule: Shows dependency chains and resolution order fo
 
 - pkg/resolver/rules/dependency_graph.go — New rule implementation
 
+
+## 2025-11-29
+
+Completed DependencyGraphRule implementation. Note: Limited by YAPP-BUG-001 bug where expressions cannot be extracted from array paths
+

@@ -52,10 +52,13 @@ RelatedFiles:
       Note: Validation functions with position tracking
     - Path: pkg/resolver/validation_extract.go
       Note: Extraction functions for enum values and constraints from schema errors
+    - Path: ttmp/2025/11/29/YAPP-BUG-001-resolver-cannot-extract-expressions-from-paths-with-array-indices
+      Note: Related bug ticket affecting DependencyGraphRule
 ExternalSources: []
 Summary: ""
 LastUpdated: 2025-11-28T16:52:31.520526183-05:00
 ---
+
 
 
 

@@ -17,5 +17,5 @@
 - [x] Add unit tests for rules: Test registry matching/sorting/aggregation, and test each rule (YAML syntax, enum suggest, vars scaffold) in pkg/resolver/rules/
 - [x] Enhance schema validation taxonomy: Extract enum values and min/max constraints from schema validation errors to populate SchemaConstraintContext.Allowed, Min, Max fields
 - [x] Implement ModuleDocEmbedRule: Rule that embeds module field tables from pkg/docs/schema_help.go for schema validation errors
-- [ ] Implement DependencyGraphRule: Rule that shows dependency chains for missing variables to help users understand resolution order
+- [x] Implement DependencyGraphRule: Rule that shows dependency chains for missing variables to help users understand resolution order (Note: Currently limited by YAPP-BUG-001 - cannot extract expressions from array paths)
 - [ ] Implement YamlKnownFieldsRule: Rule that suggests known fields when unknown keys are detected (requires yaml.v3 KnownFields support)
